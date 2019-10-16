@@ -22,3 +22,10 @@ This project contains the code for the Task-Planner. The application is a tool t
 * Responsive HTML5 client.
 * The application must run on Heroku.
 * The application must work in FireFox.
+
+### API Requirements
+* Server API for Create / Delete / Update Lists [ ]
+* Server API for Create / Delete / Update Lists items [ ]
+* Server API for Create / Delete / Update / Authenticate user accounts [ ]
+* Server API for share / unshare Lists (private/public) [ ] 
+

@@ -32,7 +32,7 @@ This project contains the code for the Task-Planner. The application is a tool t
 ### Client Requirements
 
 #### Minimum
-* [ ] Client that can create / authenticate / delete users
+* [x] Client that can create / authenticate / delete users
 * [ ] Client that can create / update / delete lists
 * [ ] Client that can create / update / delete list items
 * [ ] Client that can facilitate sharing / unshare lists

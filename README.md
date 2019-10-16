@@ -20,7 +20,7 @@ This project contains the code for the Task-Planner. The application is a tool t
 * All communication between client and server must be executed _only_ in the REST API.
 * JSON as data transport format.
 * Responsive HTML5 client.
-* The application must run on Heroku.
+* The application must run on [Heroku](https://dashboard.heroku.com/apps)
 * The application must work in FireFox.
 
 ### API Requirements

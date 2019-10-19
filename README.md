@@ -3,6 +3,32 @@ This project contains the code for the Task-Planner. The application is a tool t
 
 ## Dependencies
 
+### Git
+We use the Git Version Control System to collaborate. We use the *Git Bash Terminal* as the environment to run git commands. Download here: https://git-scm.com/download/win
+
+#### Configuring Git
+Open Git Bash and run the following commands:
+```$ git config --global user.name "<full name>"```
+```$ git config --global user.email "<UiA e-mail address>" ```
+
+Example:
+```$ git config --global user.name "Sagar Iqbal"```
+```$ git config --global user.email "sagari17@uia.no" ```
+
+#### Create and add SSH Key
+The git repository is private and requires SSH keys to access it.
+
+Create SSH Key: ```$ ssh-keygen```
+Keep pressing enter to accept the default settings.
+
+Copy the SSH Key: ```$ cat ~/.ssh/id_rsa.pub```
+
+Add the key to your Github profile, by *clicking on your profile icon* in the top right corner, press *settings*, click *SSH and GPG Keys*, click *New SSH Key*, type laptop name in title, ex: "school laptop" and press ctrl-v to paste the SSH key.
+
+#### Clone the project
+Change to a directory where you wish the project to be stored. Then clone the project repository by copying this command to the git bash terminal windows:
+```$ git clone git@github.com:sagari17/Task-Planner.git ```
+
 ### Node
 Node is the environment where our application will run. Download the LTS (Long Term Support) Version. Go to [nodejs.org](https://nodejs.org/en/) to download.
 
@@ -19,6 +45,19 @@ To begin, go to 'Download and install' here: https://devcenter.heroku.com/articl
 We use *node.js* to run the application locally on the computer. In the project root directory run the following command: ```nodemon main.js```
 
 In Firefox go to: `localhost:8080` to interact with the application.
+
+## Upload application to Heroku
+Go to the root project directory. And type: ```$ heroku login``` Follow the direction and log in to Heroku.
+
+After you have logged in, terminate the batch job by pressing: ```ctrl-c``` and terminate.
+
+Type: ```$ heroku create```
+
+Finally, type ```$ git push heroku master```
+
+The application is now pushed to the Heroku web server.
+
+Go to https://uia-task-planner.herokuapp.com/ to interact.
 
 ## Application information
 

@@ -1,6 +1,25 @@
 # Task-Planner
 This project contains the code for the Task-Planner. The application is a tool that let the end user write and edit tasks in a structed fashion.
 
+## Dependencies
+
+### Node
+Node is the environment where our application will run. Download the LTS (Long Term Support) Version. Go to [nodejs.org](https://nodejs.org/en/) to download.
+
+### Nodemon
+Nodemon automatically monitors any changes to the application and updates the localhost server.
+We use the *Node Package Manager (npm)* to install it:
+```npm install -g nodemon```
+
+### Heroku
+Our application will run on an Heroku server.
+To begin, go to 'Download and install' here: https://devcenter.heroku.com/articles/heroku-cli
+
+## Application information
+
+## package.json
+The *package.json* is the manifest file that tells node.js the basic configuration of our application.
+
 ## Requirements
 * The **Task-Planner** is a web app and will have an accompanying server that is used as a task planner tool. 
 * The team will use the Scrum agile development process. Including feature map and project board.

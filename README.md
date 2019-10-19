@@ -8,17 +8,22 @@ We use the Git Version Control System to collaborate. We use the *Git Bash Termi
 
 #### Configuring Git
 Open Git Bash and run the following commands:
+
 ```$ git config --global user.name "<full name>"```
+
 ```$ git config --global user.email "<UiA e-mail address>" ```
 
 Example:
+
 ```$ git config --global user.name "Sagar Iqbal"```
+
 ```$ git config --global user.email "sagari17@uia.no" ```
 
 #### Create and add SSH Key
 The git repository is private and requires SSH keys to access it.
 
-Create SSH Key: ```$ ssh-keygen```
+Create SSH Key:  ```$ ssh-keygen```
+
 Keep pressing enter to accept the default settings.
 
 Copy the SSH Key: ```$ cat ~/.ssh/id_rsa.pub```

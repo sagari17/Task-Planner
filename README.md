@@ -15,6 +15,11 @@ We use the *Node Package Manager (npm)* to install it:
 Our application will run on an Heroku server.
 To begin, go to 'Download and install' here: https://devcenter.heroku.com/articles/heroku-cli
 
+## Run local application
+We use *node.js* to run the application locally on the computer. In the project root directory run the following command: ```nodemon main.js```
+
+In Firefox go to: `localhost:8080` to interact with the application.
+
 ## Application information
 
 ## package.json

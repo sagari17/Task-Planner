@@ -3,6 +3,9 @@ This project contains the code for the Task-Planner. The application is a tool t
 
 ## Dependencies
 
+### Text Editor (Optional)
+Recommand VS Code: https://code.visualstudio.com/
+
 ### Git
 We use the Git Version Control System to collaborate. We use the *Git Bash Terminal* as the environment to run git commands. Download here: https://git-scm.com/download/win
 

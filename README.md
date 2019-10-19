@@ -52,7 +52,7 @@ To begin, go to 'Download and install' here: https://devcenter.heroku.com/articl
 ## Run local application
 We use *node.js* to run the application locally on the computer. In the project root directory run the following command: ```nodemon main.js```
 
-In Firefox go to: `localhost:8080` to interact with the application.
+In Firefox go to: `localhost:5000` to interact with the application.
 
 ## Upload application to Heroku
 Go to the root project directory. And type: ```$ heroku login``` Follow the direction and log in to Heroku.

@@ -28,4 +28,4 @@ http.createServer(function (req, res)
     })
 }).listen(PORT);
 
-console.log("Server listening on port 8080...");
+console.log("Server listening on port " + PORT + "...");

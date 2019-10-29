@@ -1,8 +1,14 @@
 const express = require("express");
-const app = express.Router();
+const router = express.Router();
 const db = require("./modules/db")(process.env.dbconnection);
 
-route.get("/user/:userID", function(req, res, next) {
+router.get("/", function(req, res, next) {
+  console.log("hello from users");
+});
+
+router.get("/:userID", function(req, res, next) {
+  console.log("hello from users");
+
   let user = db.getUser(req.body.userID);
   if (user) {
     res.status(200).json(user);
@@ -10,3 +16,5 @@ route.get("/user/:userID", function(req, res, next) {
     res.status(404).end();
   }
 });
+
+module.exports = router;

@@ -14,7 +14,7 @@ const db = function(dbConnectionString) {
   const getUserByID = async function(userID) {
     let userData = null;
     try {
-      userData = await runQuery("SELECT * from UserTbl where userID=$1", [
+      userData = await runQuery("SELECT * from users where userID=$1", [
         userID
       ]);
     } catch (error) {
@@ -24,7 +24,7 @@ const db = function(dbConnectionString) {
   };
 
   const getUserTasksForUser = async function(userID) {
-    let userData = await runQuery("SELECT * from UserTasks where userID=$1", [
+    let userData = await runQuery("SELECT * from tasks where userID=$1", [
       userID
     ]);
     return userData;

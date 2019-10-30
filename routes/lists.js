@@ -5,14 +5,15 @@ const dbURI =
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
-router.post("/", function() {
+router.post("/", async function(req, res, next) {
   let data = req.body;
 
   let userData = [data.name, data.owner, data.public];
 
   try {
     let result = await db.createList(userData);
-
+    console.log(result);
+    console.log(result.length);
     if (result.length > 0) {
       res.status(200).json({ msg: "Insert OK" });
     } else {

@@ -72,17 +72,19 @@ const db = function(dbConnection) {
         "INSERT INTO lists (id, name, owner, public) VALUES(DEFAULT, $1, $2, $3) RETURNING *",
         values
       );
+
     } catch (err) {
       console.log(err);
     }
-    return userData;
+    return listData;
   };
 
   return {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
     createUser: createUser,
-    deleteUser: deleteUser
+    deleteUser: deleteUser,
+    createList: createList
   };
 };
 

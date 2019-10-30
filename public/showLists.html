@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+  </head>
+
+  <body>
+    <p id = "userID"></p>
+  </body>
+
+  <script>
+
+
+    let userID = document.getElementById("userID")
+      async function getlists(){
+
+
+      let userData = sessionStorage.getItem("logindata").json()
+      let test = 2
+      let url = "http://localhost:3000/lists/2" //+ test.toString()+userData.id;
+    
+      let cfg = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      };
+
+      try {
+        console.log("try");
+        var resp = await fetch(url, cfg);
+        console.log(resp);
+        var data = await resp.json();
+
+        if (resp.status > 202) {
+          throw data;
+        }
+
+        userID.innerHTML = data.id;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    
+  </script>
+</html>

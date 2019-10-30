@@ -34,8 +34,28 @@ const db = function(dbConnection) {
     return userData;
   };
 
+<<<<<<< Updated upstream
   return {
     getUser: getUserByID
+=======
+  const getListsByUserID = async function(userID){
+    let listsData = null;
+    let values = [userID];
+    try {
+      listsData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (error) {
+      //Deal with it
+    }
+    return listsData;
+  }
+
+  return {
+    getUserByEmail: getUserByEmail,
+    getUserByID: getUserByID,
+    createUser: createUser,
+    deleteUser: deleteUser,
+    getListsByUserID: getListsByUserID
+>>>>>>> Stashed changes
   };
 };
 

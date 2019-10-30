@@ -65,12 +65,18 @@ const db = function(dbConnection) {
     return userData;
   };
 
-  // const getUserTasksForUser = async function(userID) {
-  //   let userData = await runQuery("SELECT * from tasks where userID=$1", [
-  //     userID
-  //   ]);
-  //   return userData;
-  // };
+  const createList = async function(values) {
+    let listData = null;
+    try {
+      listData = await runQuery(
+        "INSERT INTO lists (id, name, owner, public) VALUES(DEFAULT, $1, $2, $3) RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
 
   return {
     getUserByEmail: getUserByEmail,

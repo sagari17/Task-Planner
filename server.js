@@ -17,7 +17,7 @@ app.use("/", express.static("public")); //for serving client files
 app.use("/users", users);
 app.use("/lists", lists);
 app.use("/tasks", tasks);
-app.use("/tasks", auth);
+app.use("/auth", auth);
 
 // start server -----------------------------------
 var port = process.env.PORT || 5000;

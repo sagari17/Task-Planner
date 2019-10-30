@@ -16,28 +16,68 @@ const db = function(dbConnection) {
     }
   }
 
-  const getUserByID = async function(userID) {
+  const getUserByEmail = async function(email) {
     let userData = null;
-    let values = [userID];
+    let values = [email];
     try {
-      userData = await runQuery("SELECT * from users WHERE id=$1", values);
-    } catch (error) {
+      userData = await runQuery("SELECT * from users WHERE email=$1", values);
+    } catch (err) {
       //Deal with it
     }
     return userData;
   };
 
-  const getUserTasksForUser = async function(userID) {
-    let userData = await runQuery("SELECT * from tasks where userID=$1", [
-      userID
-    ]);
+  const getUserByID = async function(userID) {
+    let userData = null;
+    let values = [userID];
+    try {
+      userData = await runQuery("SELECT * from users WHERE id=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
     return userData;
   };
 
-<<<<<<< Updated upstream
-  return {
-    getUser: getUserByID
-=======
+  const createUser = async function(values) {
+    let userData = null;
+    try {
+      userData = await runQuery(
+        "INSERT INTO users (id, firstname, lastname, email, password) VALUES(DEFAULT, $1, $2, $3, $4) RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
+  const deleteUser = async function(userID) {
+    let userData = null;
+    let values = [userID];
+    try {
+      userData = await runQuery(
+        "DELETE FROM users WHERE id = $1 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
+  const createList = async function(values) {
+    let listData = null;
+    try {
+      listData = await runQuery(
+        "INSERT INTO lists (id, name, owner, public) VALUES(DEFAULT, $1, $2, $3) RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
   const getListsByUserID = async function(userID){
     let listsData = null;
     let values = [userID];
@@ -54,8 +94,7 @@ const db = function(dbConnection) {
     getUserByID: getUserByID,
     createUser: createUser,
     deleteUser: deleteUser,
-    getListsByUserID: getListsByUserID
->>>>>>> Stashed changes
+    getListsByUserID: getListsByUserID,
   };
 };
 

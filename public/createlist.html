@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+  </head>
+
+  <body>
+    <input type="text" id="name" placeholder="name" />
+    <br /><br />
+    <input type="radio" name="public" value="private" checked> Private<br>
+    <input type="radio" name="public" value="public"> Public<br>
+    <input type="radio" name="public" value="members"> Add members<br>  
+    <br /><br />
+
+    <button id="create">Create list</button>
+    <h3 id="result">Result...</h3>
+  </body>
+
+  <script>
+    let create = document.getElementById("create");
+    let result = document.getElementById("result");
+    let name = document.getElementById("name");
+    let radio = document.querySelector("input[name=public]:checked").value;
+    let public = false;
+
+
+    create.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/lists";
+
+      if(radio=="public"){
+        public = true;
+      }
+      let userid = sessionStorage.getItem("logindata").userid;
+      console.log(userid);
+      let listData = {
+        name: name.value,
+        owner: userid,
+        public: public,
+      };
+
+      let cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listData)
+      };
+
+      try {
+        var resp = await fetch(url, cfg);
+        var data = await resp.json();
+        result.innerHTML = data.msg;
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  </script>
+</html>

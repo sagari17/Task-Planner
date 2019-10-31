@@ -23,22 +23,24 @@
     let result = document.getElementById("result");
     let name = document.getElementById("name");
     let radio = document.querySelector("input[name=public]:checked").value;
-    let public = false;
+    let public = 0;
 
 
     create.addEventListener("click", async function(evt) {
       let url = "http://localhost:3000/lists";
 
       if(radio=="public"){
-        public = true;
+        public = 1;
       }
-      let userid = sessionStorage.getItem("logindata").userid;
-      console.log(userid);
+      let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+    
       let listData = {
         name: name.value,
         owner: userid,
         public: public,
       };
+
+      console.log(listData);
 
       let cfg = {
         method: "POST",
@@ -49,6 +51,7 @@
       try {
         var resp = await fetch(url, cfg);
         var data = await resp.json();
+        console.log(data);
         result.innerHTML = data.msg;
       } catch (err) {
         console.log(err);

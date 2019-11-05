@@ -107,7 +107,6 @@
 
       document.querySelector("#save").addEventListener("click", function(evt) {
         saveChanges(firstname.value, lastname.value, email.value);
-        //  showUserInfo(); await the change
       });
     }
 
@@ -127,7 +126,6 @@
         .querySelector("#change")
         .addEventListener("click", function(evt) {
           changePw(newpw.value);
-          //   showUserInfo();
         });
     }
 
@@ -156,6 +154,7 @@
         sessionData.email = email;
         sessionStorage.setItem("logindata", JSON.stringify(sessionData));
         result.innerHTML = data.msg;
+        showUserInfo();
       } catch (err) {
         console.log(err);
       }
@@ -181,6 +180,7 @@
         var data = await resp.json();
 
         result.innerHTML = data.msg;
+        showUserInfo();
       } catch (err) {
         console.log(err);
       }

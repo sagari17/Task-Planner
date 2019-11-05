@@ -110,6 +110,21 @@ const db = function(dbConnection) {
   };
   
 
+  const deleteList = async function(listID) {
+    let listData = null;
+    let values = [listID];
+    try {
+      listData = await runQuery(
+        "DELETE FROM lists WHERE id = $1 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return listData;
+  };
+
+
   return {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
@@ -118,7 +133,8 @@ const db = function(dbConnection) {
     createList: createList,
     getListByUserID: getListByUserID,
     getListByListID: getListByListID,
-    getTasksByListID: getTasksByListID
+    getTasksByListID: getTasksByListID,
+    deleteList: deleteList
     
   };
 };

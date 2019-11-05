@@ -7,33 +7,52 @@
   </head>
 
   <body>
-    <p id = "userID"></p>
+    <p id="userID"></p>
   </body>
   <button id="showList" onclick="getlists()">Show lists</button>
+  <button id="deleteList">Delete List</button>
 
   <script>
+    let delBtn = document.getElementById("deleteList");
+    delBtn.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/lists/ " + 1;
 
+      let cfg = {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      };
 
-    let userID = document.getElementById("userID")
-    let showList= document.getElementById("showList")
-    
-
-      async function getlists(){
       try {
-        let userData = JSON.parse(sessionStorage.getItem("logindata"))
-        console.log(userData)
-      
-      let url = "http://localhost:3000/lists/"+userData.userid;
+        var resp = await fetch(url, cfg);
+
+        var data = await resp.json();
+        console.log(data);
+        if (resp.status > 202) {
+          throw data;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    let userID = document.getElementById("userID");
+    let showList = document.getElementById("showList");
+
+    async function getlists() {
+      try {
+        let userData = JSON.parse(sessionStorage.getItem("logindata"));
+        console.log(userData);
+
+        let url = "http://localhost:3000/lists/" + userData.userid;
 
         let cfg = {
-          
-          method: "GET",
+          method: "GET"
           //headers: { "Content-Type": "application/json" },
           //body: JSON.stringify(loginData)
         };
         console.log("try");
         let resp = await fetch(url, cfg);
-        
+
         let data = await resp.json();
 
         if (resp.status > 202) {
@@ -44,6 +63,5 @@
         console.log(err);
       }
     }
-    
   </script>
 </html>

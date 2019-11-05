@@ -23,11 +23,23 @@ router.post("/", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
-router.get("/:userID", async function(req, res, next) {
+router.get("/:userID", async function(req, res, next) { // Get all lists where this userID is the owner
   try {
-    let user = await db.getListByUserID(req.params.userID);
-    if (user) {
-      res.status(200).json(user);
+    let lists = await db.getListByUserID(req.params.userID);
+    if (lists) {
+      res.status(200).json(lists);
+    } else {
+      throw "No lists exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+router.get("/view/:listID", async function(req, res, next) { // Get single list by listID
+  try {
+    let list = await db.getListByUserID(req.params.listID);
+    if (list) {
+      res.status(200).json(list);
     } else {
       throw "No lists exist.";
     }

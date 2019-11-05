@@ -23,6 +23,7 @@ router.post("/", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+
 router.get("/:userID", async function(req, res, next) {
   try {
     let user = await db.getListByUserID(req.params.userID);
@@ -35,5 +36,21 @@ router.get("/:userID", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+
+// delete list -------------------------------------------------------------------
+router.delete("/:listID", async function(req, res, next) {
+  try {
+    let result = await db.deleteList(req.params.listID);
+
+    if (result.length > 0) {
+      res.status(200).json({ msg: "Deleted the List!" });
+    } else {
+      throw "Failed to delete the list!";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
 
 module.exports = router;

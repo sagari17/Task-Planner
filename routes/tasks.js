@@ -8,5 +8,18 @@ const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 router.get("/", function() {
   //sthg
 });
+router.get("/:listID", async function(req, res, next) { // Get all tasks connected to list id
+  try {
+    let tasks = await db.getTaskByListID(req.params.listID);
+    if (tasks) {
+      res.status(200).json(tasks);
+    } else {
+      throw "No tasks exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
 
 module.exports = router;

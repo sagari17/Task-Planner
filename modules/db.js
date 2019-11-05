@@ -105,6 +105,7 @@ const db = function(dbConnection) {
     }
     return listData;
   };
+  
   const getListByUserID = async function(userID) {
     let listData = null;
     let values = [userID];
@@ -115,16 +116,57 @@ const db = function(dbConnection) {
     }
     return listData;
   };
+  
+  const getListByListID = async function(ListID) {
+    let listData = null;
+    let values = [ListID];
+    try {
+      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return listData;
+  };
+  
+  const getTasksByListID = async function(ListID) {
+    let taskData = null;
+    let values = [ListID];
+    try {
+      taskData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return taskData;
+  };
+  
+
+  const deleteList = async function(listID) {
+    let listData = null;
+    let values = [listID];
+    try {
+      listData = await runQuery(
+        "DELETE FROM lists WHERE id = $1 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return listData;
+  };
+
 
   return {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
     createUser: createUser,
+    updateUser: updateUser,
+    changePassword: changePassword,
     deleteUser: deleteUser,
     createList: createList,
     getListByUserID: getListByUserID,
-    updateUser: updateUser,
-    changePassword: changePassword
+    getListByListID: getListByListID,
+    getTasksByListID: getTasksByListID,
+    deleteList: deleteList
   };
 };
 

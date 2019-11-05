@@ -10,8 +10,31 @@
     <p id="userID"></p>
   </body>
   <button id="showList" onclick="getlists()">Show lists</button>
+  <button id="deleteList">Delete List</button>
 
   <script>
+    let delBtn = document.getElementById("deleteList");
+    delBtn.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/lists/ " + 1;
+
+      let cfg = {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      try {
+        var resp = await fetch(url, cfg);
+
+        var data = await resp.json();
+        console.log(data);
+        if (resp.status > 202) {
+          throw data;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
     let userID = document.getElementById("userID");
     let showList = document.getElementById("showList");
 

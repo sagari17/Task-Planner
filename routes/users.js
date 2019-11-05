@@ -42,10 +42,12 @@ router.get("/:userID", async function(req, res, next) {
 
 // update user with certain id ----------------------------------------------------------------
 router.patch("/", async function(req, res, next) {
+  console.log("inside patch user ");
+  console.log(req.body);
   try {
     let user = await db.updateUser(req.body);
     if (user) {
-      res.status(200).json(user);
+      res.status(200).json({ msg: "Changes Saved" });
     } else {
       throw "Profile could not be updated.";
     }
@@ -58,10 +60,11 @@ router.patch("/", async function(req, res, next) {
 router.patch("/changePassword", async function(req, res, next) {
   try {
     let hash = bcrypt.hashSync(req.body.password, 10);
+    let values = { password: hash, id: req.body.id };
 
-    let user = await db.changePassword(hash);
+    let user = await db.changePassword(values);
     if (user) {
-      res.status(200).json(user);
+      res.status(200).json({ msg: "Password changed" });
     } else {
       throw "Password could not be changed.";
     }

@@ -7,15 +7,16 @@
   </head>
 
   <body>
-    <div id="content">
+    <div id="container"></div>
+    <h3 id="result">Result...</h3>
+
+    <template id="profile">
       <p id="name">Jonathan Doe</p>
       <p id="email">jonathandoe@gmail.com</p>
       <button id="edit">Edit Profile</button>
       <button id="changepw">Change Password</button>
       <button id="logout">Logout</button>
-      <h3 id="result">Result...</h3>
-    </div>
-
+    </template>
     <template id="editProfile">
       <input type="text" id="firstname" placeholder="Firstname" />
       <input type="text" id="lastname" placeholder="Lastname" />
@@ -25,10 +26,10 @@
     </template>
 
     <template id="changePw">
-      <input type="password" id="new-pw" placeholder="New Password" />
+      <input type="password" id="newpw" placeholder="New Password" />
       <input
         type="password"
-        id="new-pwrepeat"
+        id="newpwrepeat"
         placeholder="Repeat New Password"
       />
       <button type="button" id="goback">Go Back</button>
@@ -37,47 +38,152 @@
   </body>
 
   <script>
-    let content = document.getElementById("content");
-    let name = document.getElementById("name");
-    let email = document.getElementById("email");
-    let edit = document.getElementById("edit");
-    let changepw = document.getElementById("changepw");
-    let logout = document.getElementById("logout");
+    let container = document.getElementById("container");
     let result = document.getElementById("result");
+    let profileTmpl = document.getElementById("profile");
+    let editTmpl = document.getElementById("editProfile");
+    let changePwTmpl = document.getElementById("changePw");
 
-    function showUserInfo() {}
+    let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+    let userFirstname;
+    let userLastname;
+    let userEmail;
 
-    edit.addEventListener("click", function(evt) {});
+    showUserInfo();
 
-    login.addEventListener("click", async function(evt) {
-      let url = "http://localhost:3000/auth";
-
-      let loginData = {
-        email: email.value,
-        password: password.value
-      };
+    async function showUserInfo() {
+      let url = "http://localhost:3000/users/" + userid;
 
       let cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData)
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
       };
 
       try {
-        console.log("try");
         var resp = await fetch(url, cfg);
-        console.log(resp);
         var data = await resp.json();
 
         if (resp.status > 202) {
           throw data;
-        }
+        } else {
+          userFirstname = data[0].firstname;
+          userLastname = data[0].lastname;
+          userEmail = data[0].email;
+          profileTmpl.content.querySelector("#name").innerHTML =
+            userFirstname + " " + userLastname;
+          profileTmpl.content.querySelector("#email").innerHTML = userEmail;
 
-        result.innerHTML = data.email + " is logged in!";
-        sessionStorage.setItem("logindata", JSON.stringify(data));
+          container.innerHTML = "";
+          container.appendChild(profileTmpl.content.cloneNode(true));
+
+          document
+            .querySelector("#edit")
+            .addEventListener("click", editProfilePage);
+          document
+            .querySelector("#changepw")
+            .addEventListener("click", changePasswordPage);
+        }
       } catch (err) {
         console.log(err);
       }
-    });
+    }
+
+    function editProfilePage(evt) {
+      container.innerHTML = "";
+      container.appendChild(editTmpl.content.cloneNode(true));
+
+      let firstname = document.querySelector("#firstname");
+      firstname.value = userFirstname;
+      let lastname = document.querySelector("#lastname");
+      lastname.value = userLastname;
+      let email = document.querySelector("#email");
+      email.value = userEmail;
+
+      document
+        .querySelector("#goback")
+        .addEventListener("click", function(evt) {
+          showUserInfo();
+        });
+
+      document.querySelector("#save").addEventListener("click", function(evt) {
+        saveChanges(firstname.value, lastname.value, email.value);
+        //  showUserInfo(); await the change
+      });
+    }
+
+    function changePasswordPage(evt) {
+      container.innerHTML = "";
+      container.appendChild(changePwTmpl.content.cloneNode(true));
+
+      let newpw = document.querySelector("#newpw");
+
+      document
+        .querySelector("#goback")
+        .addEventListener("click", function(evt) {
+          showUserInfo();
+        });
+
+      document
+        .querySelector("#change")
+        .addEventListener("click", function(evt) {
+          changePw(newpw.value);
+          //   showUserInfo();
+        });
+    }
+
+    async function saveChanges(firstname, lastname, email) {
+      let url = "http://localhost:3000/users";
+
+      let userData = {
+        firstname: firstname,
+        lastname: lastname,
+        email: email,
+        id: userid
+      };
+      console.log(userData);
+
+      let cfg = {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      };
+
+      try {
+        var resp = await fetch(url, cfg);
+        var data = await resp.json();
+
+        let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
+        sessionData.email = email;
+        sessionStorage.setItem("logindata", JSON.stringify(sessionData));
+        result.innerHTML = data.msg;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function changePw(password) {
+      let url = "http://localhost:3000/users/changePassword";
+
+      let userData = {
+        password: password,
+        id: userid
+      };
+      console.log(userData);
+
+      let cfg = {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      };
+
+      try {
+        var resp = await fetch(url, cfg);
+        var data = await resp.json();
+
+        result.innerHTML = data.msg;
+      } catch (err) {
+        console.log(err);
+      }
+    }
   </script>
 </html>

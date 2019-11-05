@@ -7,33 +7,29 @@
   </head>
 
   <body>
-    <p id = "userID"></p>
+    <p id="userID"></p>
   </body>
   <button id="showList" onclick="getlists()">Show lists</button>
 
   <script>
+    let userID = document.getElementById("userID");
+    let showList = document.getElementById("showList");
 
-
-    let userID = document.getElementById("userID")
-    let showList= document.getElementById("showList")
-    
-
-      async function getlists(){
+    async function getlists() {
       try {
-        let userData = JSON.parse(sessionStorage.getItem("logindata"))
-        console.log(userData)
-      
-      let url = "http://localhost:3000/lists/"+userData.userid;
+        let userData = JSON.parse(sessionStorage.getItem("logindata"));
+        console.log(userData);
+
+        let url = "http://localhost:3000/lists/" + userData.userid;
 
         let cfg = {
-          
-          method: "GET",
+          method: "GET"
           //headers: { "Content-Type": "application/json" },
           //body: JSON.stringify(loginData)
         };
         console.log("try");
         let resp = await fetch(url, cfg);
-        
+
         let data = await resp.json();
 
         if (resp.status > 202) {
@@ -44,6 +40,5 @@
         console.log(err);
       }
     }
-    
   </script>
 </html>

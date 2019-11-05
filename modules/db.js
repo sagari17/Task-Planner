@@ -53,10 +53,10 @@ const db = function(dbConnection) {
 
   const updateUser = async function(data) {
     let userData = null;
-    let values = [data.firstname, data.lastname, data.email];
+    let values = [data.firstname, data.lastname, data.email, data.id];
     try {
       userData = await runQuery(
-        "UPDATE users SET firstname=$1, lastname=$2, email=$3 RETURNING *",
+        "UPDATE users SET firstname=$1, lastname=$2, email=$3 WHERE id=$4 RETURNING *",
         values
       );
     } catch (err) {
@@ -65,12 +65,12 @@ const db = function(dbConnection) {
     return userData;
   };
 
-  const changePassword = async function(password) {
+  const changePassword = async function(data) {
     let userData = null;
-    let values = [password];
+    let values = [data.password, data.id];
     try {
       userData = await runQuery(
-        "UPDATE users SET password=$1 RETURNING *",
+        "UPDATE users SET password=$1 WHERE id=$2 RETURNING *",
         values
       );
     } catch (err) {

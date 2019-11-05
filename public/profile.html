@@ -60,10 +60,9 @@
       };
 
       try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
+        var data = await requestToServer(url, cfg);
 
-        if (resp.status > 202) {
+        if (data == null) {
           throw data;
         } else {
           userFirstname = data[0].firstname;

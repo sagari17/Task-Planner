@@ -88,6 +88,27 @@ const db = function(dbConnection) {
     }
     return listData;
   };
+  const getListByListID = async function(ListID) {
+    let listData = null;
+    let values = [ListID];
+    try {
+      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return listData;
+  };
+  const getTasksByListID = async function(ListID) {
+    let taskData = null;
+    let values = [ListID];
+    try {
+      taskData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return taskData;
+  };
+  
 
   const deleteList = async function(listID) {
     let listData = null;
@@ -111,7 +132,10 @@ const db = function(dbConnection) {
     deleteUser: deleteUser,
     createList: createList,
     getListByUserID: getListByUserID,
+    getListByListID: getListByListID,
+    getTasksByListID: getTasksByListID,
     deleteList: deleteList
+    
   };
 };
 

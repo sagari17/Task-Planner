@@ -103,7 +103,17 @@ const db = function(dbConnection) {
     } catch (err) {
       console.log(err);
     }
-    return userData;
+    return listData;
+  };
+  const getListByUserID = async function(userID) {
+    let listData = null;
+    let values = [userID];
+    try {
+      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return listData;
   };
 
   return {
@@ -112,6 +122,7 @@ const db = function(dbConnection) {
     createUser: createUser,
     deleteUser: deleteUser,
     createList: createList,
+    getListByUserID: getListByUserID,
     updateUser: updateUser,
     changePassword: changePassword
   };

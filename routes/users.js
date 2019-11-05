@@ -40,6 +40,36 @@ router.get("/:userID", async function(req, res, next) {
   }
 });
 
+// update user with certain id ----------------------------------------------------------------
+router.patch("/", async function(req, res, next) {
+  try {
+    let user = await db.updateUser(req.body);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      throw "Profile could not be updated.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// change password of user with certain id ----------------------------------------------------------------
+router.patch("/changePassword", async function(req, res, next) {
+  try {
+    let hash = bcrypt.hashSync(req.body.password, 10);
+
+    let user = await db.changePassword(hash);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      throw "Password could not be changed.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
 // delete user -------------------------------------------------------------------
 router.delete("/:userID", async function(req, res, next) {
   try {

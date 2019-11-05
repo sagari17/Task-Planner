@@ -51,6 +51,34 @@ const db = function(dbConnection) {
     return userData;
   };
 
+  const updateUser = async function(data) {
+    let userData = null;
+    let values = [data.firstname, data.lastname, data.email];
+    try {
+      userData = await runQuery(
+        "UPDATE users SET firstname=$1, lastname=$2, email=$3 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
+  const changePassword = async function(password) {
+    let userData = null;
+    let values = [password];
+    try {
+      userData = await runQuery(
+        "UPDATE users SET password=$1 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
   const deleteUser = async function(userID) {
     let userData = null;
     let values = [userID];
@@ -82,7 +110,10 @@ const db = function(dbConnection) {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
     createUser: createUser,
-    deleteUser: deleteUser
+    deleteUser: deleteUser,
+    createList: createList,
+    updateUser: updateUser,
+    changePassword: changePassword
   };
 };
 

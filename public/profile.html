@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+  </head>
+
+  <body>
+    <div id="content">
+      <p id="name">Jonathan Doe</p>
+      <p id="email">jonathandoe@gmail.com</p>
+      <button id="edit">Edit Profile</button>
+      <button id="changepw">Change Password</button>
+      <button id="logout">Logout</button>
+      <h3 id="result">Result...</h3>
+    </div>
+
+    <template id="editProfile">
+      <input type="text" id="firstname" placeholder="Firstname" />
+      <input type="text" id="lastname" placeholder="Lastname" />
+      <input type="text" id="email" placeholder="E-mail" />
+      <button type="button" id="goback">Go Back</button>
+      <button type="button" id="save">Save Changes</button>
+    </template>
+
+    <template id="changePw">
+      <input type="password" id="new-pw" placeholder="New Password" />
+      <input
+        type="password"
+        id="new-pwrepeat"
+        placeholder="Repeat New Password"
+      />
+      <button type="button" id="goback">Go Back</button>
+      <button type="button" id="change">Change Password</button>
+    </template>
+  </body>
+
+  <script>
+    let content = document.getElementById("content");
+    let name = document.getElementById("name");
+    let email = document.getElementById("email");
+    let edit = document.getElementById("edit");
+    let changepw = document.getElementById("changepw");
+    let logout = document.getElementById("logout");
+    let result = document.getElementById("result");
+
+    function showUserInfo() {}
+
+    edit.addEventListener("click", function(evt) {});
+
+    login.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/auth";
+
+      let loginData = {
+        email: email.value,
+        password: password.value
+      };
+
+      let cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      };
+
+      try {
+        console.log("try");
+        var resp = await fetch(url, cfg);
+        console.log(resp);
+        var data = await resp.json();
+
+        if (resp.status > 202) {
+          throw data;
+        }
+
+        result.innerHTML = data.email + " is logged in!";
+        sessionStorage.setItem("logindata", JSON.stringify(data));
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  </script>
+</html>

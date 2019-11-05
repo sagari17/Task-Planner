@@ -78,13 +78,24 @@ const db = function(dbConnection) {
     }
     return listData;
   };
+  const getListByUserID = async function(userID) {
+    let listData = null;
+    let values = [userID];
+    try {
+      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return listData;
+  };
 
   return {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
     createUser: createUser,
     deleteUser: deleteUser,
-    createList: createList
+    createList: createList,
+    getListByUserID: getListByUserID
   };
 };
 

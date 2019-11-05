@@ -23,5 +23,17 @@ router.post("/", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+router.get("/:userID", async function(req, res, next) {
+  try {
+    let user = await db.getListByUserID(req.params.userID);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      throw "No lists exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 
 module.exports = router;

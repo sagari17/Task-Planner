@@ -12,16 +12,13 @@
     <br /><br />
     <button id="login">Login</button>
     <h3 id="result">Result...</h3>
-    <button id="createList">CreateList</button>
   </body>
 
   <script>
     let email = document.getElementById("email");
     let password = document.getElementById("password");
     let login = document.getElementById("login");
-    let createList = document.getElementById("createList");
     let result = document.getElementById("result");
-    createList.addEventListener("click", function() {location.replace("showlist.html")})
     login.addEventListener("click", async function(evt) {
       let url = "http://localhost:3000/auth";
 

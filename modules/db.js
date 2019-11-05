@@ -102,7 +102,17 @@ const db = function(dbConnection) {
     let taskData = null;
     let values = [ListID];
     try {
-      listData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
+      taskData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return taskData;
+  };
+  const getTaskByTaskID = async function(TaskID) {
+    let taskData = null;
+    let values = [TaskID];
+    try {
+      taskData = await runQuery("SELECT * from tasks WHERE id=$1", values);
     } catch (err) {
       //Deal with it
     }
@@ -117,7 +127,8 @@ const db = function(dbConnection) {
     createList: createList,
     getListByUserID: getListByUserID,
     getListByListID: getListByListID,
-    getTaskByListID: getTaskByListID
+    getTaskByListID: getTaskByListID,
+    getTaskByTaskID: getTaskByTaskID
   };
 };
 

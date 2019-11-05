@@ -20,5 +20,17 @@ router.get("/bylist/:listID", async function(req, res, next) { // Get all tasks 
     res.status(500).json({ error: err });
   }
 });
+router.get("/byid/:taskID", async function(req, res, next) { // Get single tasks by task id
+  try {
+    let tasks = await db.getTaskByTaskID(req.params.taskID);
+    if (tasks) {
+      res.status(200).json(tasks);
+    } else {
+      throw "No tasks exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 
 module.exports = router;

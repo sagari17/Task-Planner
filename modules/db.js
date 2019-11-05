@@ -98,7 +98,7 @@ const db = function(dbConnection) {
     }
     return listData;
   };
-  const getTaskByListID = async function(ListID) {
+  const getTasksByListID = async function(ListID) {
     let taskData = null;
     let values = [ListID];
     try {
@@ -108,16 +108,7 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
-  const getTaskByTaskID = async function(TaskID) {
-    let taskData = null;
-    let values = [TaskID];
-    try {
-      taskData = await runQuery("SELECT * from tasks WHERE id=$1", values);
-    } catch (err) {
-      //Deal with it
-    }
-    return taskData;
-  };
+  
 
   return {
     getUserByEmail: getUserByEmail,
@@ -127,8 +118,8 @@ const db = function(dbConnection) {
     createList: createList,
     getListByUserID: getListByUserID,
     getListByListID: getListByListID,
-    getTaskByListID: getTaskByListID,
-    getTaskByTaskID: getTaskByTaskID
+    getTasksByListID: getTasksByListID
+    
   };
 };
 

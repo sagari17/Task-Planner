@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My document</title>
+  <script type="text/javascript" src="js/index.js"></script>
   <script type="text/javascript" src="js/utilities.js"></script>
 </head>
 
@@ -59,7 +60,7 @@
     };
 
     try {
-      var data = await utilities.requestToServer(url, cfg);
+      let data = await utilities.requestToServer(url, cfg);
 
       if (data == null) {
         throw data;
@@ -145,8 +146,7 @@
     };
 
     try {
-      var resp = await fetch(url, cfg);
-      var data = await resp.json();
+      let data = await utilities.requestToServer(url, cfg);
 
       let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
       sessionData.email = email;
@@ -174,8 +174,7 @@
     };
 
     try {
-      var resp = await fetch(url, cfg);
-      var data = await resp.json();
+      let data = await utilities.requestToServer(url, cfg);
 
       result.innerHTML = data.msg;
       showUserInfo();

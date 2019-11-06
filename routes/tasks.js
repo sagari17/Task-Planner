@@ -20,6 +20,33 @@ router.get("/:listID", async function(req, res, next) { // Get all tasks connect
     res.status(500).json({ error: err });
   }
 });
+router.delete("/:taskID", async function(req, res, next) { // Delete task by task id
+  try {
+    let result = await db.deleteTask(req.params.listID);
+
+    if (result.length > 0) {
+      res.status(200).json({ msg: "Deleted the task!" });
+    } else {
+      throw "Failed to delete the task!";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+router.patch("/", async function(req, res, next) { 
+  console.log("inside patch user ");
+  console.log(req.body);
+  try {
+    let task = await db.updateTask(req.body);
+    if (task) {
+      res.status(200).json({ msg: "Changes Saved" });
+    } else {
+      throw "Task could not be updated.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 
 
 module.exports = router;

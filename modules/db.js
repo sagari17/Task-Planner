@@ -154,6 +154,33 @@ const db = function(dbConnection) {
     return listData;
   };
 
+  const deleteTask = async function(taskID) {
+    let taskData = null;
+    let values = [taskID];
+    try {
+      taskData = await runQuery(
+        "DELETE FROM lists WHERE id = $1 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+  const updateTask = async function(data) {
+    let taskData = null;
+    let values = [data.name, data.due_date, data.tag, data.assigned_user, data.id];
+    try {
+      userData = await runQuery(
+        "UPDATE users SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
 
   return {
     getUserByEmail: getUserByEmail,
@@ -166,7 +193,9 @@ const db = function(dbConnection) {
     getListByUserID: getListByUserID,
     getListByListID: getListByListID,
     getTasksByListID: getTasksByListID,
-    deleteList: deleteList
+    deleteList: deleteList,
+    deleteTask: deleteTask,
+    updateTask: updateTask
   };
 };
 

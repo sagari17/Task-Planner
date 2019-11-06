@@ -79,12 +79,26 @@ const db = function(dbConnection) {
     return listData;
   };
 
+  const createTask = async function(values) {
+    let taskData = null;
+    try {
+      taskData = await runQuery(
+        "INSERT INTO tasks (id, name, due_date, tag, assigned_user, finished, listid) VALUES(DEFAULT, $1, $2, $3, $4, $5, $6) RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
   return {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
     createUser: createUser,
     deleteUser: deleteUser,
-    createList: createList
+    createList: createList,
+    createTask: createTask
   };
 };
 

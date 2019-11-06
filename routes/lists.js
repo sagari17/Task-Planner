@@ -5,6 +5,7 @@ const dbURI =
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
+// create list ------------------------------------------------
 router.post("/", async function(req, res, next) {
   let data = req.body;
 

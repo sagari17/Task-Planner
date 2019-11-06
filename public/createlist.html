@@ -1,61 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
-  </head>
 
-  <body>
-    <input type="text" id="name" placeholder="name" />
-    <br /><br />
-    <input type="radio" name="public" value="private" checked> Private<br>
-    <input type="radio" name="public" value="public"> Public<br>
-    <input type="radio" name="public" value="members"> Add members<br>  
-    <br /><br />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My document</title>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+</head>
 
-    <button id="create">Create list</button>
-    <h3 id="result">Result...</h3>
-  </body>
+<body>
+  <input type="text" id="name" placeholder="name" />
+  <br /><br />
+  <input type="radio" name="public" value="private" checked /> Private<br />
+  <input type="radio" name="public" value="public" /> Public<br />
+  <input type="radio" name="public" value="members" /> Add members<br />
+  <br /><br />
 
-  <script>
-    let create = document.getElementById("create");
-    let result = document.getElementById("result");
-    let name = document.getElementById("name");
-    let radio = document.querySelector("input[name=public]:checked").value;
-    let public = 0;
+  <button id="create">Create list</button>
+  <h3 id="result">Result...</h3>
+</body>
 
+<script>
+  redirectNotAuthUser("login.html");
 
-    create.addEventListener("click", async function(evt) {
-      let url = "http://localhost:3000/lists";
+  let create = document.getElementById("create");
+  let result = document.getElementById("result");
+  let name = document.getElementById("name");
+  let radio = document.querySelector("input[name=public]:checked").value;
+  let public = 0;
 
-      if(radio=="public"){
-        public = 1;
-      }
-      let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
-    
-      let listData = {
-        name: name.value,
-        owner: userid,
-        public: public,
-      };
+  create.addEventListener("click", async function (evt) {
+    let url = "http://localhost:3000/lists";
 
-      console.log(listData);
+    if (radio == "public") {
+      public = 1;
+    }
+    let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
 
-      let cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(listData)
-      };
+    let listData = {
+      name: name.value,
+      owner: userid,
+      public: public
+    };
 
-      try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
-        console.log(data);
-        result.innerHTML = data.msg;
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  </script>
+    console.log(listData);
+
+    let cfg = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(listData)
+    };
+
+    try {
+      let data = await utilities.requestToServer(url, cfg);
+      result.innerHTML = data.msg;
+    } catch (err) {
+      console.log(err);
+    }
+  });
+</script>
+
 </html>

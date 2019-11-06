@@ -27,7 +27,9 @@ router.post("/", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
-router.get("/:listID", async function(req, res, next) { // Get all tasks connected to list id
+
+// Get all tasks by certain list id --------------------------------------
+router.get("/:listID", async function(req, res, next) {
   try {
     let tasks = await db.getTaskByListID(req.params.listID);
     if (tasks) {
@@ -39,6 +41,5 @@ router.get("/:listID", async function(req, res, next) { // Get all tasks connect
     res.status(500).json({ error: err });
   }
 });
-
 
 module.exports = router;

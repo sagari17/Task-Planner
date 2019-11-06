@@ -41,9 +41,10 @@ router.get("/:listID", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
-router.delete("/:taskID", async function(req, res, next) { // Delete task by task id
+// Delete single task by certain task id --------------------------------------
+router.delete("/:taskID", async function(req, res, next) {
   try {
-    let result = await db.deleteTask(req.params.listID);
+    let result = await db.deleteTask(req.params.taskID);
 
     if (result.length > 0) {
       res.status(200).json({ msg: "Deleted the task!" });
@@ -54,8 +55,9 @@ router.delete("/:taskID", async function(req, res, next) { // Delete task by tas
     res.status(500).json({ error: err });
   }
 });
+// Update task with certain task id --------------------------------------
 router.patch("/", async function(req, res, next) { 
-  console.log("inside patch user ");
+  console.log("inside patch task ");
   console.log(req.body);
   try {
     let task = await db.updateTask(req.body);

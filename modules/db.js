@@ -169,10 +169,10 @@ const db = function(dbConnection) {
   };
   const updateTask = async function(data) {
     let taskData = null;
-    let values = [data.name, data.due_date, data.tag, data.assigned_user, data.id];
+    let values = [data.name, data.date, data.tag, data.assigned, data.finished, data.id]; // the data.id needs to be the task id, not the list id
     try {
       userData = await runQuery(
-        "UPDATE users SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
+        "UPDATE users SET name=$1, due_date=$2, tag=$3, assigned_user=$4, finished=$5 WHERE id=$6 RETURNING *",
         values
       );
     } catch (err) {

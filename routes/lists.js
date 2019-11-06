@@ -5,6 +5,7 @@ const dbURI =
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
+// create list -----------------------------------------------------
 router.post("/", async function(req, res, next) {
   let data = req.body;
 
@@ -24,8 +25,8 @@ router.post("/", async function(req, res, next) {
   }
 });
 
-router.get("/:userID", async function(req, res, next) { // Get all lists where this userID is the owner
-
+// Get all lists by certain userID ---------------------------------
+router.get("/:userID", async function(req, res, next) {
   try {
     let lists = await db.getListByUserID(req.params.userID);
     if (lists) {
@@ -37,7 +38,9 @@ router.get("/:userID", async function(req, res, next) { // Get all lists where t
     res.status(500).json({ error: err });
   }
 });
-router.get("/view/:listID", async function(req, res, next) { // Get single list by listID
+
+// Get single list by listID ----------------------------------------
+router.get("/view/:listID", async function(req, res, next) {
   try {
     let list = await db.getListByUserID(req.params.listID);
     if (list) {
@@ -64,6 +67,5 @@ router.delete("/:listID", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
-
 
 module.exports = router;

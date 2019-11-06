@@ -1,53 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
-  </head>
 
-  <body>
-    <input type="text" id="email" placeholder="E-mail" />
-    <input type="password" id="password" placeholder="Password" />
-    <br /><br />
-    <button id="login">Login</button>
-    <h3 id="result">Result...</h3>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My document</title>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+</head>
 
-  <script>
-    let email = document.getElementById("email");
-    let password = document.getElementById("password");
-    let login = document.getElementById("login");
-    let result = document.getElementById("result");
-    login.addEventListener("click", async function(evt) {
-      let url = "http://localhost:3000/auth";
+<body>
+  <input type="text" id="email" placeholder="E-mail" />
+  <input type="password" id="password" placeholder="Password" />
+  <br /><br />
+  <button id="login">Login</button>
+  <h3 id="result">Result...</h3>
+</body>
 
-      let loginData = {
-        email: email.value,
-        password: password.value
-      };
+<script>
+  let email = document.getElementById("email");
+  let password = document.getElementById("password");
+  let login = document.getElementById("login");
+  let result = document.getElementById("result");
+  login.addEventListener("click", async function (evt) {
+    let url = "http://localhost:3000/auth";
 
-      let cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData)
-      };
+    let loginData = {
+      email: email.value,
+      password: password.value
+    };
 
-      try {
-        console.log("try");
-        var resp = await fetch(url, cfg);
-        console.log(resp);
-        var data = await resp.json();
+    let cfg = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginData)
+    };
 
-        if (resp.status > 202) {
-          throw data;
-        }
+    try {
+      let data = await utilities.requestToServer(url, cfg);
 
-        result.innerHTML = data.email + " is logged in!";
-        sessionStorage.setItem("logindata", JSON.stringify(data));
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  </script>
+      // if (resp.status > 202) {
+      //   throw data;
+      // }
+
+      result.innerHTML = data.email + " is logged in!";
+      sessionStorage.setItem("logindata", JSON.stringify(data));
+    } catch (err) {
+      console.log(err);
+    }
+  });
+</script>
+
 </html>

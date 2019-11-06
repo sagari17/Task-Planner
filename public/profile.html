@@ -1,188 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
-  </head>
 
-  <body>
-    <div id="container"></div>
-    <h3 id="result">Result...</h3>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My document</title>
+  <script type="text/javascript" src="js/utilities.js"></script>
+</head>
 
-    <template id="profile">
-      <p id="name">Jonathan Doe</p>
-      <p id="email">jonathandoe@gmail.com</p>
-      <button id="edit">Edit Profile</button>
-      <button id="changepw">Change Password</button>
-      <button id="logout">Logout</button>
-    </template>
-    <template id="editProfile">
-      <input type="text" id="firstname" placeholder="Firstname" />
-      <input type="text" id="lastname" placeholder="Lastname" />
-      <input type="text" id="email" placeholder="E-mail" />
-      <button type="button" id="goback">Go Back</button>
-      <button type="button" id="save">Save Changes</button>
-    </template>
+<body>
+  <div id="container"></div>
+  <h3 id="result">Result...</h3>
 
-    <template id="changePw">
-      <input type="password" id="newpw" placeholder="New Password" />
-      <input
-        type="password"
-        id="newpwrepeat"
-        placeholder="Repeat New Password"
-      />
-      <button type="button" id="goback">Go Back</button>
-      <button type="button" id="change">Change Password</button>
-    </template>
-  </body>
+  <template id="profile">
+    <p id="name">Jonathan Doe</p>
+    <p id="email">jonathandoe@gmail.com</p>
+    <button id="edit">Edit Profile</button>
+    <button id="changepw">Change Password</button>
+    <button id="logout">Logout</button>
+  </template>
 
-  <script>
-    let container = document.getElementById("container");
-    let result = document.getElementById("result");
-    let profileTmpl = document.getElementById("profile");
-    let editTmpl = document.getElementById("editProfile");
-    let changePwTmpl = document.getElementById("changePw");
+  <template id="editProfile">
+    <input type="text" id="firstname" placeholder="Firstname" />
+    <input type="text" id="lastname" placeholder="Lastname" />
+    <input type="text" id="email" placeholder="E-mail" />
+    <button type="button" id="goback">Go Back</button>
+    <button type="button" id="save">Save Changes</button>
+  </template>
 
-    let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
-    let userFirstname;
-    let userLastname;
-    let userEmail;
+  <template id="changePw">
+    <input type="password" id="newpw" placeholder="New Password" />
+    <input type="password" id="newpwrepeat" placeholder="Repeat New Password" />
+    <button type="button" id="goback">Go Back</button>
+    <button type="button" id="change">Change Password</button>
+  </template>
+</body>
 
-    showUserInfo();
+<script>
+  let container = document.getElementById("container");
+  let result = document.getElementById("result");
+  let profileTmpl = document.getElementById("profile");
+  let editTmpl = document.getElementById("editProfile");
+  let changePwTmpl = document.getElementById("changePw");
 
-    async function showUserInfo() {
-      let url = "http://localhost:3000/users/" + userid;
+  let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+  let userFirstname;
+  let userLastname;
+  let userEmail;
 
-      let cfg = {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      };
+  showUserInfo();
 
-      try {
-        var data = await requestToServer(url, cfg);
+  async function showUserInfo() {
+    let url = "http://localhost:3000/users/" + userid;
 
-        if (data == null) {
-          throw data;
-        } else {
-          userFirstname = data[0].firstname;
-          userLastname = data[0].lastname;
-          userEmail = data[0].email;
-          profileTmpl.content.querySelector("#name").innerHTML =
-            userFirstname + " " + userLastname;
-          profileTmpl.content.querySelector("#email").innerHTML = userEmail;
+    let cfg = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    };
 
-          container.innerHTML = "";
-          container.appendChild(profileTmpl.content.cloneNode(true));
+    try {
+      var data = await utilities.requestToServer(url, cfg);
 
-          document
-            .querySelector("#edit")
-            .addEventListener("click", editProfilePage);
-          document
-            .querySelector("#changepw")
-            .addEventListener("click", changePasswordPage);
-        }
-      } catch (err) {
-        console.log(err);
+      if (data == null) {
+        throw data;
+      } else {
+        userFirstname = data[0].firstname;
+        userLastname = data[0].lastname;
+        userEmail = data[0].email;
+        profileTmpl.content.querySelector("#name").innerHTML =
+          userFirstname + " " + userLastname;
+        profileTmpl.content.querySelector("#email").innerHTML = userEmail;
+
+        container.innerHTML = "";
+        container.appendChild(profileTmpl.content.cloneNode(true));
+
+        document
+          .querySelector("#edit")
+          .addEventListener("click", editProfilePage);
+        document
+          .querySelector("#changepw")
+          .addEventListener("click", changePasswordPage);
       }
+    } catch (err) {
+      console.log(err);
     }
+  }
 
-    function editProfilePage(evt) {
-      container.innerHTML = "";
-      container.appendChild(editTmpl.content.cloneNode(true));
+  function editProfilePage(evt) {
+    container.innerHTML = "";
+    container.appendChild(editTmpl.content.cloneNode(true));
 
-      let firstname = document.querySelector("#firstname");
-      firstname.value = userFirstname;
-      let lastname = document.querySelector("#lastname");
-      lastname.value = userLastname;
-      let email = document.querySelector("#email");
-      email.value = userEmail;
+    let firstname = document.querySelector("#firstname");
+    firstname.value = userFirstname;
+    let lastname = document.querySelector("#lastname");
+    lastname.value = userLastname;
+    let email = document.querySelector("#email");
+    email.value = userEmail;
 
-      document
-        .querySelector("#goback")
-        .addEventListener("click", function(evt) {
-          showUserInfo();
-        });
-
-      document.querySelector("#save").addEventListener("click", function(evt) {
-        saveChanges(firstname.value, lastname.value, email.value);
+    document
+      .querySelector("#goback")
+      .addEventListener("click", function (evt) {
+        showUserInfo();
       });
-    }
 
-    function changePasswordPage(evt) {
-      container.innerHTML = "";
-      container.appendChild(changePwTmpl.content.cloneNode(true));
+    document.querySelector("#save").addEventListener("click", function (evt) {
+      saveChanges(firstname.value, lastname.value, email.value);
+    });
+  }
 
-      let newpw = document.querySelector("#newpw");
+  function changePasswordPage(evt) {
+    container.innerHTML = "";
+    container.appendChild(changePwTmpl.content.cloneNode(true));
 
-      document
-        .querySelector("#goback")
-        .addEventListener("click", function(evt) {
-          showUserInfo();
-        });
+    let newpw = document.querySelector("#newpw");
 
-      document
-        .querySelector("#change")
-        .addEventListener("click", function(evt) {
-          changePw(newpw.value);
-        });
-    }
-
-    async function saveChanges(firstname, lastname, email) {
-      let url = "http://localhost:3000/users";
-
-      let userData = {
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        id: userid
-      };
-      console.log(userData);
-
-      let cfg = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      };
-
-      try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
-
-        let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
-        sessionData.email = email;
-        sessionStorage.setItem("logindata", JSON.stringify(sessionData));
-        result.innerHTML = data.msg;
+    document
+      .querySelector("#goback")
+      .addEventListener("click", function (evt) {
         showUserInfo();
-      } catch (err) {
-        console.log(err);
-      }
+      });
+
+    document
+      .querySelector("#change")
+      .addEventListener("click", function (evt) {
+        changePw(newpw.value);
+      });
+  }
+
+  async function saveChanges(firstname, lastname, email) {
+    let url = "http://localhost:3000/users";
+
+    let userData = {
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
+      id: userid
+    };
+    console.log(userData);
+
+    let cfg = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData)
+    };
+
+    try {
+      var resp = await fetch(url, cfg);
+      var data = await resp.json();
+
+      let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
+      sessionData.email = email;
+      sessionStorage.setItem("logindata", JSON.stringify(sessionData));
+      result.innerHTML = data.msg;
+      showUserInfo();
+    } catch (err) {
+      console.log(err);
     }
+  }
 
-    async function changePw(password) {
-      let url = "http://localhost:3000/users/changePassword";
+  async function changePw(password) {
+    let url = "http://localhost:3000/users/changePassword";
 
-      let userData = {
-        password: password,
-        id: userid
-      };
-      console.log(userData);
+    let userData = {
+      password: password,
+      id: userid
+    };
+    console.log(userData);
 
-      let cfg = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      };
+    let cfg = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData)
+    };
 
-      try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
+    try {
+      var resp = await fetch(url, cfg);
+      var data = await resp.json();
 
-        result.innerHTML = data.msg;
-        showUserInfo();
-      } catch (err) {
-        console.log(err);
-      }
+      result.innerHTML = data.msg;
+      showUserInfo();
+    } catch (err) {
+      console.log(err);
     }
-  </script>
+  }
+</script>
+
 </html>

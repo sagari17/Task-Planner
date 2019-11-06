@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My document</title>
+    <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
     <input type="text" id="name" placeholder="name" />
     <br /><br />
-    <input type="radio" name="public" value="private" checked> Private<br>
-    <input type="radio" name="public" value="public"> Public<br>
-    <input type="radio" name="public" value="members"> Add members<br>  
+    <input type="radio" name="public" value="private" checked /> Private<br />
+    <input type="radio" name="public" value="public" /> Public<br />
+    <input type="radio" name="public" value="members" /> Add members<br />
     <br /><br />
 
     <button id="create">Create list</button>
@@ -19,25 +20,26 @@
   </body>
 
   <script>
+    redirectNotAuthUser("login.html");
+
     let create = document.getElementById("create");
     let result = document.getElementById("result");
     let name = document.getElementById("name");
     let radio = document.querySelector("input[name=public]:checked").value;
     let public = 0;
 
-
     create.addEventListener("click", async function(evt) {
       let url = "http://localhost:3000/lists";
 
-      if(radio=="public"){
+      if (radio == "public") {
         public = 1;
       }
       let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
-    
+
       let listData = {
         name: name.value,
         owner: userid,
-        public: public,
+        public: public
       };
 
       console.log(listData);

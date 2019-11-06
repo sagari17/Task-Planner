@@ -10,7 +10,6 @@ const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
 // login user -------------------------------------------------------------------
 router.post("/", async function(req, res) {
-  console.log("hello from auth");
   let loginData = req.body;
   try {
     let result = await db.getUserByEmail(loginData.email);

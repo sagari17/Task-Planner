@@ -51,6 +51,34 @@ const db = function(dbConnection) {
     return userData;
   };
 
+  const updateUser = async function(data) {
+    let userData = null;
+    let values = [data.firstname, data.lastname, data.email, data.id];
+    try {
+      userData = await runQuery(
+        "UPDATE users SET firstname=$1, lastname=$2, email=$3 WHERE id=$4 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
+  const changePassword = async function(data) {
+    let userData = null;
+    let values = [data.password, data.id];
+    try {
+      userData = await runQuery(
+        "UPDATE users SET password=$1 WHERE id=$2 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
   const deleteUser = async function(userID) {
     let userData = null;
     let values = [userID];
@@ -72,7 +100,54 @@ const db = function(dbConnection) {
         "INSERT INTO lists (id, name, owner, public) VALUES(DEFAULT, $1, $2, $3) RETURNING *",
         values
       );
+    } catch (err) {
+      console.log(err);
+    }
+    return listData;
+  };
+  
+  const getListByUserID = async function(userID) {
+    let listData = null;
+    let values = [userID];
+    try {
+      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return listData;
+  };
+  
+  const getListByListID = async function(ListID) {
+    let listData = null;
+    let values = [ListID];
+    try {
+      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return listData;
+  };
+  
+  const getTasksByListID = async function(ListID) {
+    let taskData = null;
+    let values = [ListID];
+    try {
+      taskData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
+    } catch (err) {
+      //Deal with it
+    }
+    return taskData;
+  };
+  
 
+  const deleteList = async function(listID) {
+    let listData = null;
+    let values = [listID];
+    try {
+      listData = await runQuery(
+        "DELETE FROM lists WHERE id = $1 RETURNING *",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
@@ -96,8 +171,14 @@ const db = function(dbConnection) {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
     createUser: createUser,
+    updateUser: updateUser,
+    changePassword: changePassword,
     deleteUser: deleteUser,
     createList: createList,
+    getListByUserID: getListByUserID,
+    getListByListID: getListByListID,
+    getTasksByListID: getTasksByListID,
+    deleteList: deleteList,
     createTask: createTask
   };
 };

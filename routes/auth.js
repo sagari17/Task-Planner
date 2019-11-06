@@ -8,6 +8,7 @@ const dbURI =
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
+// login user -------------------------------------------------------------------
 router.post("/", async function(req, res) {
   console.log("hello from auth");
   let loginData = req.body;

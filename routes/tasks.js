@@ -31,7 +31,7 @@ router.post("/", async function(req, res, next) {
 // Get all tasks by certain list id --------------------------------------
 router.get("/:listID", async function(req, res, next) {
   try {
-    let tasks = await db.getTaskByListID(req.params.listID);
+    let tasks = await db.getTasksByListID(req.params.listID);
     if (tasks) {
       res.status(200).json(tasks);
     } else {

@@ -42,7 +42,7 @@ router.get("/:userID", async function(req, res, next) {
 // Get single list by listID ----------------------------------------
 router.get("/view/:listID", async function(req, res, next) {
   try {
-    let list = await db.getListByUserID(req.params.listID);
+    let list = await db.getListByListID(req.params.listID);
     if (list) {
       res.status(200).json(list);
     } else {

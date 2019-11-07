@@ -24,3 +24,113 @@
   height: 0.8rem;
   margin-right: 0.4rem;
 }
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.7rem;
+}
+
+main {
+  padding: 0 1.4%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.green {
+  color: var(--color-green);
+  font-style: normal;
+}
+
+#pageTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-weight: 700;
+  font-size: 120%;
+  margin: 0;
+}
+
+#pageTitle > img {
+  margin: 0 0.7rem 0 0;
+  height: 2.5rem;
+}
+
+.addList {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addList > img {
+  width: 0.8rem;
+}
+
+.list-wrapper {
+  width: 22.1%;
+  background-color: var(--color-green);
+  border-radius: 0.2rem;
+  height: 100%;
+  margin: 0 1.4% 2.8% 1.4%;
+  -webkit-margin-collapse: separate;
+}
+.list-wrapper > div {
+  background: #fff;
+}
+
+.list-wrapper > button {
+  background: #fff;
+  padding: 1rem;
+  width: 100%;
+  height: 100%;
+  border: none;
+  color: var(--color-green);
+}
+
+.list-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.25rem 0;
+  padding: 0.9rem 1rem;
+  background-color: #f9f9f9;
+}
+
+.list-div:first-of-type {
+  background-color: #fff;
+  font-weight: 600;
+  font-size: 150%;
+  padding: 1.25rem 1rem 1rem 1rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+}
+
+.list-div:last-of-type {
+  margin-bottom: 0;
+}
+
+.list-div img {
+  height: 1.3rem;
+}
+
+.delete-button {
+  height: 1.6rem !important;
+}
+.unchecked {
+  background-image: url("../images/checkbox_unchecked.svg");
+  background-size: contain;
+  height: 1.3rem;
+  width: 1.3rem;
+}
+
+.checked {
+  background-image: url("../images/checkbox_checked.svg");
+  background-size: contain;
+  height: 1.4rem;
+  width: 1.4rem;
+}

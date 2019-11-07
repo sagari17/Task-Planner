@@ -105,7 +105,7 @@ const db = function(dbConnection) {
     }
     return listData;
   };
-  
+
   const getListByUserID = async function(userID) {
     let listData = null;
     let values = [userID];
@@ -116,10 +116,10 @@ const db = function(dbConnection) {
     }
     return listData;
   };
-  
-  const getListByListID = async function(ListID) {
+
+  const getListByListID = async function(listID) {
     let listData = null;
-    let values = [ListID];
+    let values = [listID];
     try {
       listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
     } catch (err) {
@@ -127,10 +127,10 @@ const db = function(dbConnection) {
     }
     return listData;
   };
-  
-  const getTasksByListID = async function(ListID) {
+
+  const getTasksByListID = async function(listID) {
     let taskData = null;
-    let values = [ListID];
+    let values = [listID];
     try {
       taskData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
     } catch (err) {
@@ -138,7 +138,21 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
-  
+
+  const getTasksByListIDs = async function(listIDS) {
+    let taskData = null;
+    let query = "SELECT * from tasks WHERE listid=$1";
+    let values = listIDS;
+    for (let i = 1; i < listIDS.length; i++) {
+      query += ` OR listid=$${i + 1}`;
+    }
+    try {
+      taskData = await runQuery(query, values);
+    } catch (err) {
+      //Deal with it
+    }
+    return taskData;
+  };
 
   const deleteList = async function(listID) {
     let listData = null;
@@ -178,6 +192,7 @@ const db = function(dbConnection) {
     getListByUserID: getListByUserID,
     getListByListID: getListByListID,
     getTasksByListID: getTasksByListID,
+    getTasksByListIDs: getTasksByListIDs,
     deleteList: deleteList,
     createTask: createTask
   };

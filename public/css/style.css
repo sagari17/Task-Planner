@@ -15,7 +15,20 @@
 
 body {
   background-color: var(--color-blue-light);
-  font-size: 100%;
+  font-size: 85%;
   color: var(--color-blue);
   margin: 0;
+}
+
+button:focus {
+  outline: none;
+}
+
+.button-green {
+  background-color: var(--color-green);
+  border: none;
+  border-radius: 100px;
+  width: 13rem;
+  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  color: white;
 }

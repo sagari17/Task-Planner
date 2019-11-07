@@ -66,6 +66,16 @@
         let url = "http://localhost:3000/lists/" + userData.userid;
         let listData = await utilities.requestToServer(url, {});
         if (listData.length > 0) {
+          for (let i = 0; i < listData.length; i++) {
+            if (i == 0) {
+              ids = listData[i].id;
+            } else {
+              ids += "," + listData[i].id;
+            }
+          }
+
+          let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
+          let taskData = await utilities.requestToServer(url2, {});
           for (let list of listData) {
             let listWrapper = document.createElement("div");
             listWrapper.setAttribute("id", list.id);
@@ -84,34 +94,32 @@
 
             listViewList.appendChild(listDiv);
 
-            let url = "http://localhost:3000/tasks/" + list.id;
-            //let url = "http://localhost:3000/tasks/" + 14;
-            let taskData = await utilities.requestToServer(url, {});
-            console.log(taskData);
             for (let task of taskData) {
-              let taskDiv = document.createElement("div");
-              taskDiv.classList.add("list-div");
-              taskDiv.innerHTML = task.name;
+              if (task.listid == list.id) {
+                let taskDiv = document.createElement("div");
+                taskDiv.classList.add("list-div");
+                taskDiv.innerHTML = task.name;
 
-              let checkedDiv = document.createElement("div");
-              if (task.finished) {
-                checkedDiv.classList.add("checked");
-              } else {
-                checkedDiv.classList.add("unchecked");
+                let checkedDiv = document.createElement("div");
+                if (task.finished) {
+                  checkedDiv.classList.add("checked");
+                } else {
+                  checkedDiv.classList.add("unchecked");
+                }
+                taskDiv.appendChild(checkedDiv);
+
+                listViewList.appendChild(taskDiv);
               }
-              taskDiv.appendChild(checkedDiv);
-
-              listViewList.appendChild(taskDiv);
             }
+
+            listWrapper.appendChild(listViewList);
+
+            let editButton = document.createElement("button");
+            editButton.innerHTML = "Edit List";
+            listWrapper.appendChild(editButton);
+
+            document.querySelector("main").appendChild(listWrapper);
           }
-
-          listWrapper.appendChild(listViewList);
-
-          let editButton = document.createElement("button");
-          editButton.innerHTML = "Edit List";
-          listWrapper.appendChild(editButton);
-
-          document.querySelector("main").appendChild(listWrapper);
         } else {
           console.log("no lists yet");
         }

@@ -5,14 +5,19 @@ const dbURI =
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
-router.get("/", function() {
-  
-});
+router.get("/", function() {});
 // create task-------------------------------------------------
 router.post("/", async function(req, res, next) {
   let task = req.body;
 
-  let taskData = [task.name, task.date, task.tag, task.assign, task.finished, task.listid];
+  let taskData = [
+    task.name,
+    task.date,
+    task.tag,
+    task.assign,
+    task.finished,
+    task.listid
+  ];
   console.log(taskData);
   try {
     let result = await db.createTask(taskData);
@@ -31,7 +36,8 @@ router.post("/", async function(req, res, next) {
 // Get all tasks by certain list id --------------------------------------
 router.get("/:listID", async function(req, res, next) {
   try {
-    let tasks = await db.getTaskByListID(req.params.listID);
+    console.log("inalltasks");
+    let tasks = await db.getTasksByListID(req.params.listID);
     if (tasks) {
       res.status(200).json(tasks);
     } else {
@@ -42,4 +48,19 @@ router.get("/:listID", async function(req, res, next) {
   }
 });
 
+// Get all tasks by several list ids --------------------------------------
+router.get("/alltasks/:listIDS", async function(req, res, next) {
+  try {
+    let ids = req.params.listIDS;
+    let listIDS = ids.split(",");
+    let tasks = await db.getTasksByListIDs(listIDS);
+    if (tasks) {
+      res.status(200).json(tasks);
+    } else {
+      throw "No tasks exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 module.exports = router;

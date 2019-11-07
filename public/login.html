@@ -1,54 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My document</title>
-  <script type="text/javascript" src="js/index.js"></script>
-  <script type="text/javascript" src="js/utilities.js"></script>
-</head>
+  <body>
+    <input type="text" id="email" placeholder="E-mail" />
+    <input type="password" id="password" placeholder="Password" />
+    <br /><br />
+    <button id="login">Login</button>
+    <h3 id="result">Result...</h3>
+  </body>
 
-<body>
-  <input type="text" id="email" placeholder="E-mail" />
-  <input type="password" id="password" placeholder="Password" />
-  <br /><br />
-  <button id="login">Login</button>
-  <h3 id="result">Result...</h3>
-</body>
+  <script>
+    let email = document.getElementById("email");
+    let password = document.getElementById("password");
+    let login = document.getElementById("login");
+    let result = document.getElementById("result");
+    login.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/auth";
 
-<script>
-  let email = document.getElementById("email");
-  let password = document.getElementById("password");
-  let login = document.getElementById("login");
-  let result = document.getElementById("result");
-  login.addEventListener("click", async function (evt) {
-    let url = "http://localhost:3000/auth";
+      let loginData = {
+        email: email.value,
+        password: password.value
+      };
 
-    let loginData = {
-      email: email.value,
-      password: password.value
-    };
+      let cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      };
 
-    let cfg = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData)
-    };
+      try {
+        let data = await utilities.requestToServer(url, cfg);
 
-    try {
-      let data = await utilities.requestToServer(url, cfg);
+        // if (resp.status > 202) {
+        //   throw data;
+        // }
 
-      // if (resp.status > 202) {
-      //   throw data;
-      // }
-
-      result.innerHTML = data.email + " is logged in!";
-      sessionStorage.setItem("logindata", JSON.stringify(data));
-    } catch (err) {
-      console.log(err);
-    }
-  });
-</script>
-
+        result.innerHTML = data.email + " is logged in!";
+        sessionStorage.setItem("logindata", JSON.stringify(data));
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  </script>
 </html>

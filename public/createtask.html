@@ -11,18 +11,18 @@
     <input type="text" id="name" placeholder="Task name" />
     <br /><br />
     Due date
-    <input type="date" id="date" name="date" checked><br>
+    <input type="date" id="date" name="date" checked /><br />
 
-    <br>
+    <br />
 
-    Tags <br>
-        <select id="tag">
-          <option value="Tag1">Tag1</option>
-          <option value="Tag2">Tag2</option>
-          <option value="Tag3">Tag3</option>
-        </select>
+    Tags <br />
+    <select id="tag">
+      <option value="Tag1">Tag1</option>
+      <option value="Tag2">Tag2</option>
+      <option value="Tag3">Tag3</option>
+    </select>
 
-<br>
+    <br />
 
     <button id="create">Create task</button>
     <h3 id="result">Result...</h3>
@@ -35,18 +35,16 @@
     let date = document.getElementById("date");
     let tag = document.getElementById("tag");
 
-
     create.addEventListener("click", async function(evt) {
       let url = "http://localhost:3000/tasks";
 
-    
       let taskData = {
         name: name.value,
         date: date.value,
         tag: tag.value,
         assign: 3,
         finished: 0,
-        listid: 14
+        listid: 4
       };
 
       console.log(taskData);

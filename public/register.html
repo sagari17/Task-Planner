@@ -1,59 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My document</title>
-  <script type="text/javascript" src="js/index.js"></script>
-  <script type="text/javascript" src="js/utilities.js"></script>
-</head>
+  <body>
+    <input type="text" id="firstname" placeholder="Firstname" />
+    <input type="text" id="lastname" placeholder="Lastname" />
+    <input type="text" id="email" placeholder="E-mail" />
+    <input type="password" id="pw" placeholder="Password" />
+    <input type="password" id="pwrepeat" placeholder="Repeat Password" />
+    <br /><br />
 
-<body>
-  <input type="text" id="firstname" placeholder="Firstname" />
-  <input type="text" id="lastname" placeholder="Lastname" />
-  <input type="text" id="email" placeholder="E-mail" />
-  <input type="password" id="pw" placeholder="Password" />
-  <input type="password" id="pwrepeat" placeholder="Repeat Password" />
-  <br /><br />
+    <button id="create">Create user</button>
+    <h3 id="result">Result...</h3>
+  </body>
 
-  <button id="create">Create user</button>
-  <h3 id="result">Result...</h3>
-</body>
+  <script>
+    let firstname = document.getElementById("firstname");
+    let lastname = document.getElementById("lastname");
+    let email = document.getElementById("email");
+    let password = document.getElementById("pw");
+    let passwordrepeat = document.getElementById("pwrepeat");
+    let create = document.getElementById("create");
+    let result = document.getElementById("result");
+    let del1 = document.getElementById("del1");
 
-<script>
-  let firstname = document.getElementById("firstname");
-  let lastname = document.getElementById("lastname");
-  let email = document.getElementById("email");
-  let password = document.getElementById("pw");
-  let password = document.getElementById("pwrepeat");
-  let create = document.getElementById("create");
-  let result = document.getElementById("result");
-  let del1 = document.getElementById("del1");
+    create.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/users";
 
-  create.addEventListener("click", async function (evt) {
-    let url = "http://localhost:3000/users";
+      let userData = {
+        firstname: firstname.value,
+        lastname: lastname.value,
+        email: email.value,
+        password: password.value
+      };
 
-    let userData = {
-      firstname: firstname.value,
-      lastname: lastname.value,
-      email: email.value,
-      password: password.value
-    };
+      let cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      };
 
-    let cfg = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData)
-    };
-
-    try {
-      let data = await utilities.requestToServer(url, cfg);
-      result.innerHTML = data.msg;
-    } catch (err) {
-      console.log(err);
-    }
-  });
-</script>
-
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+        result.innerHTML = data.msg;
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  </script>
 </html>

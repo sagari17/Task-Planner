@@ -68,4 +68,20 @@ router.delete("/:listID", async function(req, res, next) {
   }
 });
 
+// update list -------------------------------------------------------------------
+router.patch("/", async function(req, res, next) { 
+  console.log("inside patch list ");
+  console.log(req.body);
+  try {
+    let list = await db.updateList(req.body);
+    if (list) {
+      res.status(200).json({ msg: "Changes Saved" });
+    } else {
+      throw "List could not be updated.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
 module.exports = router;

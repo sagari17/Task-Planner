@@ -1,64 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My document</title>
-  <script type="text/javascript" src="js/index.js"></script>
-  <script type="text/javascript" src="js/utilities.js"></script>
-</head>
-
-<body>
-  <p id="userID"></p>
-</body>
-<button id="showList" onclick="getlists()">Show lists</button>
-<button id="deleteList">Delete List</button>
-
-<script>
-  let delBtn = document.getElementById("deleteList");
-  delBtn.addEventListener("click", async function (evt) {
-    let url = "http://localhost:3000/lists/ " + 1;
-
-    let cfg = {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" }
-    };
-
-    try {
-      let data = await utilities.requestToServer(url, cfg);
-      // if (resp.status > 202) {
-      //   throw data;
-      // }
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-  let userID = document.getElementById("userID");
-  let showList = document.getElementById("showList");
-
-  async function getlists() {
-    try {
-      let userData = JSON.parse(sessionStorage.getItem("logindata"));
-      console.log(userData);
-
-      let url = "http://localhost:3000/lists/" + userData.userid;
+  <body>
+    <my-menu></my-menu>
+    <button id="showList" onclick="getlists()">Show lists</button>
+    <button id="deleteList">Delete List</button>
+  </body>
+  <script type="text/javascript" src="js/menuBar.js"></script>
+  <script>
+    let delBtn = document.getElementById("deleteList");
+    delBtn.addEventListener("click", async function(evt) {
+      let url = "http://localhost:3000/lists/ " + 1;
 
       let cfg = {
-        method: "GET"
-        //headers: { "Content-Type": "application/json" },
-        //body: JSON.stringify(loginData)
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
       };
-      let data = await utilities.requestToServer(url, cfg);
-      // if (resp.status > 202) {
-      //   throw data;
-      // }
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-</script>
 
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    let userID = document.getElementById("userID");
+    let showList = document.getElementById("showList");
+
+    async function getlists() {
+      try {
+        let userData = JSON.parse(sessionStorage.getItem("logindata"));
+        let url = "http://localhost:3000/lists/" + userData.userid;
+        let data = await utilities.requestToServer(url, {});
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  </script>
 </html>

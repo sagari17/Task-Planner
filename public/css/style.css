@@ -1,0 +1,21 @@
+@import url("showlist.css");
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap");
+
+:root {
+  --color-blue: #17254a;
+  --color-blue-middle: #8f9bb3;
+  --color-blue-light: #f0f4fa;
+  --color-green: #91db00;
+  --color-red: #e03f3f;
+}
+
+* {
+  font-family: "Montserrat", "Calibri-Light", sans-serif;
+}
+
+body {
+  background-color: var(--color-blue-light);
+  font-size: 100%;
+  color: var(--color-blue);
+  margin: 0;
+}

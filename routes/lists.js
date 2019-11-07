@@ -42,7 +42,7 @@ router.get("/:userID", async function(req, res, next) {
 // Get single list by listID ----------------------------------------
 router.get("/view/:listID", async function(req, res, next) {
   try {
-    let list = await db.getListByUserID(req.params.listID);
+    let list = await db.getListByListID(req.params.listID);
     if (list) {
       res.status(200).json(list);
     } else {
@@ -62,6 +62,22 @@ router.delete("/:listID", async function(req, res, next) {
       res.status(200).json({ msg: "Deleted the List!" });
     } else {
       throw "Failed to delete the list!";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// update list -------------------------------------------------------------------
+router.patch("/", async function(req, res, next) { 
+  console.log("inside patch list ");
+  console.log(req.body);
+  try {
+    let list = await db.updateList(req.body);
+    if (list) {
+      res.status(200).json({ msg: "Changes Saved" });
+    } else {
+      throw "List could not be updated.";
     }
   } catch (err) {
     res.status(500).json({ error: err });

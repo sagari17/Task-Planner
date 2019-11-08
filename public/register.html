@@ -7,14 +7,17 @@
   </head>
 
   <body>
-    <input type="text" id="firstname" placeholder="Firstname" autocomplete="off"/>
-    <input type="text" id="lastname" placeholder="Lastname" autocomplete="off"/>
-    <input type="email" id="email" placeholder="E-mail" autocomplete="off"/>
-    <input type="password" id="pw" placeholder="Password" autocomplete="off"/>
-    <input type="password" id="pwrepeat" placeholder="Repeat Password" autocomplete="off"/>
+    <form>
+    <input type="text" id="firstname" placeholder="Firstname" autocomplete="off" required />
+    <input type="text" id="lastname" placeholder="Lastname" autocomplete="off" required/>
+    <input type="email" id="email" placeholder="E-mail" autocomplete="off" required/>
+    <input type="password" id="pw" placeholder="Password" autocomplete="off" required/>
+    <input type="password" id="pwrepeat" placeholder="Repeat Password" autocomplete="off" required/>
     <br /><br />
 
-    <button id="create">Create user</button>
+    <button type="submit" id="create">Create user</button>
+  </form>
+
     <h3 id="result">Result...</h3>
   </body>
 
@@ -29,6 +32,8 @@
     let del1 = document.getElementById("del1");
 
     create.addEventListener("click", async function(evt) {
+      evt.preventDefault();
+      
       let url = "http://localhost:3000/users";
 
       let userData = {
@@ -43,6 +48,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData)
       };
+
+      
 
       try {
         var resp = await fetch(url, cfg);

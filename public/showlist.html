@@ -66,19 +66,22 @@
         let url = "http://localhost:3000/lists/" + userData.userid;
         let listData = await utilities.requestToServer(url, {});
         if (listData.length > 0) {
+          let listWrapper;
+          let listViewList;
+          let deleteIcon;
           for (let list of listData) {
-            let listWrapper = document.createElement("div");
+            listWrapper = document.createElement("div");
             listWrapper.setAttribute("id", list.id);
             listWrapper.classList.add("list-wrapper");
 
-            let listViewList = document.createElement("div");
+            listViewList = document.createElement("div");
             listViewList.classList.add("viewList");
 
-            let listDiv = document.createElement("div");
+            listDiv = document.createElement("div");
             listDiv.classList.add("list-div");
             listDiv.innerHTML = list.name;
 
-            let deleteIcon = document.createElement("img");
+            deleteIcon = document.createElement("img");
             deleteIcon.setAttribute("src", "images/delete_blue.svg");
             listDiv.appendChild(deleteIcon);
 

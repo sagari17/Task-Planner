@@ -36,15 +36,11 @@
 
       try {
         let data = await utilities.requestToServer(url, cfg);
-
-        // if (resp.status > 202) {
-        //   throw data;
-        // }
-
         result.innerHTML = data.email + " is logged in!";
         sessionStorage.setItem("logindata", JSON.stringify(data));
       } catch (err) {
-        console.log(err);
+        let error = await err;
+        console.log(error.msg);
       }
     });
   </script>

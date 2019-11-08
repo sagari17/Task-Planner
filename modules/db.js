@@ -213,7 +213,6 @@ const db = function(dbConnection) {
       listData = await runQuery(
         "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",
         values
-        
       );
     } catch (err) {
       console.log(err);

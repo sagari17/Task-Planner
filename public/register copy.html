@@ -8,17 +8,15 @@
   </head>
 
   <body>
-    <form>
+    <form onsubmit="return false">
       <input type="text" id="firstname" placeholder="Firstname" autocomplete="off" required />
       <input type="text" id="lastname" placeholder="Lastname" autocomplete="off" required/>
       <input type="email" id="email" placeholder="E-mail" autocomplete="off" required/>
       <input type="password" id="pw" placeholder="Password" autocomplete="off" required/>
-      <input type="password" id="pwrepeat" placeholder="Repeat Password" autocomplete="off" required/>
-            
-      <button type="submit" id="create">Create user</button>
+      <input type="password" id="pwrepeat" placeholder="Repeat Password" autocomplete="off" minlength="8" maxlength="12" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required/>
+      <button type="submit" id="create" >Submit</button>
     </form>
-
-    <h3 id="result">Result...</h3>
+    <h3 id="result">Result ...</h3>
   </body>
 
   <script>
@@ -29,14 +27,11 @@
     let passwordrepeat = document.getElementById("pwrepeat");
     let create = document.getElementById("create");
     let result = document.getElementById("result");
-    let del1 = document.getElementById("del1");
+
 
     create.addEventListener("click", async function(evt) {
-      evt.preventDefault();
-
-      //console.log(checkRegisterInput());
-    
-      
+      if(checkRegisterInput() && checkPasswords()){
+        console.log("does it");
       let url = "http://localhost:3000/users";
 
       let userData = {
@@ -52,19 +47,34 @@
         body: JSON.stringify(userData)
       };
 
-      
-
       try {
         let data = await utilities.requestToServer(url, cfg);
         result.innerHTML = data.msg;
       } catch (err) {
         console.log(err);
       }
+      } 
     });
 
-  // function checkRegisterInput(){
-  //   return (utilities.isValidInput(firstname.value) || utilities.isValidInput(lastname.value));
-  // }
+    function checkRegisterInput(){
+      if((utilities.isValidInput(firstname.value) && utilities.isValidInput(lastname.value))){
+        return true;
+      } else {
+        console.log("Please input valid first and last name - no special characters!");
+        return false;
+      }
+    }
 
+    function checkPasswords(){
+      if(password.value == passwordrepeat.value){
+        return true;
+      } else {
+        console.log("Passwords do not match.");
+        return false;
+      }
+    }
+
+
+  
   </script>
 </html>

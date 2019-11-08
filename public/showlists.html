@@ -19,36 +19,7 @@
           Add new list <img src="images/plus.svg" />
         </button>
       </header>
-      <main>
-        <!-- <div class="list-wrapper">
-            <div>
-              <div class="list-div">
-                List Nr. 1
-                <img
-                  src="images/delete_blue.svg"
-                  alt="delete"
-                  title="delete"
-                  class="delete-button"
-                />
-              </div>
-              <div class="list-div">
-                Item one
-                <div class="unchecked"></div>
-              </div>
-              <div class="list-div">
-                Item one
-                <div class="unchecked"></div>
-              </div>
-              <div class="list-div">
-                Item one
-                <div class="checked"></div>
-              </div>
-            </div>
-            <button>
-              Edit List
-            </button>
-          </div> -->
-      </main>
+      <main></main>
     </template>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
@@ -63,19 +34,32 @@
     async function showLists() {
       try {
         let userData = JSON.parse(sessionStorage.getItem("logindata"));
-        let url = "http://localhost:3000/lists/" + userData.userid;
-        let listData = await utilities.requestToServer(url, {});
+        let listData = JSON.parse(localStorage.getItem("listdata"));
+        let ids;
+        if (!listData) {
+          console.log("listdata not defined");
+          let url = "http://localhost:3000/lists/" + userData.userid;
+          listData = await utilities.requestToServer(url, {});
+          console.log("fetched listdata");
+          localStorage.setItem("listdata", JSON.stringify(listData));
+        }
         if (listData.length > 0) {
-          for (let i = 0; i < listData.length; i++) {
-            if (i == 0) {
-              ids = listData[i].id;
-            } else {
-              ids += "," + listData[i].id;
+          let taskData = JSON.parse(localStorage.getItem("taskdata"));
+          if (!taskData) {
+            for (let i = 0; i < listData.length; i++) {
+              if (i == 0) {
+                ids = listData[i].id;
+              } else {
+                ids += "," + listData[i].id;
+              }
             }
+
+            let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
+            taskData = await utilities.requestToServer(url2, {});
+            console.log("fetched listdata");
+            localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
 
-          let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
-          let taskData = await utilities.requestToServer(url2, {});
           for (let list of listData) {
             let listWrapper = document.createElement("div");
             listWrapper.setAttribute("id", list.id);

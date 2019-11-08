@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My document</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
+    <my-menu></my-menu>
     <div id="container"></div>
     <h3 id="result">Result...</h3>
 
@@ -17,6 +20,7 @@
       <button id="changepw">Change Password</button>
       <button id="logout">Logout</button>
     </template>
+
     <template id="editProfile">
       <input type="text" id="firstname" placeholder="Firstname" />
       <input type="text" id="lastname" placeholder="Lastname" />
@@ -37,6 +41,7 @@
     </template>
   </body>
 
+  <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
     let container = document.getElementById("container");
     let result = document.getElementById("result");
@@ -60,10 +65,9 @@
       };
 
       try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
+        let data = await utilities.requestToServer(url, cfg);
 
-        if (resp.status > 202) {
+        if (data == null) {
           throw data;
         } else {
           userFirstname = data[0].firstname;
@@ -147,8 +151,7 @@
       };
 
       try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
+        let data = await utilities.requestToServer(url, cfg);
 
         let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
         sessionData.email = email;
@@ -176,8 +179,7 @@
       };
 
       try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
+        let data = await utilities.requestToServer(url, cfg);
 
         result.innerHTML = data.msg;
         showUserInfo();

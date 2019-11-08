@@ -105,40 +105,54 @@ const db = function(dbConnection) {
     }
     return listData;
   };
-  
+
   const getListByUserID = async function(userID) {
     let listData = null;
     let values = [userID];
     try {
       listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
     } catch (err) {
-      //Deal with it
+      console.log(err);
     }
     return listData;
   };
-  
-  const getListByListID = async function(ListID) {
+
+  const getListByListID = async function(listID) {
     let listData = null;
-    let values = [ListID];
+    let values = [listID];
     try {
-      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+      listData = await runQuery("SELECT * FROM lists WHERE id=$1", values);
     } catch (err) {
-      //Deal with it
+      console.log(err);
     }
     return listData;
   };
-  
-  const getTasksByListID = async function(ListID) {
+
+  const getTasksByListID = async function(listID) {
     let taskData = null;
-    let values = [ListID];
+    let values = [listID];
     try {
-      taskData = await runQuery("SELECT * from tasks WHERE listid=$1", values);
+      taskData = await runQuery("SELECT * FROM tasks WHERE listid=$1", values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
+  const getTasksByListIDs = async function(listIDS) {
+    let taskData = null;
+    let query = "SELECT * from tasks WHERE listid=$1";
+    let values = listIDS;
+    for (let i = 1; i < listIDS.length; i++) {
+      query += ` OR listid=$${i + 1}`;
+    }
+    try {
+      taskData = await runQuery(query, values);
     } catch (err) {
       //Deal with it
     }
     return taskData;
   };
-  
 
   const deleteList = async function(listID) {
     let listData = null;
@@ -154,6 +168,58 @@ const db = function(dbConnection) {
     return listData;
   };
 
+  const createTask = async function(values) {
+    let taskData = null;
+    try {
+      taskData = await runQuery(
+        "INSERT INTO tasks (id, name, due_date, tag, assigned_user, finished, listid) VALUES(DEFAULT, $1, $2, $3, $4, $5, $6) RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+  const deleteTask = async function(taskID) {
+    let taskData = null;
+    let values = [taskID];
+    try {
+      taskData = await runQuery(
+        "DELETE FROM tasks WHERE id = $1 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+  const updateTask = async function(data) {
+    let taskData = null;
+    let values = [data.name, data.date, data.tag, data.finished, data.id]; // the data.id needs to be the task id, not the list id
+    try {
+      taskData = await runQuery(
+        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, finished=$4 WHERE id=$5 RETURNING *",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+  const updateList = async function(data) {
+    let listData = null;
+    let values = [data.name, data.public, data.id]; // the data.id needs to be the task id, not the list id
+    try {
+      listData = await runQuery(
+        "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",
+        values
+        
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return listData;
+  };
 
   return {
     getUserByEmail: getUserByEmail,
@@ -166,7 +232,12 @@ const db = function(dbConnection) {
     getListByUserID: getListByUserID,
     getListByListID: getListByListID,
     getTasksByListID: getTasksByListID,
-    deleteList: deleteList
+    getTasksByListIDs: getTasksByListIDs,
+    deleteList: deleteList,
+    createTask: createTask,
+    deleteTask: deleteTask,
+    updateTask: updateTask,
+    updateList: updateList
   };
 };
 

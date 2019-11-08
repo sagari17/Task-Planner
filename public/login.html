@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My document</title>
+    <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
@@ -34,14 +35,11 @@
       };
 
       try {
-        console.log("try");
-        var resp = await fetch(url, cfg);
-        console.log(resp);
-        var data = await resp.json();
+        let data = await utilities.requestToServer(url, cfg);
 
-        if (resp.status > 202) {
-          throw data;
-        }
+        // if (resp.status > 202) {
+        //   throw data;
+        // }
 
         result.innerHTML = data.email + " is logged in!";
         sessionStorage.setItem("logindata", JSON.stringify(data));

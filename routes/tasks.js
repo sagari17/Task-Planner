@@ -5,12 +5,38 @@ const dbURI =
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
-router.get("/", function() {
-  //sthg
-});
-router.get("/:listID", async function(req, res, next) { // Get all tasks connected to list id
+router.get("/", function() {});
+// create task-------------------------------------------------
+router.post("/", async function(req, res, next) {
+  let task = req.body;
+
+  let taskData = [
+    task.name,
+    task.date,
+    task.tag,
+    task.assign,
+    task.finished,
+    task.listid
+  ];
+  console.log(taskData);
   try {
-    let tasks = await db.getTaskByListID(req.params.listID);
+    let result = await db.createTask(taskData);
+    console.log(result);
+    console.log(result.length);
+    if (result.length > 0) {
+      res.status(200).json({ msg: "Insert OK" });
+    } else {
+      throw "insert failed";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// Get all tasks by certain list id --------------------------------------
+router.get("/:listID", async function(req, res, next) {
+  try {
+    let tasks = await db.getTasksByListID(req.params.listID);
     if (tasks) {
       res.status(200).json(tasks);
     } else {
@@ -20,6 +46,49 @@ router.get("/:listID", async function(req, res, next) { // Get all tasks connect
     res.status(500).json({ error: err });
   }
 });
+// Delete single task by certain task id --------------------------------------
+router.delete("/:taskID", async function(req, res, next) {
+  try {
+    let result = await db.deleteTask(req.params.taskID);
 
+    if (result.length > 0) {
+      res.status(200).json({ msg: "Deleted the task!" });
+    } else {
+      throw "Failed to delete the task!";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+// Update task with certain task id --------------------------------------
+router.patch("/", async function(req, res, next) { 
+  console.log("inside patch task ");
+  console.log(req.body);
+  try {
+    let task = await db.updateTask(req.body);
+    if (task) {
+      res.status(200).json({ msg: "Changes Saved" });
+    } else {
+      throw "Task could not be updated.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 
+// Get all tasks by several list ids --------------------------------------
+router.get("/alltasks/:listIDS", async function(req, res, next) {
+  try {
+    let ids = req.params.listIDS;
+    let listIDS = ids.split(",");
+    let tasks = await db.getTasksByListIDs(listIDS);
+    if (tasks) {
+      res.status(200).json(tasks);
+    } else {
+      throw "No tasks exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 module.exports = router;

@@ -258,23 +258,29 @@
     async function deleteList(evt) {
       evt.stopPropagation();
       let id = evt.target.parentNode.parentNode.parentNode.id;
-      alert("Are you sure you want to delete the list with id " + id + "?");
+      if (
+        confirm(
+          "Are you sure you want to delete the list " +
+            evt.target.parentNode.innerText +
+            "?"
+        )
+      ) {
+        let url = "http://localhost:3000/lists/ " + id;
 
-      let url = "http://localhost:3000/lists/ " + id;
+        let cfg = {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        };
 
-      let cfg = {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" }
-      };
-
-      try {
-        let data = await utilities.requestToServer(url, cfg);
-        localStorage.removeItem("taskdata");
-        localStorage.removeItem("listdata");
-        redirectUser("showlists.html");
-        console.log(data);
-      } catch (err) {
-        console.log(err);
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          localStorage.removeItem("taskdata");
+          localStorage.removeItem("listdata");
+          redirectUser("showlists.html");
+          console.log(data);
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
 

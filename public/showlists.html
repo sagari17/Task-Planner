@@ -10,29 +10,128 @@
 
   <body>
     <my-menu></my-menu>
-    <template id="showLists">
+    <form onsubmit="return false" id="container"></form>
+    <template id="showListsTmpl">
       <header>
         <p id="pageTitle">
           <img src="images/lists.svg" /><em class="green">My&nbsp </em> Lists
         </p>
-        <button class="button-green addList">
+        <button id="addList" class="button-green">
           Add new list <img src="images/plus.svg" />
         </button>
       </header>
-      <main></main>
+      <main id="show-lists-wrapper"></main>
+    </template>
+    <template id="newListTmpl">
+      <header>
+        <p id="pageTitle">
+          <img src="images/new_edit_list.svg" /><em class="green">New&nbsp </em>
+          List
+        </p>
+      </header>
+      <main id="new-list-wrapper">
+        <div>
+          <p class="new-list-heading">List Title</p>
+          <input
+            type="text"
+            id="new-list-title"
+            placeholder="List title here"
+            required
+          />
+        </div>
+        <div>
+          <p class="new-list-heading">List Sharing</p>
+          <div class="radio-group">
+            <input type="radio" name="public" value="private" checked />
+            Private
+            <p>Your list is private. Only you can see it.</p>
+          </div>
+          <div class="radio-group">
+            <input type="radio" name="public" value="public" /> Public
+            <p>
+              Your list is public. Everyone who has the link can access it.
+            </p>
+          </div>
+          <div class="radio-group">
+            <input type="radio" name="public" value="members" /> Add members
+            <p>
+              Share this list with certain users to let them become Members of
+              this list. You can then assign them to tasks on the list.
+            </p>
+            <div class="members-div">
+              <input
+                type="text"
+                id="member-email"
+                placeholder="User email address"
+              />
+              <p id="errormsg-member"></p>
+              <button type="button">
+                <img src="images/plus_green_button.svg" /> Add Member
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="tasks-container">
+          <p class="new-list-heading">Tasks</p>
+          <button type="button" id="addTask">
+            <img src="images/plus_green_button.svg" />Add Task
+          </button>
+        </div>
+        <button type="button" id="cancelList" class="button-green">
+          Cancel List</button
+        ><button id="saveList" class="button-green">Save List</button>
+      </main>
+    </template>
+
+    <template id="task-div">
+      <div class="task-div">
+        <div>
+          <input
+            type="text"
+            class="task-title"
+            placeholder="Task title here"
+            required
+          />
+          <img src="images/delete_red_button.svg" class="delete-icon-red" />
+        </div>
+        <div>
+          <div>
+            Assign deadline:
+            <input type="date" class="due-date" name="date" /><br />
+          </div>
+          <div>
+            Add tag:
+            <select class="tag">
+              <option value="None" selected>No Tag</option>
+              <option value="Urgent">Urgent</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Not Urgent">Not Urgent</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          Assign user:
+          <select class="user">
+            <option value="None" selected>No User</option>
+          </select>
+        </div>
+      </div>
     </template>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
     redirectNotAuthUser("login.html");
-    let listTmpl = document.getElementById("showLists");
-    let div = listTmpl.content.cloneNode(true);
-    document.body.appendChild(div);
+    let container = document.getElementById("container");
+    let detailID;
 
     showLists();
 
     async function showLists() {
       try {
+        let showListTmpl = document.getElementById("showListsTmpl");
+        let div = showListTmpl.content.cloneNode(true);
+        container.appendChild(div);
+        document.querySelector("#addList").addEventListener("click", newList);
         let userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
@@ -74,15 +173,17 @@
 
             let deleteIcon = document.createElement("img");
             deleteIcon.setAttribute("src", "images/delete_blue.svg");
+            deleteIcon.classList.add("delete-icon-blue");
             listDiv.appendChild(deleteIcon);
 
             listViewList.appendChild(listDiv);
 
-            for (let task of taskData) {
+            for (let [index, task] of taskData.entries()) {
               if (task.listid == list.id) {
                 let taskDiv = document.createElement("div");
                 taskDiv.classList.add("list-div");
                 taskDiv.innerHTML = task.name;
+                taskDiv.setAttribute("id", "index-" + index);
 
                 let checkedDiv = document.createElement("div");
                 if (task.finished) {
@@ -100,9 +201,25 @@
 
             let editButton = document.createElement("button");
             editButton.innerHTML = "Edit List";
+            editButton.classList.add("edit");
             listWrapper.appendChild(editButton);
 
             document.querySelector("main").appendChild(listWrapper);
+
+            //eventlistener for viewing a list
+            document.querySelectorAll(".viewList").forEach(div => {
+              div.addEventListener("click", viewList);
+            });
+
+            //eventlistener for editing a list
+            document.querySelectorAll(".edit").forEach(div => {
+              div.addEventListener("click", editList);
+            });
+
+            //eventlistener for deleting the respective list
+            document.querySelectorAll(".delete-icon-blue").forEach(btn => {
+              btn.addEventListener("click", deleteList);
+            });
           }
         } else {
           console.log("no lists yet");
@@ -122,6 +239,115 @@
 
       try {
         let data = await utilities.requestToServer(url, cfg);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function viewList(evt) {
+      detailID = evt.target.parentNode.parentNode.id;
+      redirectUser("showlists.html?id=" + detailID);
+    }
+
+    async function editList(evt) {
+      detailID = evt.target.parentNode.id;
+    }
+
+    async function newList(evt) {
+      let newListTmpl = document.getElementById("newListTmpl");
+      let newListContent = newListTmpl.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(newListContent);
+
+      document.querySelector("#addTask").addEventListener("click", addTaskForm);
+      document
+        .querySelector("#saveList")
+        .addEventListener("click", saveNewList);
+      document
+        .querySelector("#cancelList")
+        .addEventListener("click", function() {
+          redirectUser("showlists.html");
+        });
+    }
+
+    function deleteList(evt) {
+      evt.stopPropagation();
+      let id = evt.target.parentNode.parentNode.parentNode.id;
+      alert("Are you sure you want to delete the list with id " + id + "?");
+    }
+
+    function addTaskForm() {
+      let newTaskDiv = document.getElementById("task-div");
+      let newTaskContent = newTaskDiv.content.cloneNode(true);
+      let tasksContainer = document.querySelector("#tasks-container");
+      tasksContainer.appendChild(newTaskContent);
+      document.querySelectorAll(".delete-icon-red").forEach(btn => {
+        btn.addEventListener("click", function(evt) {
+          evt.target.parentNode.parentNode.remove();
+        });
+      });
+    }
+
+    async function saveNewList() {
+      //saveList
+      let radio = document.querySelector("input[name=public]:checked").value;
+      let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+      let public = 0;
+      if (radio == "public") {
+        public = 1;
+      }
+      let listData = {
+        name: document.querySelector("#new-list-title").value,
+        owner: userid,
+        public: public
+      };
+
+      let url = "http://localhost:3000/lists";
+      let cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listData)
+      };
+
+      try {
+        let newlistData = await utilities.requestToServer(url, cfg);
+        console.log(newlistData);
+        let taskDivs = document.querySelectorAll(".task-div");
+        let newTasks = [];
+        for (let task of taskDivs) {
+          let title = task.querySelector(".task-title").value;
+          let date =
+            task.querySelector(".due-date").value == ""
+              ? null
+              : task.querySelector(".due-date").value;
+          let tag =
+            task.querySelector(".tag").value == "None"
+              ? null
+              : task.querySelector(".tag").value;
+          let user =
+            task.querySelector(".user").value == "None"
+              ? null
+              : task.querySelector(".user").value;
+          newTasks.push(title, date, tag, user, 0, newlistData.id);
+          console.log(newTasks);
+        }
+        let url2 = "http://localhost:3000/tasks/createSeveralTasks";
+        let cfg2 = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTasks)
+        };
+
+        try {
+          var resp = await fetch(url2, cfg2);
+          var newTasksData = await resp.json();
+          console.log(newTasksData);
+          localStorage.removeItem("taskdata");
+          localStorage.removeItem("listdata");
+          redirectUser("showlists.html");
+        } catch (err) {
+          console.log(err);
+        }
       } catch (err) {
         console.log(err);
       }

@@ -19,6 +19,8 @@ body {
   color: var(--color-blue);
   margin: 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /*buttons*/
@@ -48,4 +50,8 @@ button:focus {
   background-size: contain;
   height: 1.4rem;
   width: 1.4rem;
+}
+
+.hidden {
+  display: none;
 }

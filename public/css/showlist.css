@@ -133,24 +133,3 @@ header {
   cursor: pointer;
   background: #e7f2e1;
 }
-
-/*new, edit list*/
-#container {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-#new-list-wrapper {
-  flex-grow: 1;
-  background-color: #fff;
-  padding: 0 2rem 2rem 2rem;
-}
-
-#new-list-wrapper > div {
-  margin: 2rem 0;
-}
-.new-list-heading {
-  font-weight: 600;
-  margin-top: 0;
-}

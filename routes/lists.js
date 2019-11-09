@@ -13,10 +13,8 @@ router.post("/", async function(req, res, next) {
 
   try {
     let result = await db.createList(userData);
-    console.log(result);
-    console.log(result.length);
     if (result.length > 0) {
-      res.status(200).json({ msg: "Insert OK" });
+      res.status(200).json(result[0]);
     } else {
       throw "insert failed";
     }
@@ -69,7 +67,7 @@ router.delete("/:listID", async function(req, res, next) {
 });
 
 // update list -------------------------------------------------------------------
-router.patch("/", async function(req, res, next) { 
+router.patch("/", async function(req, res, next) {
   console.log("inside patch list ");
   console.log(req.body);
   try {

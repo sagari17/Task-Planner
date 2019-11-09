@@ -21,6 +21,10 @@
     let login = document.getElementById("login");
     let result = document.getElementById("result");
     login.addEventListener("click", async function(evt) {
+      if (isLoggedIn()) {
+        redirectUser("showlists.html");
+      }
+
       let url = "http://localhost:3000/auth";
 
       let loginData = {

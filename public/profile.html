@@ -86,6 +86,9 @@
           document
             .querySelector("#changepw")
             .addEventListener("click", changePasswordPage);
+          document
+            .querySelector("#logout")
+            .addEventListener("click", logoutUser);
         }
       } catch (err) {
         console.log(err);
@@ -186,6 +189,11 @@
       } catch (err) {
         console.log(err);
       }
+    }
+
+    function logoutUser() {
+      sessionStorage.removeItem("logindata");
+      redirectNotAuthUser("login.html");
     }
   </script>
 </html>

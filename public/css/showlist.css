@@ -33,7 +33,7 @@ header {
   margin: 1.7rem;
 }
 
-main {
+#show-lists-wrapper {
   padding: 0 1.4%;
   display: flex;
   flex-direction: row;
@@ -59,14 +59,15 @@ main {
   height: 2.5rem;
 }
 
-.addList {
+#addList {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 }
 
-.addList > img {
+#addList > img {
   width: 0.8rem;
 }
 
@@ -78,11 +79,8 @@ main {
   margin: 0 1.4% 2.8% 1.4%;
   -webkit-margin-collapse: separate;
 }
-.list-wrapper > div {
-  background: #fff;
-}
 
-.list-wrapper > button {
+.edit {
   background: #fff;
   padding: 1rem;
   width: 100%;
@@ -102,7 +100,7 @@ main {
 }
 
 .list-div:first-of-type {
-  background-color: #fff;
+  background-color: transparent;
   font-weight: 600;
   font-size: 150%;
   padding: 1.25rem 1rem 1rem 1rem;
@@ -121,16 +119,38 @@ main {
 .delete-button {
   height: 1.6rem !important;
 }
-.unchecked {
-  background-image: url("../images/checkbox_unchecked.svg");
-  background-size: contain;
-  height: 1.3rem;
-  width: 1.3rem;
+
+.viewList {
+  cursor: pointer;
+  background: #fff;
 }
 
-.checked {
-  background-image: url("../images/checkbox_checked.svg");
-  background-size: contain;
-  height: 1.4rem;
-  width: 1.4rem;
+.viewList:hover {
+  background: #f9f9f9;
+}
+
+.edit:hover {
+  cursor: pointer;
+  background: #e7f2e1;
+}
+
+/*new, edit list*/
+#container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#new-list-wrapper {
+  flex-grow: 1;
+  background-color: #fff;
+  padding: 0 2rem 2rem 2rem;
+}
+
+#new-list-wrapper > div {
+  margin: 2rem 0;
+}
+.new-list-heading {
+  font-weight: 600;
+  margin-top: 0;
 }

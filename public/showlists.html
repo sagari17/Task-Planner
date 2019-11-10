@@ -10,7 +10,7 @@
 
   <body>
     <my-menu></my-menu>
-    <form onsubmit="return false" id="container"></form>
+    <div id="container"></div>
     <template id="showListsTmpl">
       <header>
         <p id="pageTitle">
@@ -29,7 +29,7 @@
           List
         </p>
       </header>
-      <main id="new-list-wrapper">
+      <form id="new-list-wrapper">
         <div>
           <p class="new-list-heading">List Title</p>
           <input
@@ -79,10 +79,11 @@
         </div>
         <button type="button" id="cancelList" class="button-green">
           Cancel List</button
-        ><button id="saveList" class="button-green">Save List</button>
-      </main>
+        ><button type="submit" id="saveList" class="button-green">
+          Save List
+        </button>
+      </form>
     </template>
-
     <template id="task-div">
       <div class="task-div">
         <div>
@@ -131,7 +132,9 @@
         let showListTmpl = document.getElementById("showListsTmpl");
         let div = showListTmpl.content.cloneNode(true);
         container.appendChild(div);
-        document.querySelector("#addList").addEventListener("click", newList);
+        document
+          .querySelector("#addList")
+          .addEventListener("click", addNewList);
         let userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
@@ -238,16 +241,16 @@
       detailID = evt.target.parentNode.id;
     }
 
-    async function newList(evt) {
+    async function addNewList(evt) {
       let newListTmpl = document.getElementById("newListTmpl");
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
 
-      document.querySelector("#addTask").addEventListener("click", addTaskForm);
       document
-        .querySelector("#saveList")
-        .addEventListener("click", saveNewList);
+        .querySelector("#addTask")
+        .addEventListener("click", addEmptyTaskForm);
+      document.querySelector("form").addEventListener("submit", saveNewList);
       document
         .querySelector("#cancelList")
         .addEventListener("click", function() {
@@ -284,7 +287,7 @@
       }
     }
 
-    function addTaskForm() {
+    function addEmptyTaskForm() {
       let newTaskDiv = document.getElementById("task-div");
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
@@ -296,8 +299,13 @@
       });
     }
 
-    async function saveNewList() {
-      //saveList
+    async function saveNewList(evt) {
+      evt.preventDefault();
+      let taskDivs = document.querySelectorAll(".task-div");
+      if (taskDivs.length < 1) {
+        console.log("make sure to add tasks to your list");
+        return;
+      }
       let radio = document.querySelector("input[name=public]:checked").value;
       let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
       let public = 0;
@@ -319,8 +327,6 @@
 
       try {
         let newlistData = await utilities.requestToServer(url, cfg);
-        console.log(newlistData);
-        let taskDivs = document.querySelectorAll(".task-div");
         let newTasks = [];
         for (let task of taskDivs) {
           let title = task.querySelector(".task-title").value;
@@ -352,7 +358,7 @@
           console.log(newTasksData);
           localStorage.removeItem("taskdata");
           localStorage.removeItem("listdata");
-          redirectUser("showlists.html");
+          //redirectUser("showlists.html");
         } catch (err) {
           console.log(err);
         }

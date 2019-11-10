@@ -109,12 +109,12 @@
               <option value="Not Urgent">Not Urgent</option>
             </select>
           </div>
-        </div>
-        <div>
-          Assign user:
-          <select class="user">
-            <option value="None" selected>No User</option>
-          </select>
+          <div>
+            Assign user:
+            <select class="user">
+              <option value="None" selected>No User</option>
+            </select>
+          </div>
         </div>
       </div>
     </template>
@@ -139,10 +139,8 @@
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
         if (!listData) {
-          console.log("listdata not defined");
           let url = "http://localhost:3000/lists/" + userData.userid;
           listData = await utilities.requestToServer(url, {});
-          console.log("fetched listdata");
           localStorage.setItem("listdata", JSON.stringify(listData));
         }
         if (listData.length > 0) {
@@ -239,6 +237,47 @@
 
     async function editList(evt) {
       detailID = evt.target.parentNode.id;
+      let lists = JSON.parse(localStorage.getItem("listdata"));
+      let tasks = JSON.parse(localStorage.getItem("taskdata"));
+      let listData = lists.find(obj => {
+        return obj.id == detailID;
+      });
+      let newListTmpl = document.getElementById("newListTmpl");
+      newListTmpl.content.querySelector(".green").innerHTML = "Edit&nbsp";
+      newListTmpl.content.querySelector("#new-list-title").value =
+        listData.name;
+      let public = listData.public == true ? "public" : "private";
+      newListTmpl.content.querySelector(
+        "input[value=" + public + "]"
+      ).checked = true;
+
+      let newListContent = newListTmpl.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(newListContent);
+
+      let tasksData = tasks.filter(obj => {
+        return obj.listid == detailID;
+      });
+      for (let [index, task] of tasksData.entries()) {
+        addTaskForm(task);
+
+        let taskDivs = document.querySelectorAll(".task-div");
+        let taskDiv = taskDivs[index];
+
+        taskDiv.querySelector(".task-title").value = task.name;
+        let date = task.due_date ? task.due_date.split("T")[0] : "";
+        taskDiv.querySelector(".due-date").value = date;
+        let tag = task.tag ? task.tag : "None";
+        taskDiv.querySelector(".tag").value = tag;
+      }
+
+      document.querySelector("#addTask").addEventListener("click", addTaskForm);
+      document.querySelector("form").addEventListener("submit", saveChanges);
+      document
+        .querySelector("#cancelList")
+        .addEventListener("click", function() {
+          redirectUser("showlists.html");
+        });
     }
 
     async function addNewList(evt) {
@@ -247,9 +286,7 @@
       container.innerHTML = "";
       container.appendChild(newListContent);
 
-      document
-        .querySelector("#addTask")
-        .addEventListener("click", addEmptyTaskForm);
+      document.querySelector("#addTask").addEventListener("click", addTaskForm);
       document.querySelector("form").addEventListener("submit", saveNewList);
       document
         .querySelector("#cancelList")
@@ -287,7 +324,7 @@
       }
     }
 
-    function addEmptyTaskForm() {
+    function addTaskForm() {
       let newTaskDiv = document.getElementById("task-div");
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
@@ -330,6 +367,7 @@
         let newTasks = [];
         for (let task of taskDivs) {
           let title = task.querySelector(".task-title").value;
+          console.log(task.querySelector(".due-date").value);
           let date =
             task.querySelector(".due-date").value == ""
               ? null
@@ -358,13 +396,17 @@
           console.log(newTasksData);
           localStorage.removeItem("taskdata");
           localStorage.removeItem("listdata");
-          //redirectUser("showlists.html");
+          redirectUser("showlists.html");
         } catch (err) {
           console.log(err);
         }
       } catch (err) {
         console.log(err);
       }
+    }
+
+    async function saveChanges(evt) {
+      console.log("save changes");
     }
   </script>
 </html>

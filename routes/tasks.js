@@ -110,5 +110,19 @@ router.get("/alltasks/:listIDS", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+router.patch("/finished/", async function(req, res, next) {
+  console.log("inside patch task ");
+  console.log(req.body);
+  try {
+    let task = await db.taskChangeFinnished(req.body);
+    if (task) {
+      res.status(200).json({ msg: "Changes Saved" });
+    } else {
+      throw "Task could not be updated.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 
 module.exports = router;

@@ -180,6 +180,27 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
+
+  const createSeveralTasks = async function(values) {
+    console.log("several tasks");
+    console.log(values);
+    let taskData = null;
+    let query =
+      "INSERT INTO tasks (id, name, due_date, tag, assigned_user, finished, listid) VALUES(DEFAULT, $1, $2, $3, $4, $5, $6)";
+    for (let i = 7; i < values.length; i += 6) {
+      query += `, (DEFAULT, $${i}, $${i + 1}, $${i + 2}, $${i + 3}, $${i +
+        4}, $${i + 5})`;
+    }
+    query += "RETURNING *";
+    console.log(query);
+    try {
+      taskData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
   const deleteTask = async function(taskID) {
     let taskData = null;
     let values = [taskID];
@@ -213,7 +234,6 @@ const db = function(dbConnection) {
       listData = await runQuery(
         "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",
         values
-        
       );
     } catch (err) {
       console.log(err);
@@ -235,6 +255,7 @@ const db = function(dbConnection) {
     getTasksByListIDs: getTasksByListIDs,
     deleteList: deleteList,
     createTask: createTask,
+    createSeveralTasks: createSeveralTasks,
     deleteTask: deleteTask,
     updateTask: updateTask,
     updateList: updateList

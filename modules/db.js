@@ -255,15 +255,14 @@ const db = function(dbConnection) {
       return false;
     }
   };
-  const taskChangeFinnished = async function(data) {
+  const taskChangeFinished = async function(data) {
     let taskData = null;
     let values = [data.id,0,1];
     try {
-      taskData = await runQuery("SELECT id, finished, CASE WHEN id = $1 AND finished = $3 THEN $2 WHEN id = $1 AND finished = $2 THEN $3 END AS finished FROM tasks", values);
+      taskData = await runQuery("UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1", values);
     } catch (err) {
       console.log(err);
     }
-    console.log(taskData)
     return taskData
   };
 
@@ -286,7 +285,7 @@ const db = function(dbConnection) {
     updateTask: updateTask,
     updateList: updateList,
     checkIfEmailExists: checkIfEmailExists,
-    taskChangeFinnished: taskChangeFinnished
+    taskChangeFinished: taskChangeFinished
   };
 };
 

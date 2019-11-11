@@ -30,7 +30,7 @@
 
 
     create.addEventListener("click", async function(evt) {
-      if(checkRegisterInput() && checkPasswords() && emailExists()===true){
+      if(checkRegisterInput() && checkPasswords() && newEmail()){
         console.log("does it");
      
       let url = "http://localhost:3000/users";
@@ -56,24 +56,23 @@
       }
       } 
     });
-    async function emailExists(){
+    async function newEmail(){
       let isEmail = null;
 
       let url = "http://localhost:3000/users/email/"+email.value;
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }
       };
       try {
         let data = await utilities.requestToServer(url, cfg);
-        isEmail=data;
+        isEmail = data;
       } catch (err) {
         console.log(err);
         }
-      if(isEmail===false) {
+      if(isEmail == false) {
         return true;
       } else {
-        console.log(isEmail)
         console.log("There already is an account registered with that email.");
         return false}
     }
@@ -95,8 +94,5 @@
         return false;
       }
     }
-
-
-
   </script>
 </html>

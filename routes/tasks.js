@@ -82,7 +82,6 @@ router.delete("/:taskID", async function(req, res, next) {
 // Update task with certain task id --------------------------------------
 router.patch("/", async function(req, res, next) {
   console.log("inside patch task ");
-  console.log(req.body);
   try {
     let task = await db.updateTask(req.body);
     if (task) {
@@ -110,11 +109,12 @@ router.get("/alltasks/:listIDS", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+
+// Updates finished column to opposite of current value by task id ---------------
 router.patch("/finished/", async function(req, res, next) {
   console.log("inside patch task ");
-  console.log(req.body);
   try {
-    let task = await db.taskChangeFinnished(req.body);
+    let task = await db.taskChangeFinished(req.body);
     if (task) {
       res.status(200).json({ msg: "Changes Saved" });
     } else {

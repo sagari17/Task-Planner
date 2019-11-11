@@ -1,0 +1,36 @@
+.viewlists{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 100px;
+    align-items: center
+}
+
+.viewlists div{
+    border: 1px #ccc solid;
+    padding: 10px;
+    align-items: center
+}
+.list-1{
+
+}
+
+.list-2{
+    
+}
+
+.list-3{
+    
+}
+
+.listimg {
+    margin-left: auto;
+    margin-right: 70%;
+  }
+
+body p {
+    padding: 20px;
+    width: 150px;
+    height:5px;
+} 

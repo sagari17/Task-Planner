@@ -26,9 +26,17 @@ utilities = (function() {
       }
     });
   }
+
+  function isValidInput(input) {
+    let pattern = /^[a-zA-Z0-9]{1,20}$/;
+    let valid = pattern.test(input) ? true : false;
+    return valid;
+  }
   return {
-    requestToServer: requestToServer
+    requestToServer: requestToServer, 
+    isValidInput: isValidInput
   };
-})();
+}());
+
 
 console.log("utilities works");

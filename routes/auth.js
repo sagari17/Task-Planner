@@ -13,7 +13,6 @@ router.post("/", async function(req, res) {
   let loginData = req.body;
   try {
     let result = await db.getUserByEmail(loginData.email);
-
     if (result.length == 0) {
       res.status(400).json({ msg: "User doesn't exists" });
     } else {

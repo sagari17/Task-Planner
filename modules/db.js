@@ -180,6 +180,27 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
+
+  const createSeveralTasks = async function(values) {
+    console.log("several tasks");
+    console.log(values);
+    let taskData = null;
+    let query =
+      "INSERT INTO tasks (id, name, due_date, tag, assigned_user, finished, listid) VALUES(DEFAULT, $1, $2, $3, $4, $5, $6)";
+    for (let i = 7; i < values.length; i += 6) {
+      query += `, (DEFAULT, $${i}, $${i + 1}, $${i + 2}, $${i + 3}, $${i +
+        4}, $${i + 5})`;
+    }
+    query += "RETURNING *";
+    console.log(query);
+    try {
+      taskData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
   const deleteTask = async function(taskID) {
     let taskData = null;
     let values = [taskID];
@@ -208,17 +229,41 @@ const db = function(dbConnection) {
   };
   const updateList = async function(data) {
     let listData = null;
-    let values = [data.name, data.public, data.id]; // the data.id needs to be the task id, not the list id
+    let values = [data.name, data.public, data.id];
     try {
       listData = await runQuery(
         "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",
         values
-        
       );
     } catch (err) {
       console.log(err);
     }
     return listData;
+  };
+  const checkIfEmailExists = async function(email) {
+    let emailData = null;
+    let values = [email];
+    try {
+      emailData = await runQuery("SELECT COUNT (email) FROM users WHERE email=$1", values);
+    } catch (err) {
+      console.log(err);
+    }
+    if (parseInt(emailData[0].count)){
+      return true;
+    }
+    else {
+      return false;
+    }
+  };
+  const taskChangeFinished = async function(data) {
+    let taskData = null;
+    let values = [data.id,0,1];
+    try {
+      taskData = await runQuery("UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1", values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData
   };
 
   return {
@@ -235,9 +280,12 @@ const db = function(dbConnection) {
     getTasksByListIDs: getTasksByListIDs,
     deleteList: deleteList,
     createTask: createTask,
+    createSeveralTasks: createSeveralTasks,
     deleteTask: deleteTask,
     updateTask: updateTask,
-    updateList: updateList
+    updateList: updateList,
+    checkIfEmailExists: checkIfEmailExists,
+    taskChangeFinished: taskChangeFinished
   };
 };
 

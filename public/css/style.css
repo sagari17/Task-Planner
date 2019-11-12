@@ -20,8 +20,12 @@ body {
   font-size: 85%;
   color: var(--color-blue);
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/*buttons*/
 button:focus {
   outline: none;
 }
@@ -64,3 +68,21 @@ color: var(--color-blue-middle);
 margin: 0.5rem 0 0 0;
 }
 
+/*Task finished, unfinished*/
+.unchecked {
+  background-image: url("../images/checkbox_unchecked.svg");
+  background-size: contain;
+  height: 1.3rem;
+  width: 1.3rem;
+}
+
+.checked {
+  background-image: url("../images/checkbox_checked.svg");
+  background-size: contain;
+  height: 1.4rem;
+  width: 1.4rem;
+}
+
+.hidden {
+  display: none;
+}

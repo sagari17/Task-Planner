@@ -10,6 +10,7 @@
   </head>
 
   <body>
+
     <div class="wrapper">
       <div class="boxLeft">
           <br>
@@ -37,7 +38,6 @@
               <img src="images/MyPlanner.svg" id="plannerimg">
       </div>
     </div>
-
   </body>
 
   <script>
@@ -48,9 +48,12 @@
     let passwordrepeat = document.getElementById("pwrepeat");
     let create = document.getElementById("create");
     let result = document.getElementById("result");
-    let del1 = document.getElementById("del1");
+
 
     create.addEventListener("click", async function(evt) {
+      if(checkRegisterInput() && checkPasswords() && newEmail()){
+        console.log("does it");
+     
       let url = "http://localhost:3000/users";
 
       let userData = {
@@ -72,6 +75,45 @@
       } catch (err) {
         console.log(err);
       }
+      } 
     });
+    async function newEmail(){
+      let isEmail = null;
+
+      let url = "http://localhost:3000/users/email/"+email.value;
+      let cfg = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      };
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+        isEmail = data;
+      } catch (err) {
+        console.log(err);
+        }
+      if(isEmail == false) {
+        return true;
+      } else {
+        console.log("There already is an account registered with that email.");
+        return false}
+    }
+
+    function checkRegisterInput(){
+      if((utilities.isValidInput(firstname.value) && utilities.isValidInput(lastname.value))){
+        return true;
+      } else {
+        console.log("Please input valid first and last name - no special characters!");
+        return false;
+      }
+    }
+
+    function checkPasswords(){
+      if(password.value == passwordrepeat.value){
+        return true;
+      } else {
+        console.log("Passwords do not match.");
+        return false;
+      }
+    }
   </script>
 </html>

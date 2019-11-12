@@ -1,0 +1,58 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+.boxLeft {
+    width: 70%;
+    height: 100vh;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.boxRight {
+    width: 30%;
+    height: 100vh;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-blue);
+    display: flex;
+}
+
+.button-green {
+  background-color: var(--color-green);
+  border: none;  
+  border-radius: 100px;
+  width: 13rem;
+  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  color: white;
+  cursor: pointer;
+  font-size: 100%;
+  margin: 60px;
+  }
+  
+  a:link, a:visited {
+    background-color: none;
+    color: var(--color-green);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  a:hover, a:active {
+    background-color: none;
+    color: green;
+  }
+ .registerwrapper {
+   width: 50%;
+ }
+
+ #plannerimg {
+width: 70%;
+ }

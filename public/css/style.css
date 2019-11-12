@@ -1,4 +1,6 @@
 @import url("showlist.css");
+@import url("login.html");
+@import url("register.html");
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap");
 
 :root {
@@ -32,3 +34,33 @@ button:focus {
   padding: 0.5rem 0.7rem 0.5rem 0.9rem;
   color: white;
 }
+
+.button-blue {
+  background-color: var(--color-blue);
+  border: none;
+  border-radius:100px;
+  width: 13rem;
+  padding: 05.rem 0.7rem 05.rem 0.9rem;
+  color: white;
+}
+
+.button-grey {
+  background-color: var(--color-blue-middle);
+  border: none;
+  border-radius:100px;
+  width: 13rem;
+  padding: 05.rem 0.7rem 05.rem 0.9rem;
+  color: white;
+}
+
+.text-field {
+background-color: var(--color-blue-light);
+border: none;
+border-radius:100px;
+width: 100%;
+height: 1.5rem;
+padding: 2px 15px;
+color: var(--color-blue-middle);
+margin: 0.5rem 0 0 0;
+}
+

@@ -59,11 +59,9 @@
 
       try {
         let data = await utilities.requestToServer(url, cfg);
-        console.log("logged in");
         sessionStorage.setItem("logindata", JSON.stringify(data));
         let listData = JSON.parse(localStorage.getItem("listdata"));
-console.log(listData);
-        if (listData.length < 1 || listData[0].owner != data.userid) {
+        if (listData != null && listData[0].owner != data.userid) {
           localStorage.removeItem("taskdata");
           localStorage.removeItem("listdata");
         }

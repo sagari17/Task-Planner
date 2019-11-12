@@ -3,16 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>My document</title>    
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
-    <input type="text" id="email" placeholder="E-mail" />
-    <input type="password" id="password" placeholder="Password" />
-    <br /><br />
-    <button id="login">Login</button>
-    <h3 id="result">Result...</h3>
+      <div class="wrapper">
+          <div class="boxLeft">
+            <img src="images/login.svg" /> 
+            <h1>Login</h1> 
+            
+      
+            <div class="registerwrapper">
+            <input type="text" id="email" placeholder="E-mail" class="text-field"/>      
+            <input type="password" id="password" placeholder="Password" class="text-field" /> 
+          </div>
+              
+            <p>No account yet? <a href="register.html">Register here</a></p>
+            <button id="login" class="button-green">Login</button> 
+          </div>
+        
+          <div class="boxRight">
+                  <img src="images/MyPlanner.svg" id="plannerimg">
+          
+          </div>   
+      </div>
+        
+
   </body>
 
   <script>

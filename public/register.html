@@ -4,19 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My document</title>
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
-    <form onsubmit="return false">
-      <input type="text" id="firstname" placeholder="Firstname" autocomplete="off" required />
-      <input type="text" id="lastname" placeholder="Lastname" autocomplete="off" required/>
-      <input type="email" id="email" placeholder="E-mail" autocomplete="off" required/>
-      <input type="password" id="pw" placeholder="Password" autocomplete="off" required/>
-      <input type="password" id="pwrepeat" placeholder="Repeat Password" autocomplete="off" minlength="8" maxlength="12" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required/>
-      <button type="submit" id="create" >Submit</button>
-    </form>
-    <h3 id="result">Result ...</h3>
+
+    <div class="wrapper">
+      <div class="boxLeft">
+          <br>
+          <img src="images/register.svg" />
+          <h1>Register</h1> 
+          <br> </br>
+        <div class="registerwrapper">
+          <h4> <img src="images/user_blue.svg">Personal data</h4>
+        <input type="text" id="firstname" placeholder="Firstname" class="text-field"/> 
+        <input type="text" id="lastname" placeholder="Lastname" class="text-field"/> 
+        <input type="text" id="email" placeholder="E-mail" class="text-field"/> 
+      </div>
+        <div class="registerwrapper">
+        <h4> <img src="images/password_blue.svg">Password</h4>
+
+        <input type="password" id="pw" placeholder="Password" class="text-field"/>
+        <input type="password" id="pwrepeat" placeholder="Repeat Password" class="text-field"/> 
+      </div>
+      <br>
+          <p>Already have an account? <a href="login.html">Back to login</a></p>
+        <button id="create" class="button-green">Create account</button>
+        <br /><br />
+      </div>
+      <div class="boxRight">
+              <img src="images/MyPlanner.svg" id="plannerimg">
+      </div>
+    </div>
   </body>
 
   <script>

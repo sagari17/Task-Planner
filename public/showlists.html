@@ -124,6 +124,8 @@
     redirectNotAuthUser("login.html");
     let container = document.getElementById("container");
     let detailID;
+    let isNewList = true;
+    let existingTasks = true;
 
     showLists();
 
@@ -236,6 +238,8 @@
     }
 
     async function editList(evt) {
+      isNewList = false;
+      existingTasks = true;
       detailID = evt.target.parentNode.id;
       let lists = JSON.parse(localStorage.getItem("listdata"));
       let tasks = JSON.parse(localStorage.getItem("taskdata"));
@@ -261,33 +265,60 @@
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
 
-        let taskDivs = document.querySelectorAll(".task-div");
-        let taskDiv = taskDivs[index];
+        let taskDiv = document.querySelectorAll(".task-div")[index];
 
         taskDiv.querySelector(".task-title").value = task.name;
         let date = task.due_date ? task.due_date.split("T")[0] : "";
         taskDiv.querySelector(".due-date").value = date;
         let tag = task.tag ? task.tag : "None";
         taskDiv.querySelector(".tag").value = tag;
+        taskDiv.setAttribute("id", "taskid-" + task.id);
       }
 
+      document.querySelectorAll(".delete-icon-red").forEach(btn => {
+        btn.addEventListener("click", async function(evt) {
+          let element = evt.target.parentNode.parentNode;
+
+          if (!isNewList && !element.classList.contains("added")) {
+            console.log("deleting");
+            let taskid = element.id.split("-")[1];
+            console.log(taskid);
+            let url = "http://localhost:3000/tasks/" + taskid;
+            let cfg = {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" }
+            };
+            try {
+              let deletedData = await utilities.requestToServer(url, cfg);
+              console.log(deletedData);
+            } catch (err) {
+              console.log(err);
+            }
+          }
+
+          element.remove();
+        });
+      });
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
-      document.querySelector("form").addEventListener("submit", saveChanges);
+      document.querySelector("form").addEventListener("submit", saveList);
       document
         .querySelector("#cancelList")
         .addEventListener("click", function() {
           redirectUser("showlists.html");
         });
+
+      existingTasks = false;
     }
 
     async function addNewList(evt) {
+      isNewList = true;
       let newListTmpl = document.getElementById("newListTmpl");
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
 
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
-      document.querySelector("form").addEventListener("submit", saveNewList);
+      document.querySelector("form").addEventListener("submit", saveList);
       document
         .querySelector("#cancelList")
         .addEventListener("click", function() {
@@ -326,18 +357,19 @@
 
     function addTaskForm() {
       let newTaskDiv = document.getElementById("task-div");
+      if (!isNewList && !existingTasks) {
+        let div = newTaskDiv.content
+          .querySelector(".task-div")
+          .classList.add("added");
+      }
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);
-      document.querySelectorAll(".delete-icon-red").forEach(btn => {
-        btn.addEventListener("click", function(evt) {
-          evt.target.parentNode.parentNode.remove();
-        });
-      });
     }
 
-    async function saveNewList(evt) {
+    async function saveList(evt) {
       evt.preventDefault();
+      console.log(isNewList);
       let taskDivs = document.querySelectorAll(".task-div");
       if (taskDivs.length < 1) {
         console.log("make sure to add tasks to your list");
@@ -349,18 +381,36 @@
       if (radio == "public") {
         public = 1;
       }
-      let listData = {
-        name: document.querySelector("#new-list-title").value,
-        owner: userid,
-        public: public
-      };
 
-      let url = "http://localhost:3000/lists";
-      let cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(listData)
-      };
+      let listData;
+      let url;
+      let cfg;
+
+      if (isNewList) {
+        listData = {
+          name: document.querySelector("#new-list-title").value,
+          owner: userid,
+          public: public
+        };
+        url = "http://localhost:3000/lists";
+        cfg = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(listData)
+        };
+      } else {
+        listData = {
+          name: document.querySelector("#new-list-title").value,
+          public: public,
+          id: detailID
+        };
+        url = "http://localhost:3000/lists";
+        cfg = {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(listData)
+        };
+      }
 
       try {
         let newlistData = await utilities.requestToServer(url, cfg);
@@ -380,15 +430,36 @@
             task.querySelector(".user").value == "None"
               ? null
               : task.querySelector(".user").value;
-          newTasks.push(title, date, tag, user, 0, newlistData.id);
+
+          let taskid = task.id.split("-")[1];
+          console.log(taskid);
+
+          if (isNewList) {
+            newTasks.push(title, date, tag, user, 0, newlistData.id);
+          } else {
+            newTasks.push(title, date, tag, user, taskid);
+          }
+
           console.log(newTasks);
         }
-        let url2 = "http://localhost:3000/tasks/createSeveralTasks";
-        let cfg2 = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newTasks)
-        };
+
+        let url2;
+        let cfg2;
+        if (isNewList) {
+          url2 = "http://localhost:3000/tasks/createSeveralTasks";
+          cfg2 = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTasks)
+          };
+        } else {
+          url2 = "http://localhost:3000/tasks/updateSeveralTasks";
+          cfg2 = {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTasks)
+          };
+        }
 
         try {
           var resp = await fetch(url2, cfg2);

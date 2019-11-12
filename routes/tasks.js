@@ -81,10 +81,24 @@ router.delete("/:taskID", async function(req, res, next) {
 
 // Update task with certain task id --------------------------------------
 router.patch("/", async function(req, res, next) {
-  console.log("inside patch task ");
+  try {
+    let tasks = await db.updateTask(req.body);
+    console.log(tasks);
+    if (tasks) {
+      res.status(200).json({ msg: "Changes Saved" });
+    } else {
+      throw "Task could not be updated.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// Update several tasks --------------------------------------
+router.patch("/updateSeveralTasks", async function(req, res, next) {
   console.log(req.body);
   try {
-    let task = await db.updateTask(req.body);
+    let task = await db.updateSeveralTasks(req.body);
     if (task) {
       res.status(200).json({ msg: "Changes Saved" });
     } else {

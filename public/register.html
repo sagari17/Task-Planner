@@ -64,6 +64,8 @@
 
     form.addEventListener("submit", async function(evt) {
       evt.preventDefault();
+      console.log(checkRegisterInput());
+      console.log(checkPasswords());
       if (checkRegisterInput() && checkPasswords()) {
         console.log("does it");
         let url = "http://localhost:3000/users";

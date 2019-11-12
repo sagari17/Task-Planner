@@ -120,8 +120,9 @@ const db = function(dbConnection) {
   const getListByListID = async function(listID) {
     let listData = null;
     let values = [listID];
+    let query = "SELECT * FROM lists WHERE id=$1";
     try {
-      listData = await runQuery("SELECT * FROM lists WHERE id=$1", values);
+      listData = await runQuery(query, values);
     } catch (err) {
       console.log(err);
     }

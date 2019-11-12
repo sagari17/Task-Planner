@@ -262,6 +262,7 @@
       let tasksData = tasks.filter(obj => {
         return obj.listid == detailID;
       });
+
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
 
@@ -288,6 +289,13 @@
               method: "DELETE",
               headers: { "Content-Type": "application/json" }
             };
+
+            newtasks = tasks.filter(function(obj) {
+              return obj.id != taskid;
+            });
+
+            localStorage.setItem("taskdata", JSON.stringify(newtasks));
+
             try {
               let deletedData = await utilities.requestToServer(url, cfg);
               console.log(deletedData);
@@ -369,7 +377,6 @@
 
     async function saveList(evt) {
       evt.preventDefault();
-      console.log(isNewList);
       let taskDivs = document.querySelectorAll(".task-div");
       if (taskDivs.length < 1) {
         console.log("make sure to add tasks to your list");

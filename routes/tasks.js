@@ -81,10 +81,11 @@ router.delete("/:taskID", async function(req, res, next) {
 
 // Update task with certain task id --------------------------------------
 router.patch("/", async function(req, res, next) {
-  console.log("inside patch task ");
   try {
-    let task = await db.updateTask(req.body);
-    if (task) {
+    console.log("updating");
+    let tasks = await db.updateTask(req.body);
+    console.log(tasks);
+    if (tasks) {
       res.status(200).json({ msg: "Changes Saved" });
     } else {
       throw "Task could not be updated.";
@@ -101,7 +102,7 @@ router.get("/alltasks/:listIDS", async function(req, res, next) {
     let listIDS = ids.split(",");
     let tasks = await db.getTasksByListIDs(listIDS);
     if (tasks) {
-      res.status(200).json(tasks);
+      res.status(200).json(tasks[0]);
     } else {
       throw "No tasks exist.";
     }

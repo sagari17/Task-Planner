@@ -120,8 +120,9 @@ const db = function(dbConnection) {
   const getListByListID = async function(listID) {
     let listData = null;
     let values = [listID];
+    let query = "SELECT * FROM lists WHERE id=$1";
     try {
-      listData = await runQuery("SELECT * FROM lists WHERE id=$1", values);
+      listData = await runQuery(query, values);
     } catch (err) {
       console.log(err);
     }
@@ -216,10 +217,10 @@ const db = function(dbConnection) {
   };
   const updateTask = async function(data) {
     let taskData = null;
-    let values = [data.name, data.date, data.tag, data.finished, data.id]; // the data.id needs to be the task id, not the list id
+    let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, finished=$4 WHERE id=$5 RETURNING *",
+        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
         values
       );
     } catch (err) {
@@ -227,9 +228,30 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
+
+  const updateSeveralTasks = async function(values) {
+    let taskData = null;
+    let query =
+      "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5";
+    // for (let i = 6; i < values.length; i += 5) {
+    //   query += `; UPDATE tasks SET name=$${i}, due_date=$${i + 1}, tag=$${i +
+    //     2}, assigned_user=$${i + 3} WHERE id=$${i + 4};`;
+    // }
+    console.log(query);
+    console.log(values);
+    let val = [values[0], values[1], values[2], values[3], values[4]];
+    try {
+      taskData = await runQuery(query, val);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
   const updateList = async function(data) {
     let listData = null;
-    let values = [data.name, data.public, data.id];
+    let values = [data.name, data.public, data.id]; 
+
     try {
       listData = await runQuery(
         "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",

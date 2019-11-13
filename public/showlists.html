@@ -10,7 +10,7 @@
 
   <body>
     <my-menu></my-menu>
-    <form onsubmit="return false" id="container"></form>
+    <div id="container"></div>
     <template id="showListsTmpl">
       <header>
         <p id="pageTitle">
@@ -29,7 +29,7 @@
           List
         </p>
       </header>
-      <main id="new-list-wrapper">
+      <form id="new-list-wrapper">
         <div>
           <p class="new-list-heading">List Title</p>
           <input
@@ -79,10 +79,11 @@
         </div>
         <button type="button" id="cancelList" class="button-green">
           Cancel List</button
-        ><button id="saveList" class="button-green">Save List</button>
-      </main>
+        ><button type="submit" id="saveList" class="button-green">
+          Save List
+        </button>
+      </form>
     </template>
-
     <template id="task-div">
       <div class="task-div">
         <div>
@@ -108,12 +109,12 @@
               <option value="Not Urgent">Not Urgent</option>
             </select>
           </div>
-        </div>
-        <div>
-          Assign user:
-          <select class="user">
-            <option value="None" selected>No User</option>
-          </select>
+          <div>
+            Assign user:
+            <select class="user">
+              <option value="None" selected>No User</option>
+            </select>
+          </div>
         </div>
       </div>
     </template>
@@ -123,6 +124,9 @@
     redirectNotAuthUser("login.html");
     let container = document.getElementById("container");
     let detailID;
+    let isNewList = true;
+    let newListid;
+    let existingTasks = true;
 
     showLists();
 
@@ -131,15 +135,15 @@
         let showListTmpl = document.getElementById("showListsTmpl");
         let div = showListTmpl.content.cloneNode(true);
         container.appendChild(div);
-        document.querySelector("#addList").addEventListener("click", newList);
+        document
+          .querySelector("#addList")
+          .addEventListener("click", addNewList);
         let userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
         if (!listData) {
-          console.log("listdata not defined");
           let url = "http://localhost:3000/lists/" + userData.userid;
           listData = await utilities.requestToServer(url, {});
-          console.log("fetched listdata");
           localStorage.setItem("listdata", JSON.stringify(listData));
         }
         if (listData.length > 0) {
@@ -234,25 +238,73 @@
       redirectUser("showlists.html?id=" + detailID);
     }
 
-    async function editList(evt) {
-      detailID = evt.target.parentNode.id;
-    }
-
-    async function newList(evt) {
+    async function addNewList(evt) {
+      isNewList = true;
       let newListTmpl = document.getElementById("newListTmpl");
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
 
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
-      document
-        .querySelector("#saveList")
-        .addEventListener("click", saveNewList);
+      document.querySelector("form").addEventListener("submit", saveList);
       document
         .querySelector("#cancelList")
         .addEventListener("click", function() {
           redirectUser("showlists.html");
         });
+    }
+
+    async function editList(evt) {
+      isNewList = false;
+      existingTasks = true;
+      detailID = evt.target.parentNode.id;
+      let lists = JSON.parse(localStorage.getItem("listdata"));
+      let tasks = JSON.parse(localStorage.getItem("taskdata"));
+      let listData = lists.find(obj => {
+        return obj.id == detailID;
+      });
+      let newListTmpl = document.getElementById("newListTmpl");
+      newListTmpl.content.querySelector(".green").innerHTML = "Edit&nbsp";
+      newListTmpl.content.querySelector("#new-list-title").value =
+        listData.name;
+      let public = listData.public == true ? "public" : "private";
+      newListTmpl.content.querySelector(
+        "input[value=" + public + "]"
+      ).checked = true;
+
+      let newListContent = newListTmpl.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(newListContent);
+
+      let tasksData = tasks.filter(obj => {
+        return obj.listid == detailID;
+      });
+
+      for (let [index, task] of tasksData.entries()) {
+        addTaskForm(task);
+
+        let taskDiv = document.querySelectorAll(".task-div")[index];
+
+        taskDiv.querySelector(".task-title").value = task.name;
+        let date = task.due_date ? task.due_date.split("T")[0] : "";
+        taskDiv.querySelector(".due-date").value = date;
+        let tag = task.tag ? task.tag : "None";
+        taskDiv.querySelector(".tag").value = tag;
+        taskDiv.setAttribute("id", "taskid-" + task.id);
+      }
+
+      document.querySelectorAll(".delete-icon-red").forEach(btn => {
+        btn.addEventListener("click", deleteTaskButton);
+      });
+      document.querySelector("#addTask").addEventListener("click", addTaskForm);
+      document.querySelector("form").addEventListener("submit", saveChanges);
+      document
+        .querySelector("#cancelList")
+        .addEventListener("click", function() {
+          redirectUser("showlists.html");
+        });
+
+      existingTasks = false;
     }
 
     async function deleteList(evt) {
@@ -277,7 +329,6 @@
           localStorage.removeItem("taskdata");
           localStorage.removeItem("listdata");
           redirectUser("showlists.html");
-          console.log(data);
         } catch (err) {
           console.log(err);
         }
@@ -286,32 +337,52 @@
 
     function addTaskForm() {
       let newTaskDiv = document.getElementById("task-div");
+      if (!isNewList && !existingTasks) {
+        let div = newTaskDiv.content
+          .querySelector(".task-div")
+          .classList.add("added");
+      }
+
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);
-      document.querySelectorAll(".delete-icon-red").forEach(btn => {
-        btn.addEventListener("click", function(evt) {
-          evt.target.parentNode.parentNode.remove();
+
+      document
+        .querySelectorAll(".added .delete-icon-red:last-child")
+        .forEach(btn => {
+          btn.addEventListener("click", deleteTaskButton);
         });
-      });
     }
 
-    async function saveNewList() {
-      //saveList
+    async function saveList(evt) {
+      evt.preventDefault();
+      newListid = detailID;
+      let taskDivs = document.querySelectorAll(".task-div:not(.added)");
+
+      if (document.querySelectorAll(".task-div") < 1) {
+        console.log("make sure to add tasks to your list");
+        return;
+      }
+
       let radio = document.querySelector("input[name=public]:checked").value;
       let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
       let public = 0;
+
       if (radio == "public") {
         public = 1;
       }
-      let listData = {
+
+      let listData;
+      let url;
+      let cfg;
+
+      listData = {
         name: document.querySelector("#new-list-title").value,
         owner: userid,
         public: public
       };
-
-      let url = "http://localhost:3000/lists";
-      let cfg = {
+      url = "http://localhost:3000/lists";
+      cfg = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(listData)
@@ -319,46 +390,187 @@
 
       try {
         let newlistData = await utilities.requestToServer(url, cfg);
-        console.log(newlistData);
-        let taskDivs = document.querySelectorAll(".task-div");
-        let newTasks = [];
-        for (let task of taskDivs) {
-          let title = task.querySelector(".task-title").value;
-          let date =
-            task.querySelector(".due-date").value == ""
-              ? null
-              : task.querySelector(".due-date").value;
-          let tag =
-            task.querySelector(".tag").value == "None"
-              ? null
-              : task.querySelector(".tag").value;
-          let user =
-            task.querySelector(".user").value == "None"
-              ? null
-              : task.querySelector(".user").value;
-          newTasks.push(title, date, tag, user, 0, newlistData.id);
-          console.log(newTasks);
-        }
-        let url2 = "http://localhost:3000/tasks/createSeveralTasks";
-        let cfg2 = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newTasks)
-        };
-
-        try {
-          var resp = await fetch(url2, cfg2);
-          var newTasksData = await resp.json();
-          console.log(newTasksData);
-          localStorage.removeItem("taskdata");
-          localStorage.removeItem("listdata");
-          redirectUser("showlists.html");
-        } catch (err) {
-          console.log(err);
-        }
+        newListid = newlistData.id;
       } catch (err) {
         console.log(err);
       }
+
+      //save tasks
+      let newTasks = getAllTaskData(taskDivs);
+      console.log("creates several tasks with not new list");
+      url = "http://localhost:3000/tasks/createSeveralTasks";
+      cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTasks)
+      };
+
+      try {
+        let newTaskData = await utilities.requestToServer(url, cfg);
+        console.log(newTaskData);
+      } catch (err) {
+        console.log(err);
+      }
+
+      localStorage.removeItem("taskdata");
+      localStorage.removeItem("listdata");
+      redirectUser("showlists.html");
+    }
+
+    async function saveChanges(evt) {
+      evt.preventDefault();
+      newListid = detailID;
+      let taskDivs = document.querySelectorAll(".task-div:not(.added)");
+      if (document.querySelectorAll(".task-div") < 1) {
+        console.log("make sure to add tasks to your list");
+        return;
+      }
+      let radio = document.querySelector("input[name=public]:checked").value;
+      let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+      let public = 0;
+      if (radio == "public") {
+        public = 1;
+      }
+
+      let listData;
+      let url;
+      let cfg;
+
+      listData = {
+        name: document.querySelector("#new-list-title").value,
+        public: public,
+        id: detailID
+      };
+      url = "http://localhost:3000/lists";
+      cfg = {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listData)
+      };
+
+      try {
+        let newlistData = await utilities.requestToServer(url, cfg);
+        newListid = newlistData.id;
+      } catch (err) {
+        console.log(err);
+      }
+
+      //save tasks
+      let newTasks = getAllTaskData(taskDivs);
+
+      console.log(newTasks);
+      for (let [index, task] of newTasks.entries()) {
+        console.log(newTasks[index]);
+        url = "http://localhost:3000/tasks/";
+        cfg = {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTasks[index])
+        };
+
+        try {
+          let newTaskData = await utilities.requestToServer(url, cfg);
+          console.log(newTaskData);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      //newly added tasks to already existing list
+      let addedTaskDivs = document.querySelectorAll(".added");
+      console.log(addedTaskDivs);
+      if (addedTaskDivs.length != 0) {
+        console.log("existing");
+        isNewList = true;
+        console.log(detailID);
+        newListid = detailID;
+        let addedTasks = getAllTaskData(addedTaskDivs);
+        isNewList = false;
+        console.log(addedTasks);
+
+        url2 = "http://localhost:3000/tasks/createSeveralTasks";
+        cfg2 = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(addedTasks)
+        };
+
+        try {
+          let newTaskData = await utilities.requestToServer(url2, cfg2);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      localStorage.removeItem("taskdata");
+      localStorage.removeItem("listdata");
+      redirectUser("showlists.html");
+    }
+
+    async function deleteTaskButton(evt) {
+      console.log("in delete");
+      let element = evt.target.parentNode.parentNode;
+
+      if (!isNewList && !element.classList.contains("added")) {
+        let taskid = element.id.split("-")[1];
+        let url = "http://localhost:3000/tasks/" + taskid;
+        let cfg = {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        };
+        let tasks = JSON.parse(localStorage.getItem("taskdata"));
+
+        newtasks = tasks.filter(function(obj) {
+          return obj.id != taskid;
+        });
+
+        localStorage.setItem("taskdata", JSON.stringify(newtasks));
+
+        try {
+          let deletedData = await utilities.requestToServer(url, cfg);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      element.remove();
+    }
+
+    function getAllTaskData(taskDivs) {
+      let newTasks = [];
+      for (let task of taskDivs) {
+        let title = task.querySelector(".task-title").value;
+        console.log(task.querySelector(".due-date").value);
+        let date =
+          task.querySelector(".due-date").value == ""
+            ? null
+            : task.querySelector(".due-date").value;
+        let tag =
+          task.querySelector(".tag").value == "None"
+            ? null
+            : task.querySelector(".tag").value;
+        let user =
+          task.querySelector(".user").value == "None"
+            ? null
+            : task.querySelector(".user").value;
+
+        let taskid = task.id.split("-")[1];
+
+        console.log(newListid);
+
+        if (isNewList) {
+          newTasks.push(title, date, tag, user, 0, newListid);
+        } else {
+          newTasks.push({
+            name: title,
+            date: date,
+            tag: tag,
+            user: user,
+            taskid: taskid
+          });
+        }
+      }
+      return newTasks;
     }
   </script>
 </html>

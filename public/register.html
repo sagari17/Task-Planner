@@ -48,7 +48,7 @@
     let passwordrepeat = document.getElementById("pwrepeat");
     let create = document.getElementById("create");
     let result = document.getElementById("result");
-
+    let form = document.querySelector("form");
 
     create.addEventListener("click", async function(evt) {
       if(checkRegisterInput() && checkPasswords() && newEmail()){
@@ -56,26 +56,26 @@
      
       let url = "http://localhost:3000/users";
 
-      let userData = {
-        firstname: firstname.value,
-        lastname: lastname.value,
-        email: email.value,
-        password: password.value
-      };
+        let userData = {
+          firstname: firstname.value,
+          lastname: lastname.value,
+          email: email.value,
+          password: password.value
+        };
 
-      let cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      };
+        let cfg = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData)
+        };
 
-      try {
-        let data = await utilities.requestToServer(url, cfg);
-        result.innerHTML = data.msg;
-      } catch (err) {
-        console.log(err);
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          result.innerHTML = data.msg;
+        } catch (err) {
+          console.log(err);
+        }
       }
-      } 
     });
     async function newEmail(){
       let isEmail = null;
@@ -98,17 +98,22 @@
         return false}
     }
 
-    function checkRegisterInput(){
-      if((utilities.isValidInput(firstname.value) && utilities.isValidInput(lastname.value))){
+    function checkRegisterInput() {
+      if (
+        utilities.isValidInput(firstname.value) &&
+        utilities.isValidInput(lastname.value)
+      ) {
         return true;
       } else {
-        console.log("Please input valid first and last name - no special characters!");
+        console.log(
+          "Please input valid first and last name - no special characters!"
+        );
         return false;
       }
     }
 
-    function checkPasswords(){
-      if(password.value == passwordrepeat.value){
+    function checkPasswords() {
+      if (password.value == passwordrepeat.value) {
         return true;
       } else {
         console.log("Passwords do not match.");

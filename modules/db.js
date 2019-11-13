@@ -250,7 +250,8 @@ const db = function(dbConnection) {
 
   const updateList = async function(data) {
     let listData = null;
-    let values = [data.name, data.public, data.id]; // the data.id needs to be the list id
+    let values = [data.name, data.public, data.id]; 
+
     try {
       listData = await runQuery(
         "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",
@@ -260,6 +261,31 @@ const db = function(dbConnection) {
       console.log(err);
     }
     return listData;
+  };
+  const checkIfEmailExists = async function(email) {
+    let emailData = null;
+    let values = [email];
+    try {
+      emailData = await runQuery("SELECT COUNT (email) FROM users WHERE email=$1", values);
+    } catch (err) {
+      console.log(err);
+    }
+    if (parseInt(emailData[0].count)){
+      return true;
+    }
+    else {
+      return false;
+    }
+  };
+  const taskChangeFinished = async function(data) {
+    let taskData = null;
+    let values = [data.id,0,1];
+    try {
+      taskData = await runQuery("UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1", values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData
   };
 
   return {
@@ -279,7 +305,9 @@ const db = function(dbConnection) {
     createSeveralTasks: createSeveralTasks,
     deleteTask: deleteTask,
     updateTask: updateTask,
-    updateList: updateList
+    updateList: updateList,
+    checkIfEmailExists: checkIfEmailExists,
+    taskChangeFinished: taskChangeFinished
   };
 };
 

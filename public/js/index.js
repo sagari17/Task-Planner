@@ -33,10 +33,9 @@ utilities = (function() {
     return valid;
   }
   return {
-    requestToServer: requestToServer, 
+    requestToServer: requestToServer,
     isValidInput: isValidInput
   };
-}());
-
+})();
 
 console.log("utilities works");

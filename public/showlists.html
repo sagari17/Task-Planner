@@ -125,6 +125,7 @@
     let container = document.getElementById("container");
     let detailID;
     let isNewList = true;
+    let newListid;
     let existingTasks = true;
 
     showLists();
@@ -237,6 +238,22 @@
       redirectUser("showlists.html?id=" + detailID);
     }
 
+    async function addNewList(evt) {
+      isNewList = true;
+      let newListTmpl = document.getElementById("newListTmpl");
+      let newListContent = newListTmpl.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(newListContent);
+
+      document.querySelector("#addTask").addEventListener("click", addTaskForm);
+      document.querySelector("form").addEventListener("submit", saveList);
+      document
+        .querySelector("#cancelList")
+        .addEventListener("click", function() {
+          redirectUser("showlists.html");
+        });
+    }
+
     async function editList(evt) {
       isNewList = false;
       existingTasks = true;
@@ -277,38 +294,10 @@
       }
 
       document.querySelectorAll(".delete-icon-red").forEach(btn => {
-        btn.addEventListener("click", async function(evt) {
-          let element = evt.target.parentNode.parentNode;
-
-          if (!isNewList && !element.classList.contains("added")) {
-            console.log("deleting");
-            let taskid = element.id.split("-")[1];
-            console.log(taskid);
-            let url = "http://localhost:3000/tasks/" + taskid;
-            let cfg = {
-              method: "DELETE",
-              headers: { "Content-Type": "application/json" }
-            };
-
-            newtasks = tasks.filter(function(obj) {
-              return obj.id != taskid;
-            });
-
-            localStorage.setItem("taskdata", JSON.stringify(newtasks));
-
-            try {
-              let deletedData = await utilities.requestToServer(url, cfg);
-              console.log(deletedData);
-            } catch (err) {
-              console.log(err);
-            }
-          }
-
-          element.remove();
-        });
+        btn.addEventListener("click", deleteTaskButton);
       });
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
-      document.querySelector("form").addEventListener("submit", saveList);
+      document.querySelector("form").addEventListener("submit", saveChanges);
       document
         .querySelector("#cancelList")
         .addEventListener("click", function() {
@@ -316,22 +305,6 @@
         });
 
       existingTasks = false;
-    }
-
-    async function addNewList(evt) {
-      isNewList = true;
-      let newListTmpl = document.getElementById("newListTmpl");
-      let newListContent = newListTmpl.content.cloneNode(true);
-      container.innerHTML = "";
-      container.appendChild(newListContent);
-
-      document.querySelector("#addTask").addEventListener("click", addTaskForm);
-      document.querySelector("form").addEventListener("submit", saveList);
-      document
-        .querySelector("#cancelList")
-        .addEventListener("click", function() {
-          redirectUser("showlists.html");
-        });
     }
 
     async function deleteList(evt) {
@@ -356,7 +329,6 @@
           localStorage.removeItem("taskdata");
           localStorage.removeItem("listdata");
           redirectUser("showlists.html");
-          console.log(data);
         } catch (err) {
           console.log(err);
         }
@@ -370,15 +342,86 @@
           .querySelector(".task-div")
           .classList.add("added");
       }
+
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);
+
+      document
+        .querySelectorAll(".added .delete-icon-red:last-child")
+        .forEach(btn => {
+          btn.addEventListener("click", deleteTaskButton);
+        });
     }
 
     async function saveList(evt) {
       evt.preventDefault();
-      let taskDivs = document.querySelectorAll(".task-div");
-      if (taskDivs.length < 1) {
+      newListid = detailID;
+      let taskDivs = document.querySelectorAll(".task-div:not(.added)");
+
+      if (document.querySelectorAll(".task-div") < 1) {
+        console.log("make sure to add tasks to your list");
+        return;
+      }
+
+      let radio = document.querySelector("input[name=public]:checked").value;
+      let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+      let public = 0;
+
+      if (radio == "public") {
+        public = 1;
+      }
+
+      let listData;
+      let url;
+      let cfg;
+
+      listData = {
+        name: document.querySelector("#new-list-title").value,
+        owner: userid,
+        public: public
+      };
+      url = "http://localhost:3000/lists";
+      cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listData)
+      };
+
+      try {
+        let newlistData = await utilities.requestToServer(url, cfg);
+        newListid = newlistData.id;
+      } catch (err) {
+        console.log(err);
+      }
+
+      //save tasks
+      let newTasks = getAllTaskData(taskDivs);
+      console.log("creates several tasks with not new list");
+      url = "http://localhost:3000/tasks/createSeveralTasks";
+      cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTasks)
+      };
+
+      try {
+        let newTaskData = await utilities.requestToServer(url, cfg);
+        console.log(newTaskData);
+      } catch (err) {
+        console.log(err);
+      }
+
+      localStorage.removeItem("taskdata");
+      localStorage.removeItem("listdata");
+      redirectUser("showlists.html");
+    }
+
+    async function saveChanges(evt) {
+      evt.preventDefault();
+      newListid = detailID;
+      let taskDivs = document.querySelectorAll(".task-div:not(.added)");
+      if (document.querySelectorAll(".task-div") < 1) {
         console.log("make sure to add tasks to your list");
         return;
       }
@@ -393,98 +436,141 @@
       let url;
       let cfg;
 
-      if (isNewList) {
-        listData = {
-          name: document.querySelector("#new-list-title").value,
-          owner: userid,
-          public: public
-        };
-        url = "http://localhost:3000/lists";
-        cfg = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(listData)
-        };
-      } else {
-        listData = {
-          name: document.querySelector("#new-list-title").value,
-          public: public,
-          id: detailID
-        };
-        url = "http://localhost:3000/lists";
-        cfg = {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(listData)
-        };
-      }
+      listData = {
+        name: document.querySelector("#new-list-title").value,
+        public: public,
+        id: detailID
+      };
+      url = "http://localhost:3000/lists";
+      cfg = {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listData)
+      };
 
       try {
         let newlistData = await utilities.requestToServer(url, cfg);
-        let newTasks = [];
-        for (let task of taskDivs) {
-          let title = task.querySelector(".task-title").value;
-          console.log(task.querySelector(".due-date").value);
-          let date =
-            task.querySelector(".due-date").value == ""
-              ? null
-              : task.querySelector(".due-date").value;
-          let tag =
-            task.querySelector(".tag").value == "None"
-              ? null
-              : task.querySelector(".tag").value;
-          let user =
-            task.querySelector(".user").value == "None"
-              ? null
-              : task.querySelector(".user").value;
-
-          let taskid = task.id.split("-")[1];
-          console.log(taskid);
-
-          if (isNewList) {
-            newTasks.push(title, date, tag, user, 0, newlistData.id);
-          } else {
-            newTasks.push(title, date, tag, user, taskid);
-          }
-
-          console.log(newTasks);
-        }
-
-        let url2;
-        let cfg2;
-        if (isNewList) {
-          url2 = "http://localhost:3000/tasks/createSeveralTasks";
-          cfg2 = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newTasks)
-          };
-        } else {
-          url2 = "http://localhost:3000/tasks/updateSeveralTasks";
-          cfg2 = {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newTasks)
-          };
-        }
-
-        try {
-          var resp = await fetch(url2, cfg2);
-          var newTasksData = await resp.json();
-          console.log(newTasksData);
-          localStorage.removeItem("taskdata");
-          localStorage.removeItem("listdata");
-          redirectUser("showlists.html");
-        } catch (err) {
-          console.log(err);
-        }
+        newListid = newlistData.id;
       } catch (err) {
         console.log(err);
       }
+
+      //save tasks
+      let newTasks = getAllTaskData(taskDivs);
+
+      console.log(newTasks);
+      for (let [index, task] of newTasks.entries()) {
+        console.log(newTasks[index]);
+        url = "http://localhost:3000/tasks/";
+        cfg = {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTasks[index])
+        };
+
+        try {
+          let newTaskData = await utilities.requestToServer(url, cfg);
+          console.log(newTaskData);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      //newly added tasks to already existing list
+      let addedTaskDivs = document.querySelectorAll(".added");
+      console.log(addedTaskDivs);
+      if (addedTaskDivs.length != 0) {
+        console.log("existing");
+        isNewList = true;
+        console.log(detailID);
+        newListid = detailID;
+        let addedTasks = getAllTaskData(addedTaskDivs);
+        isNewList = false;
+        console.log(addedTasks);
+
+        url2 = "http://localhost:3000/tasks/createSeveralTasks";
+        cfg2 = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(addedTasks)
+        };
+
+        try {
+          let newTaskData = await utilities.requestToServer(url2, cfg2);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      localStorage.removeItem("taskdata");
+      localStorage.removeItem("listdata");
+      redirectUser("showlists.html");
     }
 
-    async function saveChanges(evt) {
-      console.log("save changes");
+    async function deleteTaskButton(evt) {
+      console.log("in delete");
+      let element = evt.target.parentNode.parentNode;
+
+      if (!isNewList && !element.classList.contains("added")) {
+        let taskid = element.id.split("-")[1];
+        let url = "http://localhost:3000/tasks/" + taskid;
+        let cfg = {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        };
+        let tasks = JSON.parse(localStorage.getItem("taskdata"));
+
+        newtasks = tasks.filter(function(obj) {
+          return obj.id != taskid;
+        });
+
+        localStorage.setItem("taskdata", JSON.stringify(newtasks));
+
+        try {
+          let deletedData = await utilities.requestToServer(url, cfg);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      element.remove();
+    }
+
+    function getAllTaskData(taskDivs) {
+      let newTasks = [];
+      for (let task of taskDivs) {
+        let title = task.querySelector(".task-title").value;
+        console.log(task.querySelector(".due-date").value);
+        let date =
+          task.querySelector(".due-date").value == ""
+            ? null
+            : task.querySelector(".due-date").value;
+        let tag =
+          task.querySelector(".tag").value == "None"
+            ? null
+            : task.querySelector(".tag").value;
+        let user =
+          task.querySelector(".user").value == "None"
+            ? null
+            : task.querySelector(".user").value;
+
+        let taskid = task.id.split("-")[1];
+
+        console.log(newListid);
+
+        if (isNewList) {
+          newTasks.push(title, date, tag, user, 0, newListid);
+        } else {
+          newTasks.push({
+            name: title,
+            date: date,
+            tag: tag,
+            user: user,
+            taskid: taskid
+          });
+        }
+      }
+      return newTasks;
     }
   </script>
 </html>

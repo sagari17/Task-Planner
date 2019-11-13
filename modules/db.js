@@ -217,7 +217,7 @@ const db = function(dbConnection) {
   };
   const updateTask = async function(data) {
     let taskData = null;
-    let values = [data.name, data.date, data.tag, data.user, data.id]; // the data.id needs to be the task id, not the list id
+    let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
     try {
       taskData = await runQuery(
         "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
@@ -279,7 +279,6 @@ const db = function(dbConnection) {
     createSeveralTasks: createSeveralTasks,
     deleteTask: deleteTask,
     updateTask: updateTask,
-    updateSeveralTasks: updateSeveralTasks,
     updateList: updateList
   };
 };

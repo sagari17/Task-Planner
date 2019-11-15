@@ -121,7 +121,7 @@
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
-    redirectNotAuthUser("login.html");
+    redirectNotAuthUser("index.html");
     let container = document.getElementById("container");
     let detailID;
     let isNewList = true;
@@ -141,14 +141,15 @@
         let userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
-        if (!listData) {
+        console.log(listData);
+        if (listData == null || listData.length == 0) {
           let url = "http://localhost:3000/lists/" + userData.userid;
           listData = await utilities.requestToServer(url, {});
           localStorage.setItem("listdata", JSON.stringify(listData));
         }
         if (listData.length > 0) {
           let taskData = JSON.parse(localStorage.getItem("taskdata"));
-          if (!taskData) {
+          if (taskData == null || taskData.length == 0) {
             for (let i = 0; i < listData.length; i++) {
               if (i == 0) {
                 ids = listData[i].id;
@@ -159,7 +160,6 @@
 
             let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
             taskData = await utilities.requestToServer(url2, {});
-            console.log("fetched listdata");
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
 

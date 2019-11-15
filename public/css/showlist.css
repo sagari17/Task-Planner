@@ -34,7 +34,7 @@ header {
 }
 
 #show-lists-wrapper {
-  padding: 0 1.4%;
+  padding: 0 0.8%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

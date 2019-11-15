@@ -1,58 +1,96 @@
 .wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-  }
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
 
 .boxLeft {
-    width: 70%;
-    height: 100vh;
-    margin: 0;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
+  width: 70%;
+  height: 100vh;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .boxRight {
-    width: 30%;
-    height: 100vh;
-    margin: 0;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--color-blue);
-    display: flex;
+  width: 30%;
+  height: 100vh;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-blue);
+  display: flex;
 }
 
-.button-green {
-  background-color: var(--color-green);
-  border: none;  
-  border-radius: 100px;
-  width: 13rem;
-  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
-  color: white;
-  cursor: pointer;
+#alternative {
   font-size: 100%;
-  margin: 60px;
-  }
-  
-  a:link, a:visited {
-    background-color: none;
-    color: var(--color-green);
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-  }
-  
-  a:hover, a:active {
-    background-color: none;
-    color: green;
-  }
- .registerwrapper {
-   width: 50%;
- }
+  margin: 2rem 0 3rem 0;
+}
 
- #plannerimg {
-width: 70%;
- }
+a:link,
+a:visited,
+#goToLogin,
+#goToRegister {
+  background-color: none;
+  color: var(--color-green);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover,
+a:active {
+  background-color: none;
+  color: green;
+}
+.registerwrapper {
+  width: 50%;
+}
+
+#plannerimg {
+  width: 50%;
+}
+
+h4 {
+  margin: 2rem 0 0.5rem 0;
+  font-size: 100%;
+  font-weight: 600;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+h4 > img {
+  height: 0.9rem;
+  margin-right: 0.5rem;
+}
+
+#registerHeadline {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#registerHeadline > img {
+  height: 5rem;
+  margin: 0 1rem 0 0;
+}
+
+.boxLeft > img {
+  margin-bottom: 1.8rem;
+  height: 12em;
+}
+
+#errormsg {
+  margin: 0 0 1rem 0;
+  color: var(--color-red);
+}
+
+#registerHeadline + #errormsg {
+  margin: 2rem 0 0 0;
+}

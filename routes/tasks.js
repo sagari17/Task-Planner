@@ -101,8 +101,9 @@ router.get("/alltasks/:listIDS", async function(req, res, next) {
     let ids = req.params.listIDS;
     let listIDS = ids.split(",");
     let tasks = await db.getTasksByListIDs(listIDS);
+    console.log(tasks);
     if (tasks) {
-      res.status(200).json(tasks[0]);
+      res.status(200).json(tasks);
     } else {
       throw "No tasks exist.";
     }

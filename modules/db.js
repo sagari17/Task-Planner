@@ -229,28 +229,9 @@ const db = function(dbConnection) {
     return taskData;
   };
 
-  const updateSeveralTasks = async function(values) {
-    let taskData = null;
-    let query =
-      "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5";
-    // for (let i = 6; i < values.length; i += 5) {
-    //   query += `; UPDATE tasks SET name=$${i}, due_date=$${i + 1}, tag=$${i +
-    //     2}, assigned_user=$${i + 3} WHERE id=$${i + 4};`;
-    // }
-    console.log(query);
-    console.log(values);
-    let val = [values[0], values[1], values[2], values[3], values[4]];
-    try {
-      taskData = await runQuery(query, val);
-    } catch (err) {
-      console.log(err);
-    }
-    return taskData;
-  };
-
   const updateList = async function(data) {
     let listData = null;
-    let values = [data.name, data.public, data.id]; 
+    let values = [data.name, data.public, data.id];
 
     try {
       listData = await runQuery(
@@ -266,26 +247,31 @@ const db = function(dbConnection) {
     let emailData = null;
     let values = [email];
     try {
-      emailData = await runQuery("SELECT COUNT (email) FROM users WHERE email=$1", values);
+      emailData = await runQuery(
+        "SELECT COUNT (email) FROM users WHERE email=$1",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
-    if (parseInt(emailData[0].count)){
+    if (parseInt(emailData[0].count)) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   };
   const taskChangeFinished = async function(data) {
     let taskData = null;
-    let values = [data.id,0,1];
+    let values = [data.id, 0, 1];
     try {
-      taskData = await runQuery("UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1", values);
+      taskData = await runQuery(
+        "UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
-    return taskData
+    return taskData;
   };
 
   return {

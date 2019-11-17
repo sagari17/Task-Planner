@@ -67,14 +67,14 @@ button {
   color: white;
 }
 
-
 .button-red {
   background-color: var(--color-red);
   border: none;
-  border-radius:100px;
+  border-radius: 100px;
   width: 13rem;
-  padding: 05.rem 0.7rem 05.rem 0.9rem;
+  padding: 05rem 0.7rem 05rem 0.9rem;
   color: white;
+}
 
 input:focus {
   outline: none;
@@ -96,7 +96,7 @@ input::placeholder {
   margin: 0.5rem 0 0 0;
 }
 
-input:focus{
+input:focus {
   outline: none;
 }
 

@@ -11,40 +11,60 @@
   <body>
     <my-menu></my-menu>
     <div id="container"></div>
-    <h3 id="result">Result...</h3>
+    
 
     <template id="profile">
-      <p id="name">Jonathan Doe</p>
+      <div class="wrapperprofile">
+      <img src="images/profile.svg" id="profileimg" />
+      <h2 id="name">Jonathan Doe</h2>
       <p id="email">jonathandoe@gmail.com</p>
-      <button id="edit">Edit Profile</button>
-      <button id="changepw">Change Password</button>
-      <button id="logout">Logout</button>
+      <div class="buttonrow">
+      <button id="edit" class="button-green">Edit Profile</button>
+      <button id="changepw" class="button-green">Change Password</button>
+    </div>
+    <div class="buttonrow2">
+      <button id="logout" class="button-blue">Logout</button>
+      <button id="delete_user" class="button-red">Delete user</button>
+      </div>
+    </div>
     </template>
 
     <template id="editProfile">
-      <input type="text" id="firstname" placeholder="Firstname" />
-      <input type="text" id="lastname" placeholder="Lastname" />
-      <input type="text" id="email" placeholder="E-mail" />
-      <button type="button" id="goback">Go Back</button>
-      <button type="button" id="save">Save Changes</button>
+        <div class="wrapperprofile">
+            <img src="images/profile.svg" id="profileimg" />
+            <h1>Edit profile</h1>
+          <div class="textwrap">
+      <input type="text" id="firstname" placeholder="Firstname" class="text-field"/>
+      <input type="text" id="lastname" placeholder="Lastname" class="text-field"/>
+      <input type="text" id="email" placeholder="E-mail" class="text-field"/>
+          </div>
+      <button type="button" id="save" class="button-green">Save Changes</button>
+      <button type="button" id="goback" class="button-blue">Go Back</button>
+    </div>
     </template>
 
     <template id="changePw">
-      <input type="password" id="newpw" placeholder="New Password" />
+      <div class="wrapperprofile">
+          <img src="images/profile.svg" id="profileimg" />
+        <h1>Change password</h1>
+        <div class="textwrap">
+      <input type="password" id="newpw" placeholder="New Password" class="text-field"/>
       <input
         type="password"
         id="newpwrepeat"
         placeholder="Repeat New Password"
+        class="text-field"
       />
-      <button type="button" id="goback">Go Back</button>
-      <button type="button" id="change">Change Password</button>
+    </div>
+      <button type="button" id="change"class="button-green" >Change Password</button>
+      <button type="button" id="goback" class="button-blue">Go Back</button>
+    </div>
     </template>
   </body>
 
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
     let container = document.getElementById("container");
-    let result = document.getElementById("result");
     let profileTmpl = document.getElementById("profile");
     let editTmpl = document.getElementById("editProfile");
     let changePwTmpl = document.getElementById("changePw");
@@ -159,7 +179,6 @@
         let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
         sessionData.email = email;
         sessionStorage.setItem("logindata", JSON.stringify(sessionData));
-        result.innerHTML = data.msg;
         showUserInfo();
       } catch (err) {
         console.log(err);
@@ -183,8 +202,6 @@
 
       try {
         let data = await utilities.requestToServer(url, cfg);
-
-        result.innerHTML = data.msg;
         showUserInfo();
       } catch (err) {
         console.log(err);

@@ -1,5 +1,6 @@
 @import url("showlist.css");
 @import url("login.css");
+@import url("profile.css");
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap");
 
 :root {
@@ -66,6 +67,15 @@ button {
   color: white;
 }
 
+
+.button-red {
+  background-color: var(--color-red);
+  border: none;
+  border-radius:100px;
+  width: 13rem;
+  padding: 05.rem 0.7rem 05.rem 0.9rem;
+  color: white;
+
 input:focus {
   outline: none;
 }
@@ -84,6 +94,10 @@ input::placeholder {
   padding: 0.5rem 0.7rem 0.5rem 0.9rem;
   color: var(--color-blue-dark);
   margin: 0.5rem 0 0 0;
+}
+
+input:focus{
+  outline: none;
 }
 
 /*Task finished, unfinished*/

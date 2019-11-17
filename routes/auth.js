@@ -14,7 +14,7 @@ router.post("/", async function(req, res) {
   try {
     let result = await db.getUserByEmail(loginData.email);
     if (result.length == 0) {
-      res.status(400).json({ msg: "User doesn't exists" });
+      res.status(400).json({ msg: "User does not exist" });
     } else {
       let check = bcrypt.compareSync(loginData.password, result[0].password);
       if (check == true) {

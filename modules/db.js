@@ -120,8 +120,9 @@ const db = function(dbConnection) {
   const getListByListID = async function(listID) {
     let listData = null;
     let values = [listID];
+    let query = "SELECT * FROM lists WHERE id=$1";
     try {
-      listData = await runQuery("SELECT * FROM lists WHERE id=$1", values);
+      listData = await runQuery(query, values);
     } catch (err) {
       console.log(err);
     }
@@ -216,10 +217,10 @@ const db = function(dbConnection) {
   };
   const updateTask = async function(data) {
     let taskData = null;
-    let values = [data.name, data.date, data.tag, data.finished, data.id]; // the data.id needs to be the task id, not the list id
+    let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, finished=$4 WHERE id=$5 RETURNING *",
+        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
         values
       );
     } catch (err) {
@@ -227,9 +228,11 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
+
   const updateList = async function(data) {
     let listData = null;
     let values = [data.name, data.public, data.id];
+
     try {
       listData = await runQuery(
         "UPDATE lists SET name=$1, public=$2 WHERE id=$3 RETURNING *",
@@ -244,26 +247,31 @@ const db = function(dbConnection) {
     let emailData = null;
     let values = [email];
     try {
-      emailData = await runQuery("SELECT COUNT (email) FROM users WHERE email=$1", values);
+      emailData = await runQuery(
+        "SELECT COUNT (email) FROM users WHERE email=$1",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
-    if (parseInt(emailData[0].count)){
+    if (parseInt(emailData[0].count)) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   };
   const taskChangeFinished = async function(data) {
     let taskData = null;
-    let values = [data.id,0,1];
+    let values = [data.id, 0, 1];
     try {
-      taskData = await runQuery("UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1", values);
+      taskData = await runQuery(
+        "UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
-    return taskData
+    return taskData;
   };
 
   return {

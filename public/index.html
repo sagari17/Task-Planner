@@ -1,18 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
 
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>Task Planner</title>
-  <script type="text/javascript" src="js/index.js"></script>
-  <script type="text/javascript" src="js/utilities.js"></script>
-</head>
+  <body>
+    <div id="container"></div>
+    <template id="logintmpl">
+      <form>
+        <div class="wrapper">
+          <div class="boxLeft">
+            <img src="images/login.svg" />
+            <h1>Login</h1>
 
-<body>
-  <h1>Task Planner Project</h1>
-  <!-- Optional JavaScript -->
-</body>
+            <p id="errormsg"></p>
 
+            <div class="registerwrapper">
+              <input
+                type="email"
+                id="email"
+                placeholder="E-mail"
+                class="text-field"
+                required
+              />
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                class="text-field"
+                required
+              />
+            </div>
+
+            <p id="alternative">
+              No account yet? <a id="goToRegister">Register here</a>
+            </p>
+            <button type="submit" id="login" class="button-green">Login</button>
+          </div>
+
+          <div class="boxRight">
+            <img src="images/MyPlanner.svg" id="plannerimg" />
+          </div>
+        </div>
+      </form>
+    </template>
+    <template id="registertmpl">
+      <form>
+        <div class="wrapper">
+          <div class="boxLeft">
+            <div id="registerHeadline">
+              <img src="images/register.svg" />
+              <h1>Register</h1>
+            </div>
+            <p id="errormsg"></p>
+            <div class="registerwrapper">
+              <h4><img src="images/user_blue.svg" />Personal data</h4>
+              <input
+                type="text"
+                id="firstname"
+                placeholder="Firstname"
+                class="text-field"
+                required
+              />
+              <input
+                type="text"
+                id="lastname"
+                placeholder="Lastname"
+                class="text-field"
+                required
+              />
+              <input
+                type="email"
+                id="email"
+                placeholder="E-mail"
+                class="text-field"
+                required
+              />
+            </div>
+            <div class="registerwrapper">
+              <h4><img src="images/password_blue.svg" />Password</h4>
+
+              <input
+                type="password"
+                id="pw"
+                placeholder="Password"
+                class="text-field"
+                required
+              />
+              <input
+                type="password"
+                id="pwrepeat"
+                placeholder="Repeat Password"
+                class="text-field"
+                required
+              />
+            </div>
+            <p id="alternative">
+              Already have an account? <a id="goToLogin">Back to login</a>
+            </p>
+            <button type="submit" id="create" class="button-green">
+              Create account
+            </button>
+          </div>
+          <div class="boxRight">
+            <img src="images/MyPlanner.svg" id="plannerimg" />
+          </div>
+        </div>
+      </form>
+    </template>
+  </body>
+
+  <script>
+    let loginTmpl = document.getElementById("logintmpl");
+    let registerTmpl = document.getElementById("registertmpl");
+    let container = document.getElementById("container");
+
+    let form;
+    let firstname;
+    let lastname;
+    let email;
+    let password;
+    let passwordrepeat;
+    let errormsg;
+
+    showLogin();
+
+    function showLogin() {
+      if (isLoggedIn()) {
+        redirectUser("showlists.html");
+      }
+
+      let loginContent = loginTmpl.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(loginContent);
+
+      let goToRegister = document.getElementById("goToRegister");
+      let form = document.getElementsByTagName("form")[0];
+
+      form.addEventListener("submit", loginUser);
+      goToRegister.addEventListener("click", showRegister);
+    }
+
+    async function loginUser(evt) {
+      evt.preventDefault();
+      errormsg = document.getElementById("errormsg");
+      email = document.getElementById("email");
+      password = document.getElementById("password");
+
+      let url = "http://localhost:3000/auth";
+
+      let loginData = {
+        email: email.value,
+        password: password.value
+      };
+
+      let cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      };
+
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+        sessionStorage.setItem("logindata", JSON.stringify(data));
+        console.log(data);
+
+        let listData = JSON.parse(localStorage.getItem("listdata"));
+        console.log(listData);
+        if (
+          listData != null &&
+          listData.length != 0 &&
+          listData[0].owner != data.userid
+        ) {
+          localStorage.removeItem("taskdata");
+          localStorage.removeItem("listdata");
+        }
+
+        redirectUser("showlists.html");
+      } catch (err) {
+        let error = await err;
+        errormsg.innerHTML = error.msg;
+      }
+    }
+
+    function showRegister() {
+      let registerContent = registerTmpl.content.cloneNode(true);
+      container.innerHTML = "";
+      container.appendChild(registerContent);
+
+      let goToLogin = document.getElementById("goToLogin");
+      let form = document.getElementsByTagName("form")[0];
+
+      form.addEventListener("submit", createAccount);
+      goToLogin.addEventListener("click", showLogin);
+    }
+
+    async function createAccount(evt) {
+      evt.preventDefault();
+
+      firstname = document.getElementById("firstname");
+      lastname = document.getElementById("lastname");
+      email = document.getElementById("email");
+      password = document.getElementById("pw");
+      passwordrepeat = document.getElementById("pwrepeat");
+      errormsg = document.getElementById("errormsg");
+
+      if (checkRegisterInput() && checkPasswords() && newEmail()) {
+        console.log("does it");
+
+        let url = "http://localhost:3000/users";
+
+        let userData = {
+          firstname: firstname.value,
+          lastname: lastname.value,
+          email: email.value,
+          password: password.value
+        };
+
+        let cfg = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData)
+        };
+
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          container.innerHTML = "";
+          showLogin();
+        } catch (err) {
+          errormsg.innerHTML = err;
+        }
+      }
+    }
+
+    async function newEmail() {
+      let isEmail = null;
+
+      let url = "http://localhost:3000/users/email/" + email.value;
+      let cfg = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      };
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+        isEmail = data;
+      } catch (err) {
+        console.log(err);
+        errormsg.innerHTML = err;
+      }
+      if (isEmail == false) {
+        return true;
+      } else {
+        errormsg.innerHTML =
+          "There already is an account registered with that email.";
+        return false;
+      }
+    }
+
+    function checkRegisterInput() {
+      if (
+        utilities.isValidInput(firstname.value) &&
+        utilities.isValidInput(lastname.value)
+      ) {
+        return true;
+      } else {
+        errormsg.innerHTML =
+          "Please input valid first and last name - no special characters!";
+        return false;
+      }
+    }
+
+    function checkPasswords() {
+      if (password.value == passwordrepeat.value) {
+        return true;
+      } else {
+        errormsg.innerHTML = "Passwords do not match.";
+        return false;
+      }
+    }
+  </script>
 </html>

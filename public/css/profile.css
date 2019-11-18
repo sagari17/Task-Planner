@@ -27,12 +27,6 @@
   margin: 1rem 0 0 0;
 }
 
-.buttonrow {
-  display: flex;
-  flex-direction: row;
-  margin: 1rem 0 0 0;
-}
-
 .buttoncol button,
 .wrapperprofile button {
   margin: 0.2rem;

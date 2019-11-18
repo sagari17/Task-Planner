@@ -76,7 +76,7 @@
                 class="text-field-50"
               />
               <p id="errormsg-member"></p>
-              <button type="button">
+              <button type="button" class="add-button">
                 <img src="images/plus_green_button.svg" /> Add Member
               </button>
             </div>
@@ -84,15 +84,17 @@
         </div>
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
-          <button type="button" id="addTask">
+          <button type="button" id="addTask" class="add-button">
             <img src="images/plus_green_button.svg" />Add Task
           </button>
         </div>
-        <button type="button" id="cancelList" class="button-green">
-          Cancel List</button
-        ><button type="submit" id="saveList" class="button-green">
-          Save List
-        </button>
+        <div class="buttonrow">
+          <button type="button" id="cancelList" class="button-blue">
+            Cancel List</button
+          ><button type="submit" id="saveList" class="button-green">
+            Save List
+          </button>
+        </div>
       </form>
     </template>
     <template id="task-div">
@@ -109,7 +111,7 @@
         <div class="taskrowmenu">
           <div class="dropdown-div">
             Assign deadline:
-            <input type="date" class="due-date" name="date" /><br />
+            <input type="date" class="due-date" name="date" />
           </div>
           <div class="dropdown-div">
             Add tag:

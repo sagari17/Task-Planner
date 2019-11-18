@@ -11,126 +11,104 @@
 
   <body>
     <my-menu></my-menu>
-    <div>
-        <p id="mylist">
-            <img src="images/lists.svg" id="listimg">
-        </p>
-    </div>
-    <div class="viewlists">
-        <div class="list-1">
-          <h3>List Nr.1</h3>
-          <img src="images/delete_blue.svg">
-          <div>
-          <p> Go to class</p>
-          <img src="images/checkbox_unchecked.svg">
-          </div>
-          <div>
-          <p> Start assignment</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-          <p> Register on Github</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-          <p> Get help from friends</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-          <p> Take notes in lecture</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-            <p2> Edit </p2>
-          </div>
-        </div>
-  
-        <div class="list-2">
-          <h3>List Nr.2</h3>
-          <img src="images/delete_blue.svg">
-          <div>
-          <p> Go to class</p>
-          <img src="images/checkbox_unchecked.svg">
-          </div>
-          <div>
-          <p> Start assignment</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-          <p> Register on Github</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-          <p> Get help from friends</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-          <p> Taker notes in lecture</p>
-          <img src="images/checkbox_unchecked.svg">
-        </div>
-        <div>
-            <p2> Edit </p2>
-          </div>
-        </div>
-  
-        <div class="list-3">
-          <h3>List Nr.3</h3>
-          <img src="images/delete_blue.svg">
-          <div>
-              <p> Go to class</p>
-              <img src="images/checkbox_unchecked.svg">
-              </div>
-              <div>
-              <p> Start assignment</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-              <p> Register on Github</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-              <p> Get help from friends</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-              <p> Taker notes in lecture</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-                <p2> Edit </p2>
-              </div>
-        </div>
-  
-        <div class="list-3">
-          <h3>List Nr.4</h3>
-          <img src="images/delete_blue.svg">
-          <div>
-              <p> Go to class</p>
-              <img src="images/checkbox_unchecked.svg">
-              </div>
-              <div>
-              <p> Start assignment</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-              <p> Register on Github</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-              <p> Get help from friends</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-            <div>
-              <p> Taker notes in lecture</p>
-              <img src="images/checkbox_unchecked.svg">
-            </div>
-        <div>
-            <p2> Edit </p2>
-          </div>
+    <div class="wrapperviewlist">
+      <div class="listChanger">
+        <img src="images/backbutton_white.svg" width="30" height="40" />
+        <div class="text1">List Nr.1</div>
+        <img src="images/pencil-edit-button.svg" width="30" height="40" />
       </div>
- 
+
+      <!------------------------------------------------------------------------------------------------------->
+
+      <div class="filterBar">
+          <img src="images/checkbox_unchecked.svg" width="20" height="20" />
+          <div class="text1">Filter by Tags</div>
+          <img src="images/" />
+          <img src="images/checkbox_checked.svg" width="20" height="20" />
+          <div class="text2">Filter by Due Date</div>
+          <img src="images/" />
+      </div>
+
+      <!------------------------------------------------------------------------------------------------------->
+
+      <div class="taskBoxes">
+        <div class="box1">
+          <div class="task1">
+            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
+            <div class="text1">Task Nr.1</div>
+            <img src="images/icon_clock.svg" width="15" height="15" />
+            <div class="text2">Due: 26.10.2019</div>
+            <img src="images/icon_user.svg" width="15" height="15" />
+            <div class="text3">John Doe</div>
+            <img src="images/icon_tag.svg" width="15" height="15" />
+            <div class="text4">Important</div>
+          </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------->
+        <div class="box2">
+          <div class="task2">
+            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
+            <div class="text1">Task Nr.2</div>
+            <img src="images/icon_clock.svg" width="15" height="15" />
+            <div class="text2">Due: 28.11.2019</div>
+            <img src="images/icon_user.svg" width="15" height="15" />
+            <div class="text3">John Doe</div>
+            <img src="images/icon_tag.svg" width="15" height="15" />
+            <div class="text4">Not important</div>
+          </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------->
+
+        <div class="box3">
+          <div class="task3">
+            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
+            <div class="text1">Task Nr.3</div>
+            <img src="images/icon_clock_grey.svg" width="15" height="15" />
+            <div class="text2">No due date</div>
+            <img src="images/icon_user_grey.svg" width="15" height="15" />
+            <div class="text3">No user assigned</div>
+            <img src="images/icon_tag_grey.svg" width="15" height="15" />
+            <div class="text4">No tag assigned</div>
+          </div>
+        </div>
+
+        <!------------------------------------------------------------------------------------------------------->
+        <div class="box4">
+          <div class="task4">
+            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
+            <div class="text1">Task Nr.4</div>
+            <img src="images/icon_clock.svg" width="15" height="15" />
+            <div class="text2">Due: 01.01.2020</div>
+            <img src="images/icon_user.svg" width="15" height="15" />
+            <div class="text3">Jane Daesy</div>
+            <img src="images/icon_tag.svg" width="15" height="15" />
+            <div class="text4">Very urgent</div>
+          </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------->
+        <div class="box5">
+          <div class="task5">
+            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
+            <div class="text1">Task Nr.5</div>
+            <img src="images/icon_clock_grey.svg" width="15" height="15" />
+            <div class="text2">No due date</div>
+            <img src="images/icon_user_grey.svg" width="15" height="15" />
+            <div class="text3">No user assigned</div>
+            <img src="images/icon_tag.svg" width="15" height="15" />
+            <div class="text4">Urgent</div>
+          </div>
+        </div>
+        <!------------------------------------------------------------------------------------------------------->
+        <div class="box6">
+          <div class="task6">
+            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
+            <div class="text1">Task Nr.6</div>
+            <img src="images/" width="15" height="15" />
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
-  <script>
-  </script>
+  <script></script>
 </html>

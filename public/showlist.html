@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
+
+  <body>
+    <my-menu></my-menu>
+    <template id="showLists">
+      <header>
+        <p id="pageTitle">
+          <img src="images/lists.svg" /><em class="green">My&nbsp </em> Lists
+        </p>
+        <button class="button-green addList">
+          Add new list <img src="images/plus.svg" />
+        </button>
+      </header>
+      <main>
+        <!-- <div class="list-wrapper">
+            <div>
+              <div class="list-div">
+                List Nr. 1
+                <img
+                  src="images/delete_blue.svg"
+                  alt="delete"
+                  title="delete"
+                  class="delete-button"
+                />
+              </div>
+              <div class="list-div">
+                Item one
+                <div class="unchecked"></div>
+              </div>
+              <div class="list-div">
+                Item one
+                <div class="unchecked"></div>
+              </div>
+              <div class="list-div">
+                Item one
+                <div class="checked"></div>
+              </div>
+            </div>
+            <button>
+              Edit List
+            </button>
+          </div> -->
+      </main>
+    </template>
+  </body>
+  <script type="text/javascript" src="js/menuBar.js"></script>
+  <script>
+    redirectNotAuthUser("login.html");
+    let listTmpl = document.getElementById("showLists");
+    let div = listTmpl.content.cloneNode(true);
+    document.body.appendChild(div);
+
+    showLists();
+
+    async function showLists() {
+      try {
+        let userData = JSON.parse(sessionStorage.getItem("logindata"));
+        let url = "http://localhost:3000/lists/" + userData.userid;
+        let listData = await utilities.requestToServer(url, {});
+        if (listData.length > 0) {
+          for (let list of listData) {
+            let listWrapper = document.createElement("div");
+            listWrapper.setAttribute("id", list.id);
+            listWrapper.classList.add("list-wrapper");
+
+            let listViewList = document.createElement("div");
+            listViewList.classList.add("viewList");
+
+            let listDiv = document.createElement("div");
+            listDiv.classList.add("list-div");
+            listDiv.innerHTML = list.name;
+
+            let deleteIcon = document.createElement("img");
+            deleteIcon.setAttribute("src", "images/delete_blue.svg");
+            listDiv.appendChild(deleteIcon);
+
+            listViewList.appendChild(listDiv);
+
+            let url = "http://localhost:3000/tasks/" + list.id;
+            //let url = "http://localhost:3000/tasks/" + 14;
+            let taskData = await utilities.requestToServer(url, {});
+            console.log(taskData);
+            for (let task of taskData) {
+              let taskDiv = document.createElement("div");
+              taskDiv.classList.add("list-div");
+              taskDiv.innerHTML = task.name;
+
+              let checkedDiv = document.createElement("div");
+              if (task.finished) {
+                checkedDiv.classList.add("checked");
+              } else {
+                checkedDiv.classList.add("unchecked");
+              }
+              taskDiv.appendChild(checkedDiv);
+
+              listViewList.appendChild(taskDiv);
+            }
+          }
+
+          listWrapper.appendChild(listViewList);
+
+          let editButton = document.createElement("button");
+          editButton.innerHTML = "Edit List";
+          listWrapper.appendChild(editButton);
+
+          document.querySelector("main").appendChild(listWrapper);
+        } else {
+          console.log("no lists yet");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function deleteList() {
+      let url = "http://localhost:3000/lists/ " + 1;
+
+      let cfg = {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  </script>
+</html>

@@ -43,7 +43,7 @@ my-menu {
   background-color: var(--color-blue);
   color: var(--color-blue-middle);
   text-transform: uppercase;
-  height: 3.5rem;
+  height: 8vh;
   box-shadow: 0px 0px 6px #5a6782;
 }
 
@@ -63,6 +63,10 @@ my-menu {
   margin-right: 0.4rem;
 }
 
+.menuItem > p {
+  display: inline;
+}
+
 /*buttons*/
 button:focus,
 input:focus,
@@ -80,7 +84,7 @@ button {
   border: none;
   border-radius: 100px;
   width: 13rem;
-  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  padding: 0.5rem 0.7rem;
   color: white;
 }
 
@@ -93,7 +97,7 @@ button {
   border: none;
   border-radius: 100px;
   width: 13rem;
-  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  padding: 0.5rem 0.7rem;
   color: white;
 }
 
@@ -102,7 +106,7 @@ button {
   border: none;
   border-radius: 100px;
   width: 13rem;
-  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  padding: 0.5rem 0.7rem;
   color: white;
 }
 
@@ -174,7 +178,24 @@ input:focus {
   display: none;
 }
 
-@media screen and (max-width: 1100px) {
+/*radio buttons*/
+
+input[type="radio"] {
+  -webkit-appearance: none;
+  background-image: url(../images/checkbox_unchecked.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 1.2rem;
+  width: 1.2rem;
+  cursor: pointer;
+  margin: 0.2rem 0.6rem 0.2rem 0;
+}
+
+input[type="radio"]:checked {
+  background-image: url(../images/checkbox_checked.svg);
+}
+
+@media screen and (max-width: 1130px) {
   .list-wrapper {
     width: 30.5%;
   }
@@ -190,14 +211,19 @@ input:focus {
     justify-content: space-between;
     margin: 0.3rem 0;
   }
+
+  .registerwrapper {
+    width: 70%;
+  }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 760px) {
   .list-wrapper {
     width: 47.2%;
   }
 
-  .textwrap {
+  .textwrap,
+  .registerwrapper {
     width: 90%;
   }
 
@@ -207,6 +233,61 @@ input:focus {
 
   .dropdown-div {
     width: 100%;
+  }
+
+  .menuItem img {
+    display: none;
+  }
+
+  .wrapper {
+    flex-direction: column-reverse;
+  }
+
+  .boxLeft {
+    width: 100%;
+    height: 94vh;
+  }
+  .boxRight {
+    width: 100%;
+    height: 6vh;
+  }
+  #plannerimg {
+    height: 3.5vh;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .menuItem p {
+    display: none;
+  }
+
+  .menuItem img {
+    display: block;
+    height: 1rem;
+  }
+
+  #menuWrapper > img {
+    display: none;
+  }
+
+  #menuWrapper {
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+
+  header {
+    flex-direction: column;
+    margin: 0;
+  }
+
+  #addList {
+    margin-bottom: 1rem;
+  }
+
+  #pageTitle {
+    margin: 1rem 0;
   }
 }
 

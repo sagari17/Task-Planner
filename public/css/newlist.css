@@ -26,18 +26,6 @@
   background-color: white;
 }
 
-.text-fieldz {
-  background-color: var(--color-blue-light);
-  border: none;
-  border-radius: 10px;
-  width: 40%;
-  max-width: 40%;
-  height: 1.5rem;
-  padding: 2px 15px;
-  color: var(--color-blue-middle);
-  margin: 0.5rem 0 0 0;
-}
-
 .pgrey {
   color: var(--color-blue-middle);
   font-size: 90%;
@@ -81,17 +69,18 @@
 }
 
 .dropdown-div input,
-.dropdown-div select {
+select {
   margin-left: 0.3rem;
   border-radius: 100px;
   border: 1.2px solid var(--color-blue-middle);
-  padding: 0.2rem 0.6rem;
-  width: 11rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 100%;
+  width: 13rem;
   box-sizing: border-box;
 }
 
 .dropdown-div input:focus,
-.dropdown-div select:focus {
+select:focus {
   border-color: var(--color-green);
 }
 
@@ -112,7 +101,7 @@
 #tasks-container .add-button {
   width: 100%;
   box-shadow: 0px 0px 6px #d0d6e2;
-  padding: 0.5rem 0;
+  padding: 0.7rem 0;
   background-color: white;
   border: none;
 }

@@ -43,7 +43,7 @@ my-menu {
   background-color: var(--color-blue);
   color: var(--color-blue-middle);
   text-transform: uppercase;
-  height: 3.5rem;
+  height: 8vh;
   box-shadow: 0px 0px 6px #5a6782;
 }
 
@@ -176,6 +176,23 @@ input:focus {
 
 .hidden {
   display: none;
+}
+
+/*radio buttons*/
+
+input[type="radio"] {
+  -webkit-appearance: none;
+  background-image: url(../images/checkbox_unchecked.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 1.2rem;
+  width: 1.2rem;
+  cursor: pointer;
+  margin: 0.2rem 0.6rem 0.2rem 0;
+}
+
+input[type="radio"]:checked {
+  background-image: url(../images/checkbox_checked.svg);
 }
 
 @media screen and (max-width: 1130px) {

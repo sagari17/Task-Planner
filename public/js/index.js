@@ -37,5 +37,3 @@ utilities = (function() {
     isValidInput: isValidInput
   };
 })();
-
-console.log("utilities works");

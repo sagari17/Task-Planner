@@ -11,54 +11,81 @@
   <body>
     <my-menu></my-menu>
     <div id="container"></div>
-    
 
     <template id="profile">
       <div class="wrapperprofile">
-      <img src="images/profile.svg" id="profileimg" />
-      <h2 id="name">Jonathan Doe</h2>
-      <p id="email">jonathandoe@gmail.com</p>
-      <div class="buttonrow">
-      <button id="edit" class="button-green">Edit Profile</button>
-      <button id="changepw" class="button-green">Change Password</button>
-    </div>
-    <div class="buttonrow2">
-      <button id="logout" class="button-blue">Logout</button>
-      <button id="delete_user" class="button-red">Delete user</button>
+        <img src="images/profile.svg" id="profileimg" />
+        <h2 id="name">Jonathan Doe</h2>
+        <p id="email" class="profile-email">jonathandoe@gmail.com</p>
+        <div class="buttoncol">
+          <button id="edit" class="button-green">Edit Profile</button>
+          <button id="changepw" class="button-green">Change Password</button>
+        </div>
+        <div class="buttoncol">
+          <button id="logout" class="button-blue">Logout</button>
+          <button id="deleteUser" class="button-blue">Delete user</button>
+        </div>
       </div>
-    </div>
     </template>
 
     <template id="editProfile">
-        <div class="wrapperprofile">
-            <img src="images/profile.svg" id="profileimg" />
-            <h1>Edit profile</h1>
-          <div class="textwrap">
-      <input type="text" id="firstname" placeholder="Firstname" class="text-field"/>
-      <input type="text" id="lastname" placeholder="Lastname" class="text-field"/>
-      <input type="text" id="email" placeholder="E-mail" class="text-field"/>
-          </div>
-      <button type="button" id="save" class="button-green">Save Changes</button>
-      <button type="button" id="goback" class="button-blue">Go Back</button>
-    </div>
+      <div class="wrapperprofile">
+        <img src="images/profile.svg" id="profileimg" />
+        <h1>Edit profile</h1>
+        <div class="textwrap">
+          <input
+            type="text"
+            id="firstname"
+            placeholder="Firstname"
+            class="text-field"
+          />
+          <input
+            type="text"
+            id="lastname"
+            placeholder="Lastname"
+            class="text-field"
+          />
+          <input
+            type="text"
+            id="email"
+            placeholder="E-mail"
+            class="text-field"
+          />
+        </div>
+        <div class="buttonrow">
+          <button type="button" id="goback" class="button-blue">Go Back</button>
+          <button type="button" id="save" class="button-green">
+            Save Changes
+          </button>
+        </div>
+      </div>
     </template>
 
     <template id="changePw">
       <div class="wrapperprofile">
-          <img src="images/profile.svg" id="profileimg" />
+        <img src="images/profile.svg" id="profileimg" />
         <h1>Change password</h1>
         <div class="textwrap">
-      <input type="password" id="newpw" placeholder="New Password" class="text-field"/>
-      <input
-        type="password"
-        id="newpwrepeat"
-        placeholder="Repeat New Password"
-        class="text-field"
-      />
-    </div>
-      <button type="button" id="change"class="button-green" >Change Password</button>
-      <button type="button" id="goback" class="button-blue">Go Back</button>
-    </div>
+          <input
+            type="password"
+            id="newpw"
+            placeholder="New Password"
+            class="text-field"
+          />
+          <input
+            type="password"
+            id="newpwrepeat"
+            placeholder="Repeat New Password"
+            class="text-field"
+          />
+        </div>
+        <div class="buttonrow">
+          <button type="button" id="goback" class="button-blue">Go Back</button>
+          <button type="button" id="change" class="button-green">
+            Change Password
+          </button>
+        </div>
+      </div>
     </template>
   </body>
 
@@ -109,6 +136,9 @@
           document
             .querySelector("#logout")
             .addEventListener("click", logoutUser);
+          document
+            .querySelector("#deleteUser")
+            .addEventListener("click", deleteUser);
         }
       } catch (err) {
         console.log(err);
@@ -209,6 +239,25 @@
     }
 
     function logoutUser() {
+      sessionStorage.removeItem("logindata");
+      redirectNotAuthUser("index.html");
+    }
+
+    async function deleteUser() {
+      let url = "http://localhost:3000/users/" + userid;
+
+      let cfg = {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      try {
+        let data = await utilities.requestToServer(url, cfg);
+        showUserInfo();
+      } catch (err) {
+        console.log(err);
+      }
+
       sessionStorage.removeItem("logindata");
       redirectNotAuthUser("index.html");
     }

@@ -14,7 +14,7 @@
     <template id="showListsTmpl">
       <header>
         <p id="pageTitle">
-          <img src="images/lists.svg" /><em class="green">My&nbsp </em> Lists
+          <img src="images/lists.svg" id="listimg" /><em class="green">My&nbsp </em> Lists
         </p>
         <button id="addList" class="button-green">
           Add new list <img src="images/plus.svg" />
@@ -36,25 +36,24 @@
             type="text"
             id="new-list-title"
             placeholder="List title here"
+            class="text-fieldz"
             required
           />
         </div>
         <div>
           <p class="new-list-heading">List Sharing</p>
           <div class="radio-group">
-            <input type="radio" name="public" value="private" checked />
+            <input type="radio" name="public" value="private" class="radio-buttons" checked />
             Private
-            <p>Your list is private. Only you can see it.</p>
+            <p class="pgrey">Your list is private. Only you can see it.</p>
           </div>
           <div class="radio-group">
             <input type="radio" name="public" value="public" /> Public
-            <p>
-              Your list is public. Everyone who has the link can access it.
-            </p>
+            <p class="pgrey">Your list is public. Everyone who has the link can access it. </p>
           </div>
           <div class="radio-group">
             <input type="radio" name="public" value="members" /> Add members
-            <p>
+            <p class="pgrey">
               Share this list with certain users to let them become Members of
               this list. You can then assign them to tasks on the list.
             </p>
@@ -63,6 +62,7 @@
                 type="text"
                 id="member-email"
                 placeholder="User email address"
+                class="text-fieldz"
               />
               <p id="errormsg-member"></p>
               <button type="button">
@@ -86,16 +86,16 @@
     </template>
     <template id="task-div">
       <div class="task-div">
-        <div>
+        <div class="task-title-div">
           <input
             type="text"
-            class="task-title"
+            class="text-fieldz"
             placeholder="Task title here"
             required
           />
           <img src="images/delete_red_button.svg" class="delete-icon-red" />
         </div>
-        <div>
+        <div class="taskrowmenu">
           <div>
             Assign deadline:
             <input type="date" class="due-date" name="date" /><br />
@@ -109,13 +109,14 @@
               <option value="Not Urgent">Not Urgent</option>
             </select>
           </div>
-          <div>
-            Assign user:
-            <select class="user">
-              <option value="None" selected>No User</option>
-            </select>
-          </div>
         </div>
+        <div class="taskrowmenu">
+          Assign user:
+          <select class="user">
+            <option value="None" selected>No User</option>
+          </select>
+        </div>
+      
       </div>
     </template>
   </body>

@@ -28,7 +28,9 @@ body {
 }
 
 /*buttons*/
-button:focus {
+button:focus,
+input:focus,
+select:focus {
   outline: none;
 }
 
@@ -77,10 +79,6 @@ button {
   color: white;
 }
 
-input:focus {
-  outline: none;
-}
-
 input::placeholder {
   color: var(--color-blue-middle);
 }
@@ -91,6 +89,18 @@ input::placeholder {
   border-radius: 100px;
   box-sizing: border-box;
   width: 100%;
+  font-size: 100%;
+  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  color: var(--color-blue-dark);
+  margin: 0.5rem 0 0 0;
+}
+
+.text-field-50 {
+  background-color: var(--color-blue-light);
+  border: none;
+  border-radius: 100px;
+  box-sizing: border-box;
+  width: 50%;
   font-size: 100%;
   padding: 0.5rem 0.7rem 0.5rem 0.9rem;
   color: var(--color-blue-dark);

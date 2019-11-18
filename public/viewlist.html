@@ -120,6 +120,8 @@
       let taskBoxTmpl = document.getElementById("taskBoxTmpl");
       console.log(task);
       console.log(task.due_date);
+      taskBoxTmpl.content.querySelector("input[type=radio]").name =
+        "task-" + task.id;
       taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
       taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
         ? task.due_date.split("T")[0]

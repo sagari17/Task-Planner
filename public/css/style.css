@@ -1,5 +1,7 @@
 @import url("showlist.css");
 @import url("viewlist.css");
+@import url("login.css");
+@import url("profile.css");
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap");
 
 :root {
@@ -7,6 +9,7 @@
   --color-blue-middle: #8f9bb3;
   --color-blue-light: #f0f4fa;
   --color-green: #91db00;
+  --color-green-dark: #82c205;
   --color-red: #e03f3f;
 }
 
@@ -29,6 +32,11 @@ button:focus {
   outline: none;
 }
 
+button {
+  font-size: 100%;
+  cursor: pointer;
+}
+
 .button-green {
   background-color: var(--color-green);
   border: none;
@@ -36,6 +44,61 @@ button:focus {
   width: 13rem;
   padding: 0.5rem 0.7rem 0.5rem 0.9rem;
   color: white;
+}
+
+.button-green:active {
+  background-color: var(--color-green-dark);
+}
+
+.button-blue {
+  background-color: var(--color-blue);
+  border: none;
+  border-radius: 100px;
+  width: 13rem;
+  padding: 05rem 0.7rem 05rem 0.9rem;
+  color: white;
+}
+
+.button-grey {
+  background-color: var(--color-blue-middle);
+  border: none;
+  border-radius: 100px;
+  width: 13rem;
+  padding: 05rem 0.7rem 05rem 0.9rem;
+  color: white;
+}
+
+.button-red {
+  background-color: var(--color-red);
+  border: none;
+  border-radius: 100px;
+  width: 13rem;
+  padding: 05rem 0.7rem 05rem 0.9rem;
+  color: white;
+}
+
+input:focus {
+  outline: none;
+}
+
+input::placeholder {
+  color: var(--color-blue-middle);
+}
+
+.text-field {
+  background-color: var(--color-blue-light);
+  border: none;
+  border-radius: 100px;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 100%;
+  padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+  color: var(--color-blue-dark);
+  margin: 0.5rem 0 0 0;
+}
+
+input:focus {
+  outline: none;
 }
 
 /*Task finished, unfinished*/

@@ -106,11 +106,14 @@ const db = function(dbConnection) {
     return listData;
   };
 
-  const getListByUserID = async function(userID) {
+  const getListsByUserID = async function(userID) {
     let listData = null;
     let values = [userID];
     try {
-      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+      listData = await runQuery(
+        "SELECT * from lists WHERE owner=$1 ORDER BY id",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
@@ -120,20 +123,29 @@ const db = function(dbConnection) {
   const getListByListID = async function(listID) {
     let listData = null;
     let values = [listID];
+    console.log(listID);
     let query = "SELECT * FROM lists WHERE id=$1";
     try {
       listData = await runQuery(query, values);
+      console.log(listData);
     } catch (err) {
       console.log(err);
     }
     return listData;
   };
 
-  const getTasksByListID = async function(listID) {
+  const getTasksByListID = async function(values) {
     let taskData = null;
-    let values = [listID];
+    let query = "SELECT * FROM tasks WHERE listid=$1";
+    console.log(values);
+    if (values[1] == "None") {
+      values = [values[0]];
+      console.log(values);
+    } else {
+      query += " AND tag=$2";
+    }
     try {
-      taskData = await runQuery("SELECT * FROM tasks WHERE listid=$1", values);
+      taskData = await runQuery(query, values);
     } catch (err) {
       console.log(err);
     }
@@ -282,7 +294,7 @@ const db = function(dbConnection) {
     changePassword: changePassword,
     deleteUser: deleteUser,
     createList: createList,
-    getListByUserID: getListByUserID,
+    getListsByUserID: getListsByUserID,
     getListByListID: getListByListID,
     getTasksByListID: getTasksByListID,
     getTasksByListIDs: getTasksByListIDs,

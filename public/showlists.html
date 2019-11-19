@@ -119,12 +119,7 @@
           </div>
           <div class="dropdown-div">
             Add tag:
-            <select class="tag">
-              <option value="None" selected>No Tag</option>
-              <option value="Urgent">Urgent</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Not Urgent">Not Urgent</option>
-            </select>
+            <select id="tagDropdown" class="tag"> </select>
           </div>
           <div class="dropdown-div">
             Assign user:
@@ -144,6 +139,7 @@
     let isNewList = true;
     let newListid;
     let existingTasks = true;
+    let TagArr = utilities.getTagArray();
 
     showLists();
 
@@ -360,6 +356,10 @@
           .classList.add("added");
       }
 
+      let tagDropdown = newTaskDiv.content.querySelector("#tagDropdown");
+      TagArr.forEach(obj => {
+        tagDropdown.appendChild(new Option(obj.text, obj.value));
+      });
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);

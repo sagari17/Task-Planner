@@ -51,9 +51,10 @@ router.post("/createSeveralTasks", async function(req, res, next) {
 });
 
 // Get all tasks by certain list id --------------------------------------
-router.get("/:listID", async function(req, res, next) {
+router.get("/:listID/:tag", async function(req, res, next) {
   try {
-    let tasks = await db.getTasksByListID(req.params.listID);
+    let values = [req.params.listID, req.params.tag];
+    let tasks = await db.getTasksByListID(values);
     if (tasks) {
       res.status(200).json(tasks);
     } else {

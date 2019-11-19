@@ -32,8 +32,52 @@ utilities = (function() {
     let valid = pattern.test(input) ? true : false;
     return valid;
   }
+
+  function getTagArray() {
+    return [
+      {
+        text: "Not specified",
+        value: "None"
+      },
+      {
+        text: "Urgent",
+        value: "Urgent"
+      },
+      {
+        text: "In Progress",
+        value: "In Progress"
+      },
+      {
+        text: "Not Urgent",
+        value: "Not Urgent"
+      }
+    ];
+  }
+
+  function getDateArray() {
+    return [
+      {
+        text: "Not specified",
+        value: "None"
+      },
+      {
+        text: "Due Today",
+        value: "today"
+      },
+      {
+        text: "Due this Week",
+        value: "week"
+      },
+      {
+        text: "Due this Month",
+        value: "month"
+      }
+    ];
+  }
   return {
     requestToServer: requestToServer,
-    isValidInput: isValidInput
+    isValidInput: isValidInput,
+    getTagArray: getTagArray,
+    getDateArray: getDateArray
   };
 })();

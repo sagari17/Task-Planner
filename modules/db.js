@@ -106,11 +106,14 @@ const db = function(dbConnection) {
     return listData;
   };
 
-  const getListByUserID = async function(userID) {
+  const getListsByUserID = async function(userID) {
     let listData = null;
     let values = [userID];
     try {
-      listData = await runQuery("SELECT * from lists WHERE owner=$1", values);
+      listData = await runQuery(
+        "SELECT * from lists WHERE owner=$1 ORDER BY id",
+        values
+      );
     } catch (err) {
       console.log(err);
     }
@@ -129,11 +132,39 @@ const db = function(dbConnection) {
     return listData;
   };
 
-  const getTasksByListID = async function(listID) {
+  const getTasksByListID = async function(values) {
     let taskData = null;
-    let values = [listID];
+    let query = "SELECT * FROM tasks WHERE listid=$1";
+    if (values[1] == "None") {
+      values = [values[0]];
+    } else {
+      query += " AND tag=$2";
+    }
     try {
-      taskData = await runQuery("SELECT * FROM tasks WHERE listid=$1", values);
+      taskData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
+  const filterTasksByDate = async function(values) {
+    console.log(values[1]);
+    let taskData = null;
+    let query = "SELECT * FROM tasks WHERE listid=$1";
+    if (values[1] == "today") {
+      query += " AND due_date=NOW()::date";
+    } else if (values[1] == "week") {
+      query +=
+        " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '7 days'))";
+    } else if (values[1] == "month") {
+      query +=
+        " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '1 month'))";
+    }
+    values = [values[0]];
+
+    try {
+      taskData = await runQuery(query, values);
     } catch (err) {
       console.log(err);
     }
@@ -282,10 +313,11 @@ const db = function(dbConnection) {
     changePassword: changePassword,
     deleteUser: deleteUser,
     createList: createList,
-    getListByUserID: getListByUserID,
+    getListsByUserID: getListsByUserID,
     getListByListID: getListByListID,
     getTasksByListID: getTasksByListID,
     getTasksByListIDs: getTasksByListIDs,
+    filterTasksByDate: filterTasksByDate,
     deleteList: deleteList,
     createTask: createTask,
     createSeveralTasks: createSeveralTasks,

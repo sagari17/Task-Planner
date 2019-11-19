@@ -8,7 +8,7 @@ class MyMenu extends HTMLElement {
           <img src="images/menu_lists_grey.svg" alt="lists" title="lists" />Lists
         </div>
         <div class="menuItem">
-          <img src="images/tasks_grey.svg" alt="tasks" title="tasks" />Tasks
+          <img src="images/statistics-bar.svg" alt="statistics" title="statistics" />Statistics
         </div>
         <div class="menuItem">
           <img
@@ -20,18 +20,18 @@ class MyMenu extends HTMLElement {
         <img src="images/MyPlanner.svg" />
       </div>`;
     let lists = this.querySelector(".menuItem");
-    let tasks = this.querySelectorAll(".menuItem")[1];
+    let statistics = this.querySelectorAll(".menuItem")[1];
     let profile = this.querySelectorAll(".menuItem")[2];
     lists.addEventListener("click", this.clickLists);
-    tasks.addEventListener("click", this.clickTasks);
+    statistics.addEventListener("click", this.clickStatistics);
     profile.addEventListener("click", this.clickProfile);
   }
 
   clickLists() {
     redirectUser("showlists.html");
   }
-  clickTasks() {
-    console.log("tasks clicked");
+  clickStatistics() {
+    console.log("statistics clicked");
   }
   clickProfile() {
     redirectUser("profile.html");

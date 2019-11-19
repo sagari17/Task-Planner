@@ -5,19 +5,22 @@ class MyMenu extends HTMLElement {
     this.innerHTML = `
       <div id="menuWrapper">
         <div class="menuItem">
-          <img src="images/menu_lists_grey.svg" alt="lists" title="lists" />Lists
+          <img src="images/menu_lists_grey.svg" alt="lists" title="lists" /><p>Lists</p>
         </div>
         <div class="menuItem">
+
           <img src="images/statistics-bar.svg" alt="statistics" title="statistics" />Statistics
+
+          <img src="images/tasks_grey.svg" alt="tasks" title="tasks" /><p>Tasks</p>
         </div>
         <div class="menuItem">
           <img
             src="images/menu_profile_grey.svg"
             alt="profile"
             title="profile"
-          />Profile
+          /><p>Profile</p>
         </div>
-        <img src="images/MyPlanner.svg" />
+        <img src="images/MyPlanner.svg" alt="Logo" title="Logo"/>
       </div>`;
     let lists = this.querySelector(".menuItem");
     let statistics = this.querySelectorAll(".menuItem")[1];

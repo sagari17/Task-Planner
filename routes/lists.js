@@ -42,7 +42,7 @@ router.get("/view/:listID", async function(req, res, next) {
   try {
     let list = await db.getListByListID(req.params.listID);
     if (list) {
-      res.status(200).json(list);
+      res.status(200).json(list[0]);
     } else {
       throw "No lists exist.";
     }

@@ -15,6 +15,103 @@
   margin: 2rem 0;
 }
 .new-list-heading {
-  font-weight: 600;
+  font-weight: 700;
   margin-top: 0;
+  font-size: 100%;
+}
+
+.radio-buttons {
+  color: rgb(91, 224, 58);
+  outline-color: var(--color-blue);
+  background-color: white;
+}
+
+.pgrey {
+  color: var(--color-blue-middle);
+  font-size: 90%;
+}
+
+.members-div {
+  display: flex;
+  flex-direction: row;
+}
+
+.task-div {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem 1rem 1rem;
+  box-shadow: 0px 0px 6px #d0d6e2;
+  border-radius: 2px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.task-title-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom-style: solid;
+  border-bottom-width: thin;
+  border-bottom-color: rgba(233, 233, 233, 0.692);
+  padding-bottom: 20px;
+}
+
+.taskrowmenu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 1.5rem 0.2rem 0.5rem 0.2rem;
+}
+
+.dropdown-div {
+  width: 33%;
+}
+
+.dropdown-div input,
+select {
+  margin-left: 0.3rem;
+  border-radius: 100px;
+  border: 1.2px solid var(--color-blue-middle);
+  padding: 0.3rem 0.7rem;
+  font-size: 100%;
+  width: 13rem;
+  box-sizing: border-box;
+}
+
+.dropdown-div input:focus,
+select:focus {
+  border-color: var(--color-green);
+}
+
+.add-button {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  color: var(--color-green);
+  align-items: center;
+}
+
+.add-button img {
+  margin: 0 0.5rem 0 0.8rem;
+  width: 1.8rem;
+}
+
+#tasks-container .add-button {
+  width: 100%;
+  box-shadow: 0px 0px 6px #d0d6e2;
+  padding: 0.7rem 0;
+  background-color: white;
+  border: none;
+}
+
+.buttonrow #saveList,
+.buttonrow #cancelList {
+  margin: 0 0.3rem;
+}
+
+.delete-icon-red {
+  width: 1.8rem;
+  margin-left: 0.8rem;
 }

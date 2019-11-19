@@ -4,111 +4,138 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My document</title>
-    <link rel="stylesheet" type="text/css" href="css/viewlist.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
     <my-menu></my-menu>
-    <div class="wrapperviewlist">
-      <div class="listChanger">
-        <img src="images/backbutton_white.svg" width="30" height="40" />
-        <div class="text1">List Nr.1</div>
-        <img src="images/pencil-edit-button.svg" width="30" height="40" />
+    <div id="container"></div>
+    <template id="viewListTmpl">
+      <div class="wrapperviewlist">
+        <div id="listTitleWrapper">
+          <img src="images/backbutton_white.svg" class="viewListIcon" />
+          <div id="viewListTitle">List Nr.1</div>
+          <img src="images/pencil-edit-button.svg" class="viewListIcon" />
+        </div>
+
+        <div class="filterBar">
+          <div class="filter-dropdown">
+            <input type="radio" name="filter" value="tag" />
+            <p class="tag-filter">Filter by Tags:</p>
+            <select class="tag">
+              <option value="None" selected>No Filter</option>
+              <option value="Urgent">Urgent</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Not Urgent">Not Urgent</option>
+            </select>
+          </div>
+          <div class="filter-dropdown">
+            <input type="radio" name="filter" value="date" />
+            <p class="date-filter">Filter by Due Date:</p>
+            <select class="tag">
+              <option value="None" selected>No Filter</option>
+              <option value="today">Due Today</option>
+              <option value="thisWeek">Due this week</option>
+              <option value="thisMonth">Due this month</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="taskBoxes"></div>
       </div>
+    </template>
 
-      <!------------------------------------------------------------------------------------------------------->
-
-      <div class="filterBar">
-          <img src="images/checkbox_unchecked.svg" width="20" height="20" />
-          <div class="text1">Filter by Tags</div>
-          <img src="images/filter_arrow_grey.svg" />
-          <img src="images/checkbox_checked.svg" width="20" height="20" />
-          <div class="text2">Filter by Due Date</div>
-          <img src="images/filter_arrow_green.svg" />
-      </div>
-
-      <!------------------------------------------------------------------------------------------------------->
-
-      <div class="taskBoxes">
-        <div class="box1">
-          <div class="task1">
-            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
-            <div class="text1">Task Nr.1</div>
-            <img src="images/icon_clock.svg" width="15" height="15" />
-            <div class="text2">Due: 26.10.2019</div>
-            <img src="images/icon_user.svg" width="15" height="15" />
-            <div class="text3">John Doe</div>
-            <img src="images/icon_tag.svg" width="15" height="15" />
-            <div class="text4">Important</div>
-          </div>
+    <template id="taskBoxTmpl">
+      <div class="viewList-task">
+        <div class="row">
+          <input type="radio" name="task" value="date" />
+          <div class="vl-task-title">Task Nr.1</div>
         </div>
-        <!------------------------------------------------------------------------------------------------------->
-        <div class="box2">
-          <div class="task2">
-            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
-            <div class="text1">Task Nr.2</div>
-            <img src="images/icon_clock.svg" width="15" height="15" />
-            <div class="text2">Due: 28.11.2019</div>
-            <img src="images/icon_user.svg" width="15" height="15" />
-            <div class="text3">John Doe</div>
-            <img src="images/icon_tag.svg" width="15" height="15" />
-            <div class="text4">Not important</div>
+        <div class="row attributes">
+          <div class="row attr">
+            <img src="images/icon_clock.svg" />
+            <div class="duedate">Due: 26.10.2019</div>
           </div>
-        </div>
-        <!------------------------------------------------------------------------------------------------------->
-
-        <div class="box3">
-          <div class="task3">
-            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
-            <div class="text1">Task Nr.3</div>
-            <img src="images/icon_clock_grey.svg" width="15" height="15" />
-            <div class="text2">No due date</div>
-            <img src="images/icon_user_grey.svg" width="15" height="15" />
-            <div class="text3">No user assigned</div>
-            <img src="images/icon_tag_grey.svg" width="15" height="15" />
-            <div class="text4">No tag assigned</div>
+          <div class="row attr">
+            <img src="images/icon_user.svg" />
+            <div class="user">John Doe</div>
           </div>
-        </div>
-
-        <!------------------------------------------------------------------------------------------------------->
-        <div class="box4">
-          <div class="task4">
-            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
-            <div class="text1">Task Nr.4</div>
-            <img src="images/icon_clock.svg" width="15" height="15" />
-            <div class="text2">Due: 01.01.2020</div>
-            <img src="images/icon_user.svg" width="15" height="15" />
-            <div class="text3">Jane Daesy</div>
-            <img src="images/icon_tag.svg" width="15" height="15" />
-            <div class="text4">Very urgent</div>
-          </div>
-        </div>
-        <!------------------------------------------------------------------------------------------------------->
-        <div class="box5">
-          <div class="task5">
-            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
-            <div class="text1">Task Nr.5</div>
-            <img src="images/icon_clock_grey.svg" width="15" height="15" />
-            <div class="text2">No due date</div>
-            <img src="images/icon_user_grey.svg" width="15" height="15" />
-            <div class="text3">No user assigned</div>
-            <img src="images/icon_tag.svg" width="15" height="15" />
-            <div class="text4">Urgent</div>
-          </div>
-        </div>
-        <!------------------------------------------------------------------------------------------------------->
-        <div class="box6">
-          <div class="task6">
-            <img src="images/checkbox_unchecked.svg" width="15" height="15" />
-            <div class="text1">Task Nr.6</div>
-            <img src="images/delete_red_button.svg" width="15" height="15" />
+          <div class="row attr">
+            <img src="images/icon_tag.svg" />
+            <div class="tag">Important</div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
-  <script></script>
+  <script>
+    let urlParams = new URLSearchParams(window.location.search);
+    let user = JSON.parse(sessionStorage.getItem("logindata"));
+    let userid;
+    if (isLoggedIn()) {
+      userid = user.userid;
+    }
+    let list;
+    let tasks;
+    let listid = urlParams.get("id");
+    let container = document.getElementById("container");
+
+    displayList();
+
+    async function displayList() {
+      let url = "http://localhost:3000/lists/view/" + listid;
+      try {
+        list = await utilities.requestToServer(url, {});
+        //localStorage.setItem("viewlist", JSON.stringify(list));
+      } catch (err) {
+        console.log(err);
+      }
+
+      console.log(list);
+      if (list.public == false && !(isLoggedIn() && list.owner == userid)) {
+        redirectUser("index.html");
+      }
+
+      let viewListTmpl = document.getElementById("viewListTmpl");
+      viewListTmpl.content.querySelector("#viewListTitle").innerHTML =
+        list.name;
+      let viewListContent = viewListTmpl.content.cloneNode(true);
+      container.appendChild(viewListContent);
+
+      try {
+        url = "http://localhost:3000/tasks/" + listid;
+        tasks = await utilities.requestToServer(url, {});
+      } catch (err) {
+        console.log(err);
+      }
+
+      for (let task of tasks) {
+        displayListTask(task);
+      }
+    }
+
+    function displayListTask(task) {
+      let taskBoxTmpl = document.getElementById("taskBoxTmpl");
+      console.log(task);
+      console.log(task.due_date);
+      taskBoxTmpl.content.querySelector("input[type=radio]").name =
+        "task-" + task.id;
+      taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
+      taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
+        ? task.due_date.split("T")[0]
+        : "No due date";
+      taskBoxTmpl.content.querySelector(".user").innerHTML = task.assigned_user
+        ? task.assigned_user
+        : "No user assigned";
+      taskBoxTmpl.content.querySelector(".tag").innerHTML = task.tag
+        ? task.tag
+        : "No tag assigned";
+      let taskBoxContent = taskBoxTmpl.content.cloneNode(true);
+      let taskBoxContainer = document.querySelector("#taskBoxes");
+
+      taskBoxContainer.appendChild(taskBoxContent);
+    }
+  </script>
 </html>

@@ -14,15 +14,22 @@
     <template id="viewListTmpl">
       <div class="wrapperviewlist">
         <div id="listTitleWrapper">
-          <img src="images/backbutton_white.svg" class="viewListIcon" />
+          <img
+            src="images/backbutton_white.svg"
+            id="backButton"
+            class="viewListIcon"
+          />
           <div id="viewListTitle">List Nr.1</div>
-          <img src="images/pencil-edit-button.svg" class="viewListIcon" />
+          <img
+            src="images/pencil-edit-button.svg"
+            class="viewListIcon no-visibility"
+          />
         </div>
 
         <div class="filterBar">
           <div class="filter-dropdown">
             <div class="row">
-              <input type="radio" name="filter" value="tag" />
+              <input type="radio" name="filter" value="tag" checked />
               <p class="tag-filter">Filter by Tags:</p>
             </div>
             <select id="tagDropdown"> </select>
@@ -118,12 +125,22 @@
         .querySelector("#dateDropdown")
         .addEventListener("change", changeDateFilter);
 
+      document.querySelectorAll("input[name=filter]").forEach(element => {
+        element.addEventListener("click", activateFilter);
+      });
+
+      document.querySelector("#backButton").addEventListener("click", goBack);
+
       getTasks("None");
     }
 
     async function getTasks(urlAddition) {
       try {
-        url = "http://localhost:3000/tasks/" + listid + "/" + urlAddition;
+        url =
+          "http://localhost:3000/tasks/tasksByOneID/" +
+          listid +
+          "/" +
+          urlAddition;
         tasks = await utilities.requestToServer(url, {});
       } catch (err) {
         console.log(err);
@@ -138,17 +155,19 @@
         }
       } else {
         let message = document.createElement("p");
-        message.innerHTML = "No tasks exists.";
+        message.innerHTML = "No tasks exist.";
         message.classList.add("notasks");
         taskBoxes.appendChild(message);
       }
     }
 
     function displayListTask(task) {
+      console.log(task);
       let taskBoxTmpl = document.getElementById("taskBoxTmpl");
       taskBoxTmpl.content.querySelector("input[type=radio]").name =
         "task-" + task.id;
       taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
+      console.log(task.due_date);
       taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
         ? task.due_date.split("T")[0]
         : "No due date";
@@ -164,10 +183,21 @@
     }
 
     function changeTagFilter(evt) {
-      let radio = document.querySelector("input[name=filter]:checked");
-      if (radio && radio.value == "tag") {
-        getTasks(evt.target.value);
-      }
+      document.querySelector("input[value=tag]").checked = true;
+      getTasks(document.querySelector("#tagDropdown").value);
+    }
+
+    function changeDateFilter(evt) {
+      document.querySelector("input[value=date]").checked = true;
+      getTasks("date/" + document.querySelector("#dateDropdown").value);
+    }
+
+    function activateFilter(evt) {
+      evt.target.value == "tag" ? changeTagFilter() : changeDateFilter();
+    }
+
+    function goBack() {
+      redirectUser("showlists.html");
     }
   </script>
 </html>

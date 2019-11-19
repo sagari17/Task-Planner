@@ -195,6 +195,10 @@ input[type="radio"]:checked {
   background-image: url(../images/checkbox_checked.svg);
 }
 
+.no-visibility {
+  visibility: hidden;
+}
+
 @media screen and (max-width: 1130px) {
   .list-wrapper {
     width: 30.5%;

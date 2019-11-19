@@ -123,11 +123,9 @@ const db = function(dbConnection) {
   const getListByListID = async function(listID) {
     let listData = null;
     let values = [listID];
-    console.log(listID);
     let query = "SELECT * FROM lists WHERE id=$1";
     try {
       listData = await runQuery(query, values);
-      console.log(listData);
     } catch (err) {
       console.log(err);
     }
@@ -137,13 +135,34 @@ const db = function(dbConnection) {
   const getTasksByListID = async function(values) {
     let taskData = null;
     let query = "SELECT * FROM tasks WHERE listid=$1";
-    console.log(values);
     if (values[1] == "None") {
       values = [values[0]];
-      console.log(values);
     } else {
       query += " AND tag=$2";
     }
+    try {
+      taskData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return taskData;
+  };
+
+  const filterTasksByDate = async function(values) {
+    console.log(values[1]);
+    let taskData = null;
+    let query = "SELECT * FROM tasks WHERE listid=$1";
+    if (values[1] == "today") {
+      query += " AND due_date=NOW()::date";
+    } else if (values[1] == "week") {
+      query +=
+        " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '7 days'))";
+    } else if (values[1] == "month") {
+      query +=
+        " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '1 month'))";
+    }
+    values = [values[0]];
+
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
@@ -298,6 +317,7 @@ const db = function(dbConnection) {
     getListByListID: getListByListID,
     getTasksByListID: getTasksByListID,
     getTasksByListIDs: getTasksByListIDs,
+    filterTasksByDate: filterTasksByDate,
     deleteList: deleteList,
     createTask: createTask,
     createSeveralTasks: createSeveralTasks,

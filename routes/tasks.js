@@ -18,11 +18,8 @@ router.post("/", async function(req, res, next) {
     task.finished,
     task.listid
   ];
-  console.log(taskData);
   try {
     let result = await db.createTask(taskData);
-    console.log(result);
-    console.log(result.length);
     if (result.length > 0) {
       res.status(200).json({ msg: "Insert OK" });
     } else {
@@ -38,8 +35,6 @@ router.post("/createSeveralTasks", async function(req, res, next) {
   let tasks = req.body;
   try {
     let result = await db.createSeveralTasks(tasks);
-    console.log(result);
-    console.log(result.length);
     if (result.length > 0) {
       res.status(200).json({ msg: "Insert OK" });
     } else {
@@ -50,11 +45,26 @@ router.post("/createSeveralTasks", async function(req, res, next) {
   }
 });
 
-// Get all tasks by certain list id --------------------------------------
-router.get("/:listID/:tag", async function(req, res, next) {
+// Get all tasks by certain list id (and task; add "None" if there should be not tag condition) ---------------
+router.get("/tasksByOneID/:listID/:tag", async function(req, res, next) {
   try {
     let values = [req.params.listID, req.params.tag];
     let tasks = await db.getTasksByListID(values);
+    if (tasks) {
+      res.status(200).json(tasks);
+    } else {
+      throw "No tasks exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// Get all tasks by certain list id (and task; add "None" if there should be not tag condition) ---------------
+router.get("/tasksByOneID/:listID/date/:date", async function(req, res, next) {
+  try {
+    let values = [req.params.listID, req.params.date];
+    let tasks = await db.filterTasksByDate(values);
     if (tasks) {
       res.status(200).json(tasks);
     } else {
@@ -83,9 +93,7 @@ router.delete("/:taskID", async function(req, res, next) {
 // Update task with certain task id --------------------------------------
 router.patch("/", async function(req, res, next) {
   try {
-    console.log("updating");
     let tasks = await db.updateTask(req.body);
-    console.log(tasks);
     if (tasks) {
       res.status(200).json({ msg: "Changes Saved" });
     } else {
@@ -97,12 +105,11 @@ router.patch("/", async function(req, res, next) {
 });
 
 // Get all tasks by several list ids --------------------------------------
-router.get("/alltasks/:listIDS", async function(req, res, next) {
+router.get("/allTasksBySeveralIDS/:listIDS", async function(req, res, next) {
   try {
     let ids = req.params.listIDS;
     let listIDS = ids.split(",");
     let tasks = await db.getTasksByListIDs(listIDS);
-    console.log(tasks);
     if (tasks) {
       res.status(200).json(tasks);
     } else {
@@ -115,7 +122,6 @@ router.get("/alltasks/:listIDS", async function(req, res, next) {
 
 // Updates finished column to opposite of current value by task id ---------------
 router.patch("/finished/", async function(req, res, next) {
-  console.log("inside patch task ");
   try {
     let task = await db.taskChangeFinished(req.body);
     if (task) {

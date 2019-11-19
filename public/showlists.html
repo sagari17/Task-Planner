@@ -171,7 +171,9 @@
               }
             }
 
-            let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
+            let url2 =
+              "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+
             taskData = await utilities.requestToServer(url2, {});
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
@@ -414,7 +416,6 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log("creates several tasks with not new list");
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
@@ -478,7 +479,7 @@
       console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
         console.log(newTasks[index]);
-        url = "http://localhost:3000/tasks/";
+        url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

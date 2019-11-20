@@ -102,4 +102,18 @@ router.get("/email/:userEmail", async function(req, res, next) {
   }
 });
 
+// check if email exists ----------------------------------------------------------------
+router.get("/emailAndData/:userEmail", async function(req, res, next) {
+  try {
+    let email = await db.checkEmailReturnUser(req.params.userEmail);
+    if (email||email===false) {
+      res.status(200).json(email);
+    } else {
+      throw "User does not exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
 module.exports = router;

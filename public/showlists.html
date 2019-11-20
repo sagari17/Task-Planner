@@ -73,9 +73,7 @@
               this list. You can then assign them to tasks on the list.
             </p>
             <div class="members-div">
-              <div id="list-members">
-
-              </div>
+              <div id="list-members"></div>
               <input
                 type="text"
                 id="member-email"
@@ -122,13 +120,11 @@
           </div>
           <div class="dropdown-div">
             Add tag:
-            <select id="tagDropdown" class="tag"> </select>
+            <select class="tag tagDropdown"> </select>
           </div>
           <div class="dropdown-div">
             Assign user:
-            <select class="user">
-              <option value="None" selected>No User</option>
-            </select>
+            <select class="user userDropdown"> </select>
           </div>
         </div>
       </div>
@@ -258,13 +254,22 @@
 
     async function addNewList(evt) {
       let thisUser = JSON.parse(sessionStorage.getItem("logindata"));
-      let listmembers = [{id: thisUser.userid, firstname: thisUser.firstname, lastname: thisUser.lastname, email: thisUser.email}]
+      let listmembers = [
+        {
+          id: thisUser.userid,
+          firstname: thisUser.firstname,
+          lastname: thisUser.lastname,
+          email: thisUser.email
+        }
+      ];
       isNewList = true;
       let newListTmpl = document.getElementById("newListTmpl");
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
-      document.querySelector("#addMember").addEventListener("click", editMembers);
+      document
+        .querySelector("#addMember")
+        .addEventListener("click", editMembers);
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
       document.querySelector("form").addEventListener("submit", saveList);
       document
@@ -280,9 +285,9 @@
       detailID = evt.target.parentNode.id;
       let lists = JSON.parse(localStorage.getItem("listdata"));
       let tasks = JSON.parse(localStorage.getItem("taskdata"));
-      sessionStorage.removeItem('listMembers');
-      sessionStorage.removeItem('newMembers');
-      sessionStorage.removeItem('deletedMembers');
+      sessionStorage.removeItem("listMembers");
+      sessionStorage.removeItem("newMembers");
+      sessionStorage.removeItem("deletedMembers");
       let listData = lists.find(obj => {
         return obj.id == detailID;
       });
@@ -303,10 +308,9 @@
         return obj.listid == detailID;
       });
 
-      const addOptions = await addMemberData(detailID)
-      let existing = JSON.parse(sessionStorage.getItem('listMembers'));
+      const addOptions = await addMemberData(detailID);
+      let existing = JSON.parse(sessionStorage.getItem("listMembers"));
       createMemberDiv(existing);
-      
 
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
@@ -318,11 +322,11 @@
         taskDiv.querySelector(".due-date").value = date;
         let tag = task.tag ? task.tag : "None";
         taskDiv.querySelector(".tag").value = tag;
-        
+
         taskDiv.setAttribute("id", "taskid-" + task.id);
       }
-      
-        /*const addOptions = await addMemberData(detailID)
+
+      /*const addOptions = await addMemberData(detailID)
         console.log(addOptions)
         if(addOption){
         let existing = sessionStorage.getItem('listMembers');
@@ -330,21 +334,23 @@
         addOption(existing)
         console.log(existing)
       }*/
-     
+
       //addMemberData(detailID)
       /*const getMemberData = () => {
         const result = addMemberData(detailID);
-        
+
         return result
       }
-      
+
       addOption(getMemberData)*/
-    
+
       document.querySelectorAll(".delete-icon-red").forEach(btn => {
         btn.addEventListener("click", deleteTaskButton);
       });
-      
-      document.querySelector("#addMember").addEventListener("click", editMembers);
+
+      document
+        .querySelector("#addMember")
+        .addEventListener("click", editMembers);
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
       document.querySelector("form").addEventListener("submit", saveChanges);
       document
@@ -391,14 +397,19 @@
           .querySelector(".task-div")
           .classList.add("added");
       }
-      console.log(newTaskDiv.content.querySelector(".user"));
-      addOption(JSON.parse(sessionStorage.getItem('listMembers')),newTaskDiv.content);
-     
 
-      let tagDropdown = newTaskDiv.content.querySelector("#tagDropdown");
+      let tagDropdown = newTaskDiv.content.querySelector(".tagDropdown");
+      tagDropdown.innerHTML = "";
       TagArr.forEach(obj => {
         tagDropdown.appendChild(new Option(obj.text, obj.value));
       });
+
+      let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
+      userDropdown.innerHTML = "";
+      addOption(
+        JSON.parse(sessionStorage.getItem("listMembers")),
+        newTaskDiv.content
+      );
 
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
@@ -410,139 +421,144 @@
           btn.addEventListener("click", deleteTaskButton);
         });
     }
-    async function editMembers(){
-      let memberEmail = document.getElementById("member-email")
-      let existingUser = await checkEmail()
-      async function checkEmail(){
-        console.log(memberEmail.value)
-      let url = "http://localhost:3000/users/emailAndData/" + memberEmail.value;
+    async function editMembers() {
+      let memberEmail = document.getElementById("member-email");
+      let existingUser = await checkEmail();
+      async function checkEmail() {
+        console.log(memberEmail.value);
+        let url =
+          "http://localhost:3000/users/emailAndData/" + memberEmail.value;
         let cfg = {
           method: "GET",
           headers: { "Content-Type": "application/json" }
         };
         try {
           let data = await utilities.requestToServer(url, cfg);
-          return data
+          return data;
         } catch (err) {
           console.log(err);
         }
       }
-      console.log(existingUser)
-      if(existingUser){
-        let existing = sessionStorage.getItem('listMembers');
+      console.log(existingUser);
+      if (existingUser) {
+        let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
 
-        let membersAdd = sessionStorage.getItem('newMembers');
+        let membersAdd = sessionStorage.getItem("newMembers");
         membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
-        console.log(existing)
+        console.log(existing);
 
-        let index = existing.findIndex(member => member.email==memberEmail.value)
-        if (index === -1){
-            existing.push(existingUser);
-            membersAdd.push(existingUser);
-            sessionStorage.setItem('listMembers', JSON.stringify( existing));
-            sessionStorage.setItem('newMembers', JSON.stringify( membersAdd));
-            console.log(existingUser);
-            addOption([existingUser]);
-            createMemberDiv([existingUser]); 
+        let index = existing.findIndex(
+          member => member.email == memberEmail.value
+        );
+        if (index === -1) {
+          existing.push(existingUser);
+          membersAdd.push(existingUser);
+          sessionStorage.setItem("listMembers", JSON.stringify(existing));
+          sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
+          console.log(existingUser);
+          let existingTaskDiv = document.querySelectorAll(".task-div");
+          existingTaskDiv.forEach(elem => {
+            addOption([existingUser], elem);
+          });
+          createMemberDiv([existingUser]);
+        } else {
+          console.log("The person is allerdy a member of this list.");
         }
-        else{
-          console.log("The person is allerdy a member of this list.")
-        }
-      }
-      else{
-        console.log("No user with that email exists")
+      } else {
+        console.log("No user with that email exists");
       }
     }
 
-    async function addMemberData(listID){
-      let url = "http://localhost:3000/lists/member/"+listID;
+    async function addMemberData(listID) {
+      let url = "http://localhost:3000/lists/member/" + listID;
 
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }
       };
 
       try {
         let resp = await fetch(url, cfg);
         let data = await resp.json();
-        let existing = sessionStorage.getItem('listMembers');
+        let existing = sessionStorage.getItem("listMembers");
         // If no existing data, create an array
         existing = existing ? JSON.parse(existing) : [];
         data.forEach(index => {
-        existing.push(index)
-        })
-        sessionStorage.setItem('listMembers', JSON.stringify( existing));
-        console.log(data)
-        return data
+          existing.push(index);
+        });
+        sessionStorage.setItem("listMembers", JSON.stringify(existing));
+        console.log(data);
+        return data;
       } catch (err) {
         console.log(err);
       }
     }
 
-    function addOption(array, element = document){
+    function addOption(array, element = document) {
       array.forEach(member => {
         let user = element.querySelector(".user");
         let option = document.createElement("option");
-        option.text = member.firstname+" "+member.lastname+" ("+member.email+")";
+        option.text =
+          member.firstname + " " + member.lastname + " (" + member.email + ")";
         option.value = member.id;
         user.appendChild(option);
-        console.log(member)
-       });
+      });
     }
 
-    function createMemberDiv(array){
+    function createMemberDiv(array) {
       let list_members = document.getElementById("list-members");
       array.forEach(member => {
-      let wrapper = document.createElement("div");
-      wrapper.id = member.id;
-      let membername = document.createElement("p");
-      membername.innerHTML = member.firstname +" "+ member.lastname;
-      let img = document.createElement('img');
-      img.src = "images/delete_red_button.svg"
-      img.addEventListener('click', removeMember);
-      wrapper.appendChild(membername);
-      wrapper.appendChild(img);
-      list_members.appendChild(wrapper);
-      })
+        let wrapper = document.createElement("div");
+        wrapper.id = member.id;
+        let membername = document.createElement("p");
+        membername.innerHTML = member.firstname + " " + member.lastname;
+        let img = document.createElement("img");
+        img.src = "images/delete_red_button.svg";
+        img.addEventListener("click", removeMember);
+        wrapper.appendChild(membername);
+        wrapper.appendChild(img);
+        list_members.appendChild(wrapper);
+      });
     }
 
     function removeMember(evt) {
-                    
       let elm = evt.currentTarget;
       document.querySelectorAll(".user").forEach(opt => {
-        for (var i=0; i<opt.length; i++) {
-          if (opt.options[i].value == elm.parentNode.id){
-          opt.remove(i);
+        for (var i = 0; i < opt.length; i++) {
+          if (opt.options[i].value == elm.parentNode.id) {
+            opt.remove(i);
           }
-        } 
+        }
       });
       elm.parentNode.parentNode.removeChild(elm.parentNode);
-      let existing = JSON.parse(sessionStorage.getItem('listMembers'));
-      let membersAdd = JSON.parse(sessionStorage.getItem('newMembers'));
-      let deleted = sessionStorage.getItem('deletedMembers');
+      let existing = JSON.parse(sessionStorage.getItem("listMembers"));
+      let membersAdd = JSON.parse(sessionStorage.getItem("newMembers"));
+      let deleted = sessionStorage.getItem("deletedMembers");
       deleted = deleted ? JSON.parse(deleted) : [];
-      let index_existing = existing.findIndex(member => member.id==elm.parentNode.id)
-      let index_membersAdd = membersAdd.findIndex(member => member.id==elm.parentNode.id)
+      let index_existing = existing.findIndex(
+        member => member.id == elm.parentNode.id
+      );
+      let index_membersAdd = membersAdd.findIndex(
+        member => member.id == elm.parentNode.id
+      );
       if (index_existing > -1) {
         let del = existing.splice(index_existing, 1);
-        if(index_membersAdd==-1){
+        if (index_membersAdd == -1) {
           deleted.push(del[0]);
-          console.log('deleted')
+          console.log("deleted");
         }
         existing.splice(index_existing, 1);
       }
       if (index_membersAdd > -1) {
         membersAdd.splice(index_membersAdd, 1);
       }
-      console.log(existing)
-      sessionStorage.setItem('deletedMembers', JSON.stringify( deleted));
-      sessionStorage.setItem('listMembers', JSON.stringify( existing));
-      sessionStorage.setItem('newMembers', JSON.stringify( membersAdd));
-      console.log( JSON.parse(sessionStorage.getItem('deletedMembers')) )
+      console.log(existing);
+      sessionStorage.setItem("deletedMembers", JSON.stringify(deleted));
+      sessionStorage.setItem("listMembers", JSON.stringify(existing));
+      sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
+      console.log(JSON.parse(sessionStorage.getItem("deletedMembers")));
     }
-
-
 
     async function saveList(evt) {
       evt.preventDefault();
@@ -584,9 +600,6 @@
       } catch (err) {
         console.log(err);
       }
-      
-      
-
 
       url = "http://localhost:3000/lists/member";
       cfg = {
@@ -661,15 +674,14 @@
         console.log(err);
       }
 
-
       //save members
       let condensedMembers = [];
-      let membersAdd = JSON.parse(sessionStorage.getItem('newMembers'));
+      let membersAdd = JSON.parse(sessionStorage.getItem("newMembers"));
       membersAdd.forEach(member => {
         condensedMembers.push(parseInt(detailID));
         condensedMembers.push(member.id);
-      })
-      console.log(condensedMembers)
+      });
+      console.log(condensedMembers);
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
@@ -751,12 +763,12 @@
 
       element.remove();
     }
-    async function getMemberData (listID){
-      let url = "http://localhost:3000/lists/member/"+listID;
+    async function getMemberData(listID) {
+      let url = "http://localhost:3000/lists/member/" + listID;
 
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }
       };
 
       try {
@@ -780,7 +792,7 @@
           task.querySelector(".tag").value == "None"
             ? null
             : task.querySelector(".tag").value;
-        let user = 
+        let user =
           task.querySelector(".user").value == "None"
             ? null
             : task.querySelector(".user").value;

@@ -89,6 +89,8 @@
                 id="pw"
                 placeholder="Password"
                 class="text-field"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 required
               />
               <input
@@ -96,6 +98,8 @@
                 id="pwrepeat"
                 placeholder="Repeat Password"
                 class="text-field"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 required
               />
             </div>
@@ -209,7 +213,9 @@
       passwordrepeat = document.getElementById("pwrepeat");
       errormsg = document.getElementById("errormsg");
 
-      if (checkRegisterInput() && checkPasswords() && newEmail()) {
+      console.log(newEmail());
+
+      if (checkRegisterInput() && checkPasswords() && (await newEmail())) {
         console.log("does it");
 
         let url = "http://localhost:3000/users";
@@ -275,6 +281,8 @@
     }
 
     function checkPasswords() {
+      console.log(password);
+      console.log(passwordrepeat);
       if (password.value == passwordrepeat.value) {
         return true;
       } else {

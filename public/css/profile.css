@@ -1,79 +1,37 @@
 .wrapperprofile {
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   background-color: white;
-   min-height: 92.5vh;
-   width: 100%;
-}
-
-.button-green {
-    background-color: var(--color-green);
-    border: none;  
-    border-radius: 100px;
-    width: 13rem;
-    padding: 0.5rem 0.7rem 0.5rem 0.9rem;
-    color: white;
-    cursor: pointer;
-    font-size: 100%;
-    margin: 10px;
-    }
-
-.button-blue {
-    background-color: var(--color-blue);
-    border: none;  
-    border-radius: 100px;
-    width: 13rem;
-    padding: 0.5rem 0.7rem 0.5rem 0.9rem;
-    color: white;
-    cursor: pointer;
-    font-size: 100%;
-    margin: 10px; 
-}
-
-.button-red {
-    background-color: var(--color-red);
-    border: none;  
-    border-radius: 100px;
-    width: 13rem;
-    padding: 0.5rem 0.7rem 0.5rem 0.9rem;
-    color: white;
-    cursor: pointer;
-    font-size: 100%;
-    margin: 10px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  min-height: 92.5vh;
+  width: 100%;
 }
 
 #profileimg {
-    width: 18%;
-    padding: 0rem 1rem 3rem 1rem;
-}
-
-.text-field {
-    background-color: var(--color-blue-light);
-    border: none;
-    border-radius:100px;
-    width: 60%;
-    height: 1.5rem;
-    padding: 2px 15px;
-    color: var(--color-blue-middle);
-    margin: 0.5rem 0 0 0;
+  width: 18%;
+  padding: 0rem 1rem 3rem 1rem;
 }
 
 .textwrap {
-    padding: 1rem 2rem 3rem 0rem;
-    width: 30%;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    border: none;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem 1rem 2.5rem 1rem;
+  border: none;
 }
 
-.buttonrow {
-    flex-direction: row;
-    margin: 1rem 0 0 0;
+.buttoncol {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0 0 0;
 }
 
-.buttonrow2 {
-    flex-direction: row;
+.buttoncol button,
+.wrapperprofile button {
+  margin: 0.2rem;
+}
+
+.profile-email {
+  margin: 0 0 2rem 0;
 }

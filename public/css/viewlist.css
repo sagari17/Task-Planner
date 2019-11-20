@@ -1,0 +1,107 @@
+#listTitleWrapper {
+  width: 100%;
+  height: 8vh;
+  display: flex;
+  flex-direction: row;
+  background-color: #91db00;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#listTitleWrapper img {
+  margin: 0 1.2rem;
+  height: 1.3rem;
+  cursor: pointer;
+}
+
+.filter-dropdown {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-dropdown p {
+  margin: 0 0.5rem 0 0;
+}
+
+/*----------------------------------------------------------------------------------------------*/
+
+.filterBar {
+  width: 100%;
+  height: 8vh;
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  padding: 10px;
+  box-sizing: border-box;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#viewListTitle {
+  color: #fff;
+  font-weight: 600;
+  font-size: 140%;
+}
+
+/*----------------------------------------------------------------------------------------------*/
+
+#taskBoxes {
+  padding-top: 3vh;
+}
+
+.viewList-task {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: white;
+  padding: 0 0 0 2rem;
+  box-sizing: border-box;
+  align-items: center;
+  border-radius: 0.15rem;
+  height: 8vh;
+  margin: 0 1.2rem 0.8rem 1.2rem;
+}
+
+.vl-task-title {
+  font-weight: 600;
+  margin-left: 1rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.attributes {
+  width: 65%;
+  justify-content: space-between !important;
+  height: 100%;
+}
+
+.attr {
+  width: 33%;
+  border-right: 1.1px solid var(--color-blue-light);
+  height: 100%;
+}
+
+.attr img {
+  height: 1rem;
+  margin: 0 2vw 0 2vw;
+}
+/*----------------------------------------------------------------------------------------------*/
+
+.taskBoxes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.notasks {
+  width: 100%;
+  text-align: center;
+  margin: 2vh 0;
+}

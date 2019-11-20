@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My document</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
+
+  <body>
+    <my-menu></my-menu>
+    <div id="container"></div>
+    <template id="viewListTmpl">
+      <div class="wrapperviewlist">
+        <div id="listTitleWrapper">
+          <img
+            src="images/backbutton_white.svg"
+            id="backButton"
+            class="viewListIcon"
+          />
+          <div id="viewListTitle">List Nr.1</div>
+          <img
+            src="images/pencil-edit-button.svg"
+            class="viewListIcon no-visibility"
+          />
+        </div>
+
+        <div class="filterBar">
+          <div class="filter-dropdown">
+            <div class="row">
+              <input type="radio" name="filter" value="tag" checked />
+              <p class="tag-filter">Filter by Tags:</p>
+            </div>
+            <select id="tagDropdown"> </select>
+          </div>
+          <div class="filter-dropdown">
+            <div class="row">
+              <input type="radio" name="filter" value="date" />
+              <p class="date-filter">Filter by Due Date:</p>
+            </div>
+            <select id="dateDropdown"> </select>
+          </div>
+        </div>
+
+        <div id="taskBoxes"></div>
+      </div>
+    </template>
+
+    <template id="taskBoxTmpl">
+      <div class="viewList-task">
+        <div class="row">
+          <input type="radio" name="task" value="date" />
+          <div class="vl-task-title">Task Nr.1</div>
+        </div>
+        <div class="row attributes">
+          <div class="row attr">
+            <img src="images/icon_clock.svg" />
+            <div class="duedate">Due: 26.10.2019</div>
+          </div>
+          <div class="row attr">
+            <img src="images/icon_user.svg" />
+            <div class="user">John Doe</div>
+          </div>
+          <div class="row attr">
+            <img src="images/icon_tag.svg" />
+            <div class="tag">Important</div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </body>
+  <script type="text/javascript" src="js/menuBar.js"></script>
+  <script>
+    let tagArr = utilities.getTagArray();
+    let dateArr = utilities.getDateArray();
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let user = JSON.parse(sessionStorage.getItem("logindata"));
+    let userid;
+    if (isLoggedIn()) {
+      userid = user.userid;
+    }
+    let list;
+    let tasks;
+    let listid = urlParams.get("id");
+    let container = document.getElementById("container");
+
+    displayList();
+
+    async function displayList() {
+      let url = "http://localhost:3000/lists/view/" + listid;
+      try {
+        list = await utilities.requestToServer(url, {});
+        //localStorage.setItem("viewlist", JSON.stringify(list));
+      } catch (err) {
+        console.log(err);
+      }
+
+      if (list.public == false && !(isLoggedIn() && list.owner == userid)) {
+        redirectUser("index.html");
+      }
+
+      let viewListTmpl = document.getElementById("viewListTmpl");
+      viewListTmpl.content.querySelector("#viewListTitle").innerHTML =
+        list.name;
+      let tagDropdown = viewListTmpl.content.querySelector("#tagDropdown");
+      tagArr.forEach(obj => {
+        tagDropdown.appendChild(new Option(obj.text, obj.value));
+      });
+
+      let dateDropdown = viewListTmpl.content.querySelector("#dateDropdown");
+      dateArr.forEach(obj => {
+        dateDropdown.appendChild(new Option(obj.text, obj.value));
+      });
+      let viewListContent = viewListTmpl.content.cloneNode(true);
+      container.appendChild(viewListContent);
+
+      document
+        .querySelector("#tagDropdown")
+        .addEventListener("change", changeTagFilter);
+
+      document
+        .querySelector("#dateDropdown")
+        .addEventListener("change", changeDateFilter);
+
+      document.querySelectorAll("input[name=filter]").forEach(element => {
+        element.addEventListener("click", activateFilter);
+      });
+
+      document.querySelector("#backButton").addEventListener("click", goBack);
+
+      getTasks("None");
+    }
+
+    async function getTasks(urlAddition) {
+      try {
+        url =
+          "http://localhost:3000/tasks/tasksByOneID/" +
+          listid +
+          "/" +
+          urlAddition;
+        tasks = await utilities.requestToServer(url, {});
+      } catch (err) {
+        console.log(err);
+      }
+
+      let taskBoxes = document.querySelector("#taskBoxes");
+      taskBoxes.innerHTML = "";
+
+      if (tasks.length != 0) {
+        for (let task of tasks) {
+          displayListTask(task);
+        }
+      } else {
+        let message = document.createElement("p");
+        message.innerHTML = "No tasks exist.";
+        message.classList.add("notasks");
+        taskBoxes.appendChild(message);
+      }
+    }
+
+    function displayListTask(task) {
+      let taskBoxTmpl = document.getElementById("taskBoxTmpl");
+      taskBoxTmpl.content.querySelector("input[type=radio]").name =
+        "task-" + task.id;
+      taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
+      console.log(task.due_date);
+      taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
+        ? task.due_date.split("T")[0]
+        : "No due date";
+      taskBoxTmpl.content.querySelector(".user").innerHTML = task.assigned_user
+        ? task.assigned_user
+        : "No user assigned";
+      taskBoxTmpl.content.querySelector(".tag").innerHTML = task.tag
+        ? task.tag
+        : "No tag assigned";
+      let taskBoxContent = taskBoxTmpl.content.cloneNode(true);
+      let taskBoxContainer = document.querySelector("#taskBoxes");
+      taskBoxContainer.appendChild(taskBoxContent);
+    }
+
+    function changeTagFilter(evt) {
+      document.querySelector("input[value=tag]").checked = true;
+      getTasks(document.querySelector("#tagDropdown").value);
+    }
+
+    function changeDateFilter(evt) {
+      document.querySelector("input[value=date]").checked = true;
+      getTasks("date/" + document.querySelector("#dateDropdown").value);
+    }
+
+    function activateFilter(evt) {
+      evt.target.value == "tag" ? changeTagFilter() : changeDateFilter();
+    }
+
+    function goBack() {
+      redirectUser("showlists.html");
+    }
+  </script>
+</html>

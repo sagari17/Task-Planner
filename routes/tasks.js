@@ -34,7 +34,7 @@ router.post("/", async function(req, res, next) {
 router.post("/createSeveralTasks", async function(req, res, next) {
   let tasks = req.body;
   try {
-    let result = await db.createSeveralTasks(tasks)
+    let result = await db.createSeveralTasks(tasks);
     if (result.length > 0) {
       res.status(200).json({ msg: "Insert OK" });
     } else {
@@ -45,10 +45,26 @@ router.post("/createSeveralTasks", async function(req, res, next) {
   }
 });
 
-// Get all tasks by certain list id --------------------------------------
-router.get("/:listID", async function(req, res, next) {
+// Get all tasks by certain list id (and task; add "None" if there should be not tag condition) ---------------
+router.get("/tasksByOneID/:listID/:tag", async function(req, res, next) {
   try {
-    let tasks = await db.getTasksByListID(req.params.listID);
+    let values = [req.params.listID, req.params.tag];
+    let tasks = await db.getTasksByListID(values);
+    if (tasks) {
+      res.status(200).json(tasks);
+    } else {
+      throw "No tasks exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// Get all tasks by certain list id (and task; add "None" if there should be not tag condition) ---------------
+router.get("/tasksByOneID/:listID/date/:date", async function(req, res, next) {
+  try {
+    let values = [req.params.listID, req.params.date];
+    let tasks = await db.filterTasksByDate(values);
     if (tasks) {
       res.status(200).json(tasks);
     } else {
@@ -89,7 +105,7 @@ router.patch("/", async function(req, res, next) {
 });
 
 // Get all tasks by several list ids --------------------------------------
-router.get("/alltasks/:listIDS", async function(req, res, next) {
+router.get("/allTasksBySeveralIDS/:listIDS", async function(req, res, next) {
   try {
     let ids = req.params.listIDS;
     let listIDS = ids.split(",");

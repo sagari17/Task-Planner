@@ -14,7 +14,10 @@
     <template id="showListsTmpl">
       <header>
         <p id="pageTitle">
-          <img src="images/lists.svg" /><em class="green">My&nbsp </em> Lists
+          <img src="images/lists.svg" id="listimg" /><em class="green"
+            >My&nbsp
+          </em>
+          Lists
         </p>
         <button id="addList" class="button-green">
           Add new list <img src="images/plus.svg" />
@@ -36,25 +39,36 @@
             type="text"
             id="new-list-title"
             placeholder="List title here"
+            class="text-field-50"
             required
           />
         </div>
         <div>
           <p class="new-list-heading">List Sharing</p>
           <div class="radio-group">
-            <input type="radio" name="public" value="private" checked />
-            Private
-            <p>Your list is private. Only you can see it.</p>
+            <p>
+              <input
+                type="radio"
+                name="public"
+                value="private"
+                class="radio-buttons"
+                checked
+              />
+              Private
+            </p>
+            <p class="pgrey">Your list is private. Only you can see it.</p>
           </div>
           <div class="radio-group">
-            <input type="radio" name="public" value="public" /> Public
-            <p>
+            <p><input type="radio" name="public" value="public" /> Public</p>
+            <p class="pgrey">
               Your list is public. Everyone who has the link can access it.
             </p>
           </div>
           <div class="radio-group">
-            <input type="radio" name="public" value="members" /> Add members
             <p>
+              <input type="radio" name="public" value="members" /> Add members
+            </p>
+            <p class="pgrey">
               Share this list with certain users to let them become Members of
               this list. You can then assign them to tasks on the list.
             </p>
@@ -66,9 +80,10 @@
                 type="text"
                 id="member-email"
                 placeholder="User email address"
+                class="text-field-50"
               />
               <p id="errormsg-member"></p>
-              <button type="button" id="addMember">
+              <button type="button" class="add-button" id="addMember">
                 <img src="images/plus_green_button.svg" /> Add Member
               </button>
             </div>
@@ -76,43 +91,40 @@
         </div>
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
-          <button type="button" id="addTask">
+          <button type="button" id="addTask" class="add-button">
             <img src="images/plus_green_button.svg" />Add Task
           </button>
         </div>
-        <button type="button" id="cancelList" class="button-green">
-          Cancel List</button
-        ><button type="submit" id="saveList" class="button-green">
-          Save List
-        </button>
+        <div class="buttonrow">
+          <button type="button" id="cancelList" class="button-blue">
+            Cancel List</button
+          ><button type="submit" id="saveList" class="button-green">
+            Save List
+          </button>
+        </div>
       </form>
     </template>
     <template id="task-div">
       <div class="task-div">
-        <div>
+        <div class="task-title-div">
           <input
             type="text"
-            class="task-title"
+            class="task-title text-field-50"
             placeholder="Task title here"
             required
           />
           <img src="images/delete_red_button.svg" class="delete-icon-red" />
         </div>
-        <div>
-          <div>
+        <div class="taskrowmenu">
+          <div class="dropdown-div">
             Assign deadline:
-            <input type="date" class="due-date" name="date" /><br />
+            <input type="date" class="due-date" name="date" />
           </div>
-          <div>
+          <div class="dropdown-div">
             Add tag:
-            <select class="tag">
-              <option value="None" selected>No Tag</option>
-              <option value="Urgent">Urgent</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Not Urgent">Not Urgent</option>
-            </select>
+            <select id="tagDropdown" class="tag"> </select>
           </div>
-          <div>
+          <div class="dropdown-div">
             Assign user:
             <select class="user">
               <option value="None" selected>No User</option>
@@ -130,7 +142,7 @@
     let isNewList = true;
     let newListid;
     let existingTasks = true;
-    
+    let TagArr = utilities.getTagArray();
 
     showLists();
 
@@ -145,7 +157,7 @@
         let userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
-        console.log(listData);
+
         if (listData == null || listData.length == 0) {
           let url = "http://localhost:3000/lists/all/" + userData.userid;
           listData = await utilities.requestToServer(url, {});
@@ -162,7 +174,9 @@
               }
             }
 
-            let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
+            let url2 =
+              "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+
             taskData = await utilities.requestToServer(url2, {});
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
@@ -239,7 +253,7 @@
 
     async function viewList(evt) {
       detailID = evt.target.parentNode.parentNode.id;
-      redirectUser("showlists.html?id=" + detailID);
+      redirectUser("viewlist.html?id=" + detailID);
     }
 
     async function addNewList(evt) {
@@ -376,11 +390,16 @@
         let div = newTaskDiv.content
           .querySelector(".task-div")
           .classList.add("added");
-
       }
       console.log(newTaskDiv.content.querySelector(".user"));
       addOption(JSON.parse(sessionStorage.getItem('listMembers')),newTaskDiv.content);
      
+
+      let tagDropdown = newTaskDiv.content.querySelector("#tagDropdown");
+      TagArr.forEach(obj => {
+        tagDropdown.appendChild(new Option(obj.text, obj.value));
+      });
+
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);
@@ -585,7 +604,6 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log("creates several tasks with not new list");
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
@@ -659,7 +677,7 @@
       console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
         console.log(newTasks[index]);
-        url = "http://localhost:3000/tasks/";
+        url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

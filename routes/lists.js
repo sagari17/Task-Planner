@@ -58,7 +58,7 @@ router.get("/member/:listID", async function(req, res, next) {
 // Get all lists by certain userID ---------------------------------
 router.get("/:userID", async function(req, res, next) {
   try {
-    let lists = await db.getListByUserID(req.params.userID);
+    let lists = await db.getListsByUserID(req.params.userID);
     if (lists) {
       res.status(200).json(lists);
     } else {
@@ -88,7 +88,7 @@ router.get("/view/:listID", async function(req, res, next) {
   try {
     let list = await db.getListByListID(req.params.listID);
     if (list) {
-      res.status(200).json(list);
+      res.status(200).json(list[0]);
     } else {
       throw "No lists exist.";
     }

@@ -92,6 +92,7 @@
             <img src="images/plus_green_button.svg" />Add Task
           </button>
         </div>
+        <p id="errormsg"></p>
         <div class="buttonrow">
           <button type="button" id="cancelList" class="button-blue">
             Cancel List</button
@@ -378,8 +379,11 @@
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
 
-      if (document.querySelectorAll(".task-div") < 1) {
-        console.log("make sure to add tasks to your list");
+      console.log(document.querySelectorAll(".task-div"));
+
+      if (document.querySelectorAll(".task-div").length < 1) {
+        document.getElementById("errormsg").innerHTML =
+          "Make sure to add tasks to your list";
         return;
       }
 
@@ -439,8 +443,9 @@
       evt.preventDefault();
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
-      if (document.querySelectorAll(".task-div") < 1) {
-        console.log("make sure to add tasks to your list");
+      if (document.querySelectorAll(".task-div").length < 1) {
+        document.getElementById("errormsg").innerHTML =
+          "Make sure to add tasks to your list";
         return;
       }
       let radio = document.querySelector("input[name=public]:checked").value;

@@ -199,6 +199,12 @@ input[type="radio"]:checked {
   visibility: hidden;
 }
 
+#errormsg {
+  margin: 0 0 1rem 0;
+  text-align: center;
+  color: var(--color-red);
+}
+
 @media screen and (max-width: 1130px) {
   .list-wrapper {
     width: 30.5%;

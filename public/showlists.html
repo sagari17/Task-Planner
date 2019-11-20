@@ -119,12 +119,7 @@
           </div>
           <div class="dropdown-div">
             Add tag:
-            <select class="tag">
-              <option value="None" selected>No Tag</option>
-              <option value="Urgent">Urgent</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Not Urgent">Not Urgent</option>
-            </select>
+            <select id="tagDropdown" class="tag"> </select>
           </div>
           <div class="dropdown-div">
             Assign user:
@@ -144,6 +139,7 @@
     let isNewList = true;
     let newListid;
     let existingTasks = true;
+    let TagArr = utilities.getTagArray();
 
     showLists();
 
@@ -175,7 +171,9 @@
               }
             }
 
-            let url2 = "http://localhost:3000/tasks/alltasks/" + ids;
+            let url2 =
+              "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+
             taskData = await utilities.requestToServer(url2, {});
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
@@ -360,6 +358,10 @@
           .classList.add("added");
       }
 
+      let tagDropdown = newTaskDiv.content.querySelector("#tagDropdown");
+      TagArr.forEach(obj => {
+        tagDropdown.appendChild(new Option(obj.text, obj.value));
+      });
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);
@@ -414,7 +416,6 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log("creates several tasks with not new list");
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
@@ -478,7 +479,7 @@
       console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
         console.log(newTasks[index]);
-        url = "http://localhost:3000/tasks/";
+        url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

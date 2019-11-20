@@ -93,6 +93,7 @@
             <img src="images/plus_green_button.svg" />Add Task
           </button>
         </div>
+        <p id="errormsg"></p>
         <div class="buttonrow">
           <button type="button" id="cancelList" class="button-blue">
             Cancel List</button
@@ -240,6 +241,10 @@
             });
           }
         } else {
+          let txt = document.createElement("p");
+          txt.innerHTML = "No lists yet. Go ahead and create a new one!";
+          txt.classList.add("notasks");
+          document.querySelector("#show-lists-wrapper").appendChild(txt);
         }
       } catch (err) {
         console.log(err);
@@ -565,7 +570,9 @@
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
 
-      if (document.querySelectorAll(".task-div") < 1) {
+      if (document.querySelectorAll(".task-div").length < 1) {
+        document.getElementById("errormsg").innerHTML =
+          "Make sure to add tasks to your list";
         return;
       }
 
@@ -638,7 +645,9 @@
       evt.preventDefault();
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
-      if (document.querySelectorAll(".task-div") < 1) {
+      if (document.querySelectorAll(".task-div").length < 1) {
+        document.getElementById("errormsg").innerHTML =
+          "Make sure to add tasks to your list";
         return;
       }
       let radio = document.querySelector("input[name=public]:checked").value;
@@ -790,6 +799,7 @@
           task.querySelector(".due-date").value == ""
             ? null
             : task.querySelector(".due-date").value;
+        date += " 01:00";
         let tag =
           task.querySelector(".tag").value == "None"
             ? null

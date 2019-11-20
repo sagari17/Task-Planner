@@ -38,11 +38,25 @@ router.post("/member/", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+// Delete members -----------------------------------------------------
+router.delete("/member/", async function(req, res, next) {
+  let data = req.body;
+  try {
+    let result = await db.deleteManyMembers(data);
+    if (result.length > 0) {
+      res.status(200).json(result[0]);
+    } else {
+      throw "insert failed";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 // get members by list-----------------------------------------------------
 router.get("/member/:listID", async function(req, res, next) {
-  let data = req.body;
+  //let data = req.body;
 
-  let userData = [data.list_id, data.user_id];
+  //let userData = [data.list_id, data.user_id];
   try {
     let members = await db.getMembersOfList(req.params.listID);
     if (members) {

@@ -20,7 +20,7 @@ const db = function(dbConnection) {
     let userData = null;
     let values = [email];
     try {
-      userData = await runQuery("SELECT * from users WHERE email=$1", values);
+      userData = await runQuery("SELECT * FROM users WHERE email=$1", values);
     } catch (err) {
       //Deal with it
     }
@@ -31,7 +31,7 @@ const db = function(dbConnection) {
     let userData = null;
     let values = [userID];
     try {
-      userData = await runQuery("SELECT * from users WHERE id=$1", values);
+      userData = await runQuery("SELECT * FROM users WHERE id=$1", values);
     } catch (err) {
       //Deal with it
     }
@@ -50,13 +50,13 @@ const db = function(dbConnection) {
     }
     return userData;
   };
+
   const addManyMembers = async function(values) {
     let userData = null;
-    let query ="INSERT INTO members (list_id, user_id) VALUES((select id from lists where id = $1), (select id from users where id = $2))";
+    let query ="INSERT INTO members (list_id, user_id) VALUES((SELECT id FROM lists WHERE id = $1), (SELECT id FROM users WHERE id = $2))";
     for (let i = 3; i < values.length; i +=2) {
-      query += `, ((select id from lists where id = $${i}), (select id from users where id = $${i + 1}))`
+      query += `, ((SELECT id FROM lists WHERE id = $${i}), (SELECT id FROM users WHERE id = $${i + 1}))`
     }
-
     query += "RETURNING *";
     console.log(query);
     console.log(values);
@@ -68,6 +68,25 @@ const db = function(dbConnection) {
     return userData;
   };
 
+  const deleteManyMembers = async function(values) {
+    let userData = null;
+    let query ="DELETE FROM members WHERE list_id IN (";
+    let query2 ="(SELECT id FROM lists WHERE id = $1)";
+    let query3 =") AND user_id IN ((SELECT id FROM users WHERE id = $2)";
+    for (let i = 3; i < values.length; i +=2) {
+      query2+= `,(SELECT id FROM lists WHERE id = $${i})`;
+      query3+= `,(SELECT id FROM users WHERE id = $${i + 1})`;
+    }
+    query += query2;
+    query += query3;
+    query += ")RETURNING *";
+    try {
+      userData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
 
   const updateUser = async function(data) {
     let userData = null;
@@ -129,7 +148,7 @@ const db = function(dbConnection) {
     let values = [userID];
     try {
       listData = await runQuery(
-        "SELECT * from lists WHERE owner=$1 ORDER BY id",
+        "SELECT * FROM lists WHERE owner=$1 ORDER BY id",
         values
       );
     } catch (err) {
@@ -206,7 +225,7 @@ const db = function(dbConnection) {
 
   const getTasksByListIDs = async function(listIDS) {
     let taskData = null;
-    let query = "SELECT * from tasks WHERE listid=$1";
+    let query = "SELECT * FROM tasks WHERE listid=$1";
     let values = listIDS;
     for (let i = 1; i < listIDS.length; i++) {
       query += ` OR listid=$${i + 1}`;
@@ -282,7 +301,7 @@ const db = function(dbConnection) {
     let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=(select id from lists where id = $4) WHERE id=$5 RETURNING *",
+        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=(select id FROM lists WHERE id = $4) WHERE id=$5 RETURNING *",
         values
       );
     } catch (err) {
@@ -361,7 +380,7 @@ const db = function(dbConnection) {
     let values = [listID];
     try {
       memberData = await runQuery(
-        "SELECT DISTINCT users.id, users.firstname, users.lastname, users.email FROM lists, users, members WHERE (select id from lists where id = $1) = members.list_id AND users.id = members.user_id",
+        "SELECT DISTINCT users.id, users.firstname, users.lastname, users.email FROM lists, users, members WHERE (select id FROM lists WHERE id = $1) = members.list_id AND users.id = members.user_id",
        values
       );
     } catch (err) {
@@ -394,7 +413,8 @@ const db = function(dbConnection) {
     taskChangeFinished: taskChangeFinished,
     addManyMembers: addManyMembers,
     getMembersOfList: getMembersOfList,
-    getAllListByUserID: getAllListByUserID
+    getAllListByUserID: getAllListByUserID,
+    deleteManyMembers: deleteManyMembers
   };
 };
 

@@ -97,7 +97,6 @@
         console.log(err);
       }
 
-      console.log(list);
       if (list.public == false && !(isLoggedIn() && list.owner == userid)) {
         redirectUser("index.html");
       }
@@ -162,7 +161,6 @@
     }
 
     function displayListTask(task) {
-      console.log(task);
       let taskBoxTmpl = document.getElementById("taskBoxTmpl");
       taskBoxTmpl.content.querySelector("input[type=radio]").name =
         "task-" + task.id;

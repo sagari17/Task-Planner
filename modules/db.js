@@ -214,8 +214,6 @@ const db = function(dbConnection) {
   };
 
   const createSeveralTasks = async function(values) {
-    console.log("several tasks");
-    console.log(values);
     let taskData = null;
     let query =
       "INSERT INTO tasks (id, name, due_date, tag, assigned_user, finished, listid) VALUES(DEFAULT, $1, $2, $3, $4, $5, $6)";
@@ -224,7 +222,6 @@ const db = function(dbConnection) {
         4}, $${i + 5})`;
     }
     query += "RETURNING *";
-    console.log(query);
     try {
       taskData = await runQuery(query, values);
     } catch (err) {

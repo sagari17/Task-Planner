@@ -5,11 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My document</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/statistics.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
 
   <body>
     <my-menu></my-menu>
+    <div id="container"></div>
+
+    <div class="wrapperListStatistics">
+      <div id="statsListsWrapper">
+        <div id="statsForListCreated">20 Lists created by you</div>
+        <img src="images/lists.svg" class="showListIcon" />
+      </div>
+
+      <div class="wrapperTasksStatistics">
+        <div id="statsTasksWrapper">
+          <div id="statsForTasksCreated">2 tasks due today</div>
+          <img src="images/lists.svg" class="showTaskIcon" />
+        </div>
+      </div>
+
+      <div class="wrapperRatioStatistics">
+        <div id="statsRatioWrapper">
+          <div id="statsTasksRatio">65% tasks complete ratio</div>
+          <img src="images/lists.svg" class="showDiagramIcon" />
+        </div>
+      </div>
+    </div>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script></script>

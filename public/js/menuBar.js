@@ -9,9 +9,8 @@ class MyMenu extends HTMLElement {
         </div>
         <div class="menuItem">
 
-          <img src="images/statistics-bar.svg" alt="statistics" title="statistics" />Statistics
+          <img src="images/statistics-bar.svg" alt="statistics" title="statistics" /><p>Statistics</p>
 
-          <img src="images/tasks_grey.svg" alt="tasks" title="tasks" /><p>Tasks</p>
         </div>
         <div class="menuItem">
           <img

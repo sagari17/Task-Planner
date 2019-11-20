@@ -1,0 +1,28 @@
+.wrapperListStatistics{
+    display: flex;
+    background: white;
+    align-items: center;
+    width: 50%;
+    height: 50%;
+    float: left;
+}
+
+/*----------------------------------------------------------------------------------------------*/
+.wrapperTasksStatistics{
+    display: flex;
+    background:white;
+    width: 50%;
+    height: 50%;
+    float: left;
+}
+
+
+/*----------------------------------------------------------------------------------------------*/
+
+.wrapperRatioStatistics{
+    display: flex;
+    background:white;
+    width: 50%;
+    height: 50%;
+    float: left;
+}

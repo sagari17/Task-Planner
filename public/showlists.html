@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>Lists</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
@@ -240,7 +240,6 @@
             });
           }
         } else {
-          console.log("no lists yet");
         }
       } catch (err) {
         console.log(err);
@@ -566,7 +565,6 @@
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
 
       if (document.querySelectorAll(".task-div") < 1) {
-        console.log("make sure to add tasks to your list");
         return;
       }
 
@@ -626,7 +624,6 @@
 
       try {
         let newTaskData = await utilities.requestToServer(url, cfg);
-        console.log(newTaskData);
       } catch (err) {
         console.log(err);
       }
@@ -641,7 +638,6 @@
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
       if (document.querySelectorAll(".task-div") < 1) {
-        console.log("make sure to add tasks to your list");
         return;
       }
       let radio = document.querySelector("input[name=public]:checked").value;
@@ -686,9 +682,7 @@
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
 
-      console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
-        console.log(newTasks[index]);
         url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
@@ -698,7 +692,6 @@
 
         try {
           let newTaskData = await utilities.requestToServer(url, cfg);
-          console.log(newTaskData);
         } catch (err) {
           console.log(err);
         }
@@ -730,15 +723,11 @@
 
       //newly added tasks to already existing list
       let addedTaskDivs = document.querySelectorAll(".added");
-      console.log(addedTaskDivs);
       if (addedTaskDivs.length != 0) {
-        console.log("existing");
         isNewList = true;
-        console.log(detailID);
         newListid = detailID;
         let addedTasks = getAllTaskData(addedTaskDivs);
         isNewList = false;
-        console.log(addedTasks);
 
         url2 = "http://localhost:3000/tasks/createSeveralTasks";
         cfg2 = {
@@ -760,7 +749,6 @@
     }
 
     async function deleteTaskButton(evt) {
-      console.log("in delete");
       let element = evt.target.parentNode.parentNode;
 
       if (!isNewList && !element.classList.contains("added")) {
@@ -807,7 +795,6 @@
       let newTasks = [];
       for (let task of taskDivs) {
         let title = task.querySelector(".task-title").value;
-        console.log(task.querySelector(".due-date").value);
         let date =
           task.querySelector(".due-date").value == ""
             ? null
@@ -823,7 +810,6 @@
 
         let taskid = task.id.split("-")[1];
 
-        console.log(newListid);
 
         if (isNewList) {
           newTasks.push(title, date, tag, user, 0, newListid);

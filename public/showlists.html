@@ -406,6 +406,7 @@
 
       let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
       userDropdown.innerHTML = "";
+      userDropdown.appendChild(new Option("No user assigned", "None"));
       addOption(
         JSON.parse(sessionStorage.getItem("listMembers")),
         newTaskDiv.content
@@ -674,15 +675,6 @@
         console.log(err);
       }
 
-      //save members
-      let condensedMembers = [];
-      let membersAdd = JSON.parse(sessionStorage.getItem("newMembers"));
-      membersAdd.forEach(member => {
-        condensedMembers.push(parseInt(detailID));
-        condensedMembers.push(member.id);
-      });
-      console.log(condensedMembers);
-
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
 
@@ -705,14 +697,13 @@
       }
 
       //save members
-
       let condensedMembers = [];
-      let membersAdd = JSON.parse(sessionStorage.getItem('newMembers'));
+      let membersAdd = JSON.parse(sessionStorage.getItem("newMembers"));
       membersAdd.forEach(member => {
         condensedMembers.push(parseInt(detailID));
         condensedMembers.push(member.id);
-      })
-      console.log(condensedMembers)
+      });
+      console.log(condensedMembers);
 
       url = "http://localhost:3000/lists/member";
       cfg = {

@@ -89,6 +89,8 @@
                 id="pw"
                 placeholder="Password"
                 class="text-field"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 required
               />
               <input
@@ -96,6 +98,8 @@
                 id="pwrepeat"
                 placeholder="Repeat Password"
                 class="text-field"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 required
               />
             </div>
@@ -209,6 +213,8 @@
       passwordrepeat = document.getElementById("pwrepeat");
       errormsg = document.getElementById("errormsg");
 
+      console.log(newEmail());
+
       if (checkRegisterInput() && checkPasswords() && newEmail()) {
         console.log("does it");
 
@@ -227,13 +233,14 @@
           body: JSON.stringify(userData)
         };
 
-        try {
-          let data = await utilities.requestToServer(url, cfg);
-          container.innerHTML = "";
-          showLogin();
-        } catch (err) {
-          errormsg.innerHTML = err;
-        }
+        // try {
+        //   let data = await utilities.requestToServer(url, cfg);
+        //   container.innerHTML = "";
+        //   showLogin();
+        // } catch (err) {
+        //   errormsg.innerHTML = err;
+        // }
+        console.log("registered");
       }
     }
 
@@ -275,6 +282,8 @@
     }
 
     function checkPasswords() {
+      console.log(password);
+      console.log(passwordrepeat);
       if (password.value == passwordrepeat.value) {
         return true;
       } else {

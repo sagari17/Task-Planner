@@ -22,11 +22,57 @@ router.post("/", async function(req, res, next) {
     res.status(500).json({ error: err });
   }
 });
+// add members -----------------------------------------------------
+router.post("/member/", async function(req, res, next) {
+  let data = req.body;
+
+
+  try {
+    let result = await db.addManyMembers(data);
+    if (result.length > 0) {
+      res.status(200).json(result[0]);
+    } else {
+      throw "insert failed";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+// get members by list-----------------------------------------------------
+router.get("/member/:listID", async function(req, res, next) {
+  let data = req.body;
+
+  let userData = [data.list_id, data.user_id];
+  try {
+    let members = await db.getMembersOfList(req.params.listID);
+    if (members) {
+      res.status(200).json(members);
+    } else {
+      throw "insert failed";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 
 // Get all lists by certain userID ---------------------------------
 router.get("/:userID", async function(req, res, next) {
   try {
     let lists = await db.getListByUserID(req.params.userID);
+    if (lists) {
+      res.status(200).json(lists);
+    } else {
+      throw "No lists exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// Get all lists and lists that user are member of by certain userID ---------------------------------
+router.get("/all/:userID", async function(req, res, next) {
+  try {
+    let lists = await db.getAllListByUserID(req.params.userID);
     if (lists) {
       res.status(200).json(lists);
     } else {

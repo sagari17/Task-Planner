@@ -52,14 +52,14 @@ const db = function(dbConnection) {
   };
   const addManyMembers = async function(values) {
     let userData = null;
-    let query ="INSERT INTO members (list_id, user_id) VALUES((select id from lists where id = $1), (select id from users where id = $2))";
-    for (let i = 3; i < values.length; i +=2) {
-      query += `, ((select id from lists where id = $${i}), (select id from users where id = $${i + 1}))`
+    let query =
+      "INSERT INTO members (list_id, user_id) VALUES((select id from lists where id = $1), (select id from users where id = $2))";
+    for (let i = 3; i < values.length; i += 2) {
+      query += `, ((select id from lists where id = $${i}), (select id from users where id = $${i +
+        1}))`;
     }
 
     query += "RETURNING *";
-    console.log(query);
-    console.log(values);
     try {
       userData = await runQuery(query, values);
     } catch (err) {
@@ -67,7 +67,6 @@ const db = function(dbConnection) {
     }
     return userData;
   };
-
 
   const updateUser = async function(data) {
     let userData = null;
@@ -138,19 +137,18 @@ const db = function(dbConnection) {
     return listData;
   };
 
-  const getAllListByUserID = async function(userID) {
+  const getAllListsByUserID = async function(userID) {
     let listData = null;
     let values = [userID];
     try {
       listData = await runQuery(
-        "SELECT DISTINCT lists.id, lists.name, lists.owner, lists.public  FROM lists, members WHERE lists.owner=$1 OR lists.id=members.list_id AND members.user_id=$1 ",
-       values
+        "SELECT DISTINCT lists.id, lists.name, lists.owner, lists.public FROM lists, members WHERE lists.owner=$1 OR lists.id=members.list_id AND members.user_id=$1 ",
+        values
       );
     } catch (err) {
       console.log(err);
     }
     return listData;
-    
   };
 
   const getListByListID = async function(listID) {
@@ -167,7 +165,7 @@ const db = function(dbConnection) {
 
   const getTasksByListID = async function(values) {
     let taskData = null;
-    let query = "SELECT * FROM tasks WHERE listid=$1";
+    let query = "SELECT * FROM tasks WHERE listid=$1 ORDER BY id";
     if (values[1] == "None") {
       values = [values[0]];
     } else {
@@ -205,12 +203,12 @@ const db = function(dbConnection) {
 
   const getTasksByListIDs = async function(listIDS) {
     let taskData = null;
-    let query =
-      "SELECT id, name, due_date::date, tag, assigned_user, finished, listid from tasks WHERE listid=$1";
+    let query = "SELECT * from tasks WHERE listid=$1";
     let values = listIDS;
     for (let i = 1; i < listIDS.length; i++) {
       query += ` OR listid=$${i + 1}`;
     }
+    query += " ORDER BY id";
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
@@ -347,7 +345,7 @@ const db = function(dbConnection) {
     let values = [data.id, 0, 1];
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1",
+        "UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1 RETURNING *",
         values
       );
     } catch (err) {
@@ -362,7 +360,7 @@ const db = function(dbConnection) {
     try {
       memberData = await runQuery(
         "SELECT DISTINCT users.id, users.firstname, users.lastname, users.email FROM lists, users, members WHERE (select id from lists where id = $1) = members.list_id AND users.id = members.user_id",
-       values
+        values
       );
     } catch (err) {
       console.log(err);
@@ -394,7 +392,7 @@ const db = function(dbConnection) {
     taskChangeFinished: taskChangeFinished,
     addManyMembers: addManyMembers,
     getMembersOfList: getMembersOfList,
-    getAllListByUserID: getAllListByUserID
+    getAllListsByUserID: getAllListsByUserID
   };
 };
 

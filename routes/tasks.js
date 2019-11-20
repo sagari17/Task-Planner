@@ -121,7 +121,7 @@ router.get("/allTasksBySeveralIDS/:listIDS", async function(req, res, next) {
 });
 
 // Updates finished column to opposite of current value by task id ---------------
-router.patch("/finished/", async function(req, res, next) {
+router.patch("/finished", async function(req, res, next) {
   try {
     let task = await db.taskChangeFinished(req.body);
     if (task) {

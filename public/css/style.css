@@ -159,21 +159,6 @@ input:focus {
   outline: none;
 }
 
-/*Task finished, unfinished*/
-.unchecked {
-  background-image: url("../images/checkbox_unchecked.svg");
-  background-size: contain;
-  height: 1.3rem;
-  width: 1.3rem;
-}
-
-.checked {
-  background-image: url("../images/checkbox_checked.svg");
-  background-size: contain;
-  height: 1.4rem;
-  width: 1.4rem;
-}
-
 .hidden {
   display: none;
 }

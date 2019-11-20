@@ -139,6 +139,7 @@
     let isNewList = true;
     let newListid;
     let existingTasks = true;
+    let userData;
     let TagArr = utilities.getTagArray();
 
     showLists();
@@ -151,7 +152,7 @@
         document
           .querySelector("#addList")
           .addEventListener("click", addNewList);
-        let userData = JSON.parse(sessionStorage.getItem("logindata"));
+        userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
 
@@ -175,6 +176,7 @@
               "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
 
             taskData = await utilities.requestToServer(url2, {});
+            console.log(taskData);
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
 
@@ -202,15 +204,17 @@
                 let taskDiv = document.createElement("div");
                 taskDiv.classList.add("list-div");
                 taskDiv.innerHTML = task.name;
-                taskDiv.setAttribute("id", "index-" + index);
 
-                let checkedDiv = document.createElement("div");
+                let checkedRadio = document.createElement("input");
+                checkedRadio.setAttribute("type", "radio");
+                checkedRadio.classList.add("radioFinished");
                 if (task.finished) {
-                  checkedDiv.classList.add("checked");
-                } else {
-                  checkedDiv.classList.add("unchecked");
+                  checkedRadio.checked = true;
+                  checkedRadio.classList.add("checked");
                 }
-                taskDiv.appendChild(checkedDiv);
+                checkedRadio.setAttribute("id", "taskid-" + task.id);
+
+                taskDiv.appendChild(checkedRadio);
 
                 listViewList.appendChild(taskDiv);
               }
@@ -238,6 +242,11 @@
             //eventlistener for deleting the respective list
             document.querySelectorAll(".delete-icon-blue").forEach(btn => {
               btn.addEventListener("click", deleteList);
+            });
+
+            //eventlistener for checking a task finished or not
+            document.querySelectorAll(".radioFinished").forEach(btn => {
+              btn.addEventListener("click", utilities.markAsFinished);
             });
           }
         } else {
@@ -322,11 +331,17 @@
         let taskDiv = document.querySelectorAll(".task-div")[index];
 
         taskDiv.querySelector(".task-title").value = task.name;
-        let date = task.due_date ? task.due_date.split("T")[0] : "";
+        let date = task.due_date != null ? task.due_date.split("T")[0] : "";
+        console.log(task);
+        console.log(date);
+        console.log(task.due_date);
+        console.log(task.assigned_user);
         taskDiv.querySelector(".due-date").value = date;
         let tag = task.tag ? task.tag : "None";
         taskDiv.querySelector(".tag").value = tag;
-
+        task.assigned_user == null
+          ? (taskDiv.querySelector(".user").value = "None")
+          : (taskDiv.querySelector(".user").value = task.assigned_user);
         taskDiv.setAttribute("id", "taskid-" + task.id);
       }
 
@@ -402,6 +417,12 @@
           .classList.add("added");
       }
 
+      if (isNewList || (!isNewList && !existingTasks)) {
+        newTaskDiv.content.querySelector(
+          ".due-date"
+        ).min = new Date().toISOString().split("T")[0];
+      }
+
       let tagDropdown = newTaskDiv.content.querySelector(".tagDropdown");
       tagDropdown.innerHTML = "";
       TagArr.forEach(obj => {
@@ -411,10 +432,11 @@
       let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
       userDropdown.innerHTML = "";
       userDropdown.appendChild(new Option("No user assigned", "None"));
-      addOption(
-        JSON.parse(sessionStorage.getItem("listMembers")),
-        newTaskDiv.content
-      );
+      //userDropdown.appendChild(new Option(userData, userData.id));
+      let members = JSON.parse(sessionStorage.getItem("listMembers"));
+      if (members != null && members.length > 0) {
+        addOption(members, newTaskDiv.content);
+      }
 
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
@@ -426,6 +448,7 @@
           btn.addEventListener("click", deleteTaskButton);
         });
     }
+
     async function editMembers() {
       let memberEmail = document.getElementById("member-email");
       let existingUser = await checkEmail();
@@ -468,7 +491,8 @@
           });
           createMemberDiv([existingUser]);
         } else {
-          console.log("The person is allerdy a member of this list.");
+          document.getElementById("errormsg").innerHTML =
+            "The person is already a member of this list.";
         }
       } else {
         console.log("No user with that email exists");
@@ -525,6 +549,57 @@
         wrapper.appendChild(img);
         list_members.appendChild(wrapper);
       });
+    }
+
+    async function getMemberData(listID) {
+      let url = "http://localhost:3000/lists/member/" + listID;
+
+      let cfg = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      try {
+        var resp = await fetch(url, cfg);
+        var data = await resp.json();
+        return data;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    function getAllTaskData(taskDivs) {
+      let newTasks = [];
+      for (let task of taskDivs) {
+        let title = task.querySelector(".task-title").value;
+        let date =
+          task.querySelector(".due-date").value == ""
+            ? null
+            : task.querySelector(".due-date").value + " 01:00";
+        let tag =
+          task.querySelector(".tag").value == "None"
+            ? null
+            : task.querySelector(".tag").value;
+        let user =
+          task.querySelector(".user").value == "None"
+            ? null
+            : task.querySelector(".user").value;
+
+        let taskid = task.id.split("-")[1];
+
+        if (isNewList) {
+          newTasks.push(title, date, tag, user, 0, newListid);
+        } else {
+          newTasks.push({
+            name: title,
+            date: date,
+            tag: tag,
+            user: user,
+            taskid: taskid
+          });
+        }
+      }
+      return newTasks;
     }
 
     function removeMember(evt) {
@@ -623,6 +698,7 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
+      console.log(newTasks);
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
@@ -682,7 +758,7 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-
+      console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
         url = "http://localhost:3000/tasks";
         cfg = {
@@ -774,57 +850,6 @@
       }
 
       element.remove();
-    }
-    async function getMemberData(listID) {
-      let url = "http://localhost:3000/lists/member/" + listID;
-
-      let cfg = {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      };
-
-      try {
-        var resp = await fetch(url, cfg);
-        var data = await resp.json();
-        return data;
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    function getAllTaskData(taskDivs) {
-      let newTasks = [];
-      for (let task of taskDivs) {
-        let title = task.querySelector(".task-title").value;
-        let date =
-          task.querySelector(".due-date").value == ""
-            ? null
-            : task.querySelector(".due-date").value;
-        date += " 01:00";
-        let tag =
-          task.querySelector(".tag").value == "None"
-            ? null
-            : task.querySelector(".tag").value;
-        let user =
-          task.querySelector(".user").value == "None"
-            ? null
-            : task.querySelector(".user").value;
-
-        let taskid = task.id.split("-")[1];
-
-
-        if (isNewList) {
-          newTasks.push(title, date, tag, user, 0, newListid);
-        } else {
-          newTasks.push({
-            name: title,
-            date: date,
-            tag: tag,
-            user: user,
-            taskid: taskid
-          });
-        }
-      }
-      return newTasks;
     }
   </script>
 </html>

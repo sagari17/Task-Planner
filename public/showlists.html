@@ -242,7 +242,10 @@
             });
           }
         } else {
-          console.log("no lists yet");
+          let txt = document.createElement("p");
+          txt.innerHTML = "No lists yet. Go ahead and create a new one!";
+          txt.classList.add("notasks");
+          document.querySelector("#show-lists-wrapper").appendChild(txt);
         }
       } catch (err) {
         console.log(err);
@@ -563,11 +566,11 @@
       let newTasks = [];
       for (let task of taskDivs) {
         let title = task.querySelector(".task-title").value;
-        console.log(task.querySelector(".due-date").value);
         let date =
           task.querySelector(".due-date").value == ""
             ? null
             : task.querySelector(".due-date").value;
+        date += " 01:00";
         let tag =
           task.querySelector(".tag").value == "None"
             ? null

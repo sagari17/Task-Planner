@@ -153,7 +153,7 @@ const db = function(dbConnection) {
     let taskData = null;
     let query = "SELECT * FROM tasks WHERE listid=$1";
     if (values[1] == "today") {
-      query += " AND due_date=NOW()::date";
+      query += " AND (due_date::date = NOW()::date)";
     } else if (values[1] == "week") {
       query +=
         " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '7 days'))";
@@ -173,7 +173,8 @@ const db = function(dbConnection) {
 
   const getTasksByListIDs = async function(listIDS) {
     let taskData = null;
-    let query = "SELECT * from tasks WHERE listid=$1";
+    let query =
+      "SELECT id, name, due_date::date, tag, assigned_user, finished, listid from tasks WHERE listid=$1";
     let values = listIDS;
     for (let i = 1; i < listIDS.length; i++) {
       query += ` OR listid=$${i + 1}`;

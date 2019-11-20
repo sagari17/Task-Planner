@@ -587,21 +587,6 @@
       
       
 
-
-      url = "http://localhost:3000/lists/member";
-      cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(condensedMembers)
-      };
-
-      try {
-        let newMemberData = await utilities.requestToServer(url, cfg);
-        console.log(newMemberData);
-      } catch (err) {
-        console.log(err);
-      }
-
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
       url = "http://localhost:3000/tasks/createSeveralTasks";
@@ -690,6 +675,20 @@
         } catch (err) {
           console.log(err);
         }
+      }
+
+      url = "http://localhost:3000/lists/member";
+      cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(condensedMembers)
+      };
+
+      try {
+        let newMemberData = await utilities.requestToServer(url, cfg);
+        console.log(newMemberData);
+      } catch (err) {
+        console.log(err);
       }
 
       //newly added tasks to already existing list

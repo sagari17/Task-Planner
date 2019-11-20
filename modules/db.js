@@ -149,7 +149,6 @@ const db = function(dbConnection) {
   };
 
   const filterTasksByDate = async function(values) {
-    console.log(values[1]);
     let taskData = null;
     let query = "SELECT * FROM tasks WHERE listid=$1";
     if (values[1] == "today") {

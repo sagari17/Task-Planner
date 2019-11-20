@@ -42,8 +42,6 @@ router.get("/:userID", async function(req, res, next) {
 
 // update user with certain id ----------------------------------------------------------------
 router.patch("/", async function(req, res, next) {
-  console.log("inside patch user ");
-  console.log(req.body);
   try {
     let user = await db.updateUser(req.body);
     if (user) {

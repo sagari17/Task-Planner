@@ -31,7 +31,6 @@ class MyMenu extends HTMLElement {
     redirectUser("showlists.html");
   }
   clickTasks() {
-    console.log("tasks clicked");
   }
   clickProfile() {
     redirectUser("profile.html");

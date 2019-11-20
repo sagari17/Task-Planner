@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>Create task</title>
   </head>
 
   <body>
@@ -47,7 +47,6 @@
         listid: 4
       };
 
-      console.log(taskData);
 
       let cfg = {
         method: "POST",
@@ -58,7 +57,6 @@
       try {
         var resp = await fetch(url, cfg);
         var data = await resp.json();
-        console.log(data);
         result.innerHTML = data.msg;
       } catch (err) {
         console.log(err);

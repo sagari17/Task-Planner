@@ -704,6 +704,30 @@
         }
       }
 
+      //save members
+
+      let condensedMembers = [];
+      let membersAdd = JSON.parse(sessionStorage.getItem('newMembers'));
+      membersAdd.forEach(member => {
+        condensedMembers.push(parseInt(detailID));
+        condensedMembers.push(member.id);
+      })
+      console.log(condensedMembers)
+
+      url = "http://localhost:3000/lists/member";
+      cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(condensedMembers)
+      };
+
+      try {
+        let newMemberData = await utilities.requestToServer(url, cfg);
+        console.log(newMemberData);
+      } catch (err) {
+        console.log(err);
+      }
+
       //newly added tasks to already existing list
       let addedTaskDivs = document.querySelectorAll(".added");
       console.log(addedTaskDivs);

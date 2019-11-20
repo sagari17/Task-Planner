@@ -26,7 +26,6 @@ router.post("/", async function(req, res, next) {
 router.post("/member/", async function(req, res, next) {
   let data = req.body;
 
-
   try {
     let result = await db.addManyMembers(data);
     if (result.length > 0) {
@@ -72,7 +71,7 @@ router.get("/:userID", async function(req, res, next) {
 // Get all lists and lists that user are member of by certain userID ---------------------------------
 router.get("/all/:userID", async function(req, res, next) {
   try {
-    let lists = await db.getAllListByUserID(req.params.userID);
+    let lists = await db.getAllListsByUserID(req.params.userID);
     if (lists) {
       res.status(200).json(lists);
     } else {

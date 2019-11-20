@@ -74,10 +74,44 @@ utilities = (function() {
       }
     ];
   }
+
+  async function markAsFinished(evt) {
+    evt.stopPropagation();
+    let elem = evt.target;
+    if (elem.classList.contains("checked")) {
+      elem.checked = false;
+      elem.classList.remove("checked");
+    } else {
+      elem.classList.add("checked");
+    }
+
+    let taskid = { id: evt.target.id.split("-")[1] };
+    url = "http://localhost:3000/tasks/finished";
+    cfg = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(taskid)
+    };
+
+    try {
+      let task = await utilities.requestToServer(url, cfg);
+      let oldTaskData = JSON.parse(localStorage.getItem("taskdata"));
+      for (let i = 0; i < oldTaskData.length; i++) {
+        if (oldTaskData[i].id == taskid.id) {
+          oldTaskData[i].finished = !oldTaskData[i].finished;
+        }
+      }
+      localStorage.setItem("taskdata", JSON.stringify(oldTaskData));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return {
     requestToServer: requestToServer,
     isValidInput: isValidInput,
     getTagArray: getTagArray,
-    getDateArray: getDateArray
+    getDateArray: getDateArray,
+    markAsFinished: markAsFinished
   };
 })();

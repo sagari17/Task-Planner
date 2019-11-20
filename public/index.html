@@ -215,7 +215,7 @@
 
       console.log(newEmail());
 
-      if (checkRegisterInput() && checkPasswords() && newEmail()) {
+      if (checkRegisterInput() && checkPasswords() && (await newEmail())) {
         console.log("does it");
 
         let url = "http://localhost:3000/users";
@@ -233,14 +233,13 @@
           body: JSON.stringify(userData)
         };
 
-        // try {
-        //   let data = await utilities.requestToServer(url, cfg);
-        //   container.innerHTML = "";
-        //   showLogin();
-        // } catch (err) {
-        //   errormsg.innerHTML = err;
-        // }
-        console.log("registered");
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          container.innerHTML = "";
+          showLogin();
+        } catch (err) {
+          errormsg.innerHTML = err;
+        }
       }
     }
 

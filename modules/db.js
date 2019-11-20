@@ -50,6 +50,24 @@ const db = function(dbConnection) {
     }
     return userData;
   };
+  const addManyMembers = async function(values) {
+    let userData = null;
+    let query ="INSERT INTO members (list_id, user_id) VALUES((select id from lists where id = $1), (select id from users where id = $2))";
+    for (let i = 3; i < values.length; i +=2) {
+      query += `, ((select id from lists where id = $${i}), (select id from users where id = $${i + 1}))`
+    }
+
+    query += "RETURNING *";
+    console.log(query);
+    console.log(values);
+    try {
+      userData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
 
   const updateUser = async function(data) {
     let userData = null;
@@ -120,6 +138,21 @@ const db = function(dbConnection) {
     return listData;
   };
 
+  const getAllListByUserID = async function(userID) {
+    let listData = null;
+    let values = [userID];
+    try {
+      listData = await runQuery(
+        "SELECT DISTINCT lists.id, lists.name, lists.owner, lists.public  FROM lists, members WHERE lists.owner=$1 OR lists.id=members.list_id AND members.user_id=$1 ",
+       values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return listData;
+    
+  };
+
   const getListByListID = async function(listID) {
     let listData = null;
     let values = [listID];
@@ -149,7 +182,6 @@ const db = function(dbConnection) {
   };
 
   const filterTasksByDate = async function(values) {
-    console.log(values[1]);
     let taskData = null;
     let query = "SELECT * FROM tasks WHERE listid=$1";
     if (values[1] == "today") {
@@ -244,12 +276,13 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
+
   const updateTask = async function(data) {
     let taskData = null;
     let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
+        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=(select id from lists where id = $4) WHERE id=$5 RETURNING *",
         values
       );
     } catch (err) {
@@ -272,6 +305,7 @@ const db = function(dbConnection) {
     }
     return listData;
   };
+
   const checkIfEmailExists = async function(email) {
     let emailData = null;
     let values = [email];
@@ -289,6 +323,25 @@ const db = function(dbConnection) {
       return false;
     }
   };
+
+  const checkEmailReturnUser = async function(email) {
+    let emailData = null;
+    let values = [email];
+    try {
+      emailData = await runQuery(
+        "SELECT users.id, users.firstname, users.lastname, users.email FROM users WHERE email=$1",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    if (emailData) {
+      return emailData[0];
+    } else {
+      return false;
+    }
+  };
+
   const taskChangeFinished = async function(data) {
     let taskData = null;
     let values = [data.id, 0, 1];
@@ -301,6 +354,20 @@ const db = function(dbConnection) {
       console.log(err);
     }
     return taskData;
+  };
+
+  const getMembersOfList = async function(listID) {
+    let memberData = null;
+    let values = [listID];
+    try {
+      memberData = await runQuery(
+        "SELECT DISTINCT users.id, users.firstname, users.lastname, users.email FROM lists, users, members WHERE (select id from lists where id = $1) = members.list_id AND users.id = members.user_id",
+       values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return memberData;
   };
 
   return {
@@ -323,7 +390,11 @@ const db = function(dbConnection) {
     updateTask: updateTask,
     updateList: updateList,
     checkIfEmailExists: checkIfEmailExists,
-    taskChangeFinished: taskChangeFinished
+    checkEmailReturnUser: checkEmailReturnUser,
+    taskChangeFinished: taskChangeFinished,
+    addManyMembers: addManyMembers,
+    getMembersOfList: getMembersOfList,
+    getAllListByUserID: getAllListByUserID
   };
 };
 

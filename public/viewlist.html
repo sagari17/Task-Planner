@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>My list</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
@@ -165,7 +165,6 @@
       taskBoxTmpl.content.querySelector("input[type=radio]").name =
         "task-" + task.id;
       taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
-      console.log(task.due_date);
       taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
         ? task.due_date.split("T")[0]
         : "No due date";

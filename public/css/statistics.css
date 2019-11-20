@@ -1,4 +1,8 @@
-.wrapperListStatistics{
+.wrapperStatistics{
+    flex-direction: row;
+}
+
+.statsListStatistics{
     display: flex;
     background: white;
     align-items: center;

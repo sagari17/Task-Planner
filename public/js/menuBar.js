@@ -6,7 +6,7 @@ class MyMenu extends HTMLElement {
       <div id="menuWrapper">
 
       <div class="menuItem">
-        <img src="images/dash_dashboardbar.svg" alt="dashboard" title="dashboard" /><p>Dashboard</p>
+        <img src="images/dashboard.svg" alt="dashboard" title="dashboard" /><p>Dashboard</p>
       </div>
 
 
@@ -23,12 +23,19 @@ class MyMenu extends HTMLElement {
         </div>
         <img src="images/MyPlanner.svg" alt="Logo" title="Logo"/>
       </div>`;
-    let dashboard = this.querySelector(".menuItem");
-    let lists = this.querySelectorAll(".menuItem")[1];
-    let profile = this.querySelectorAll(".menuItem")[2];
-    lists.addEventListener("click", this.clickLists);
-    dashboard.addEventListener("click", this.clickDashboard);
-    profile.addEventListener("click", this.clickProfile);
+
+    this.querySelectorAll(".menuItem")[0].addEventListener(
+      "click",
+      this.clickDashboard
+    );
+    this.querySelectorAll(".menuItem")[1].addEventListener(
+      "click",
+      this.clickLists
+    );
+    this.querySelectorAll(".menuItem")[2].addEventListener(
+      "click",
+      this.clickProfile
+    );
   }
 
   clickLists() {

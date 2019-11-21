@@ -770,7 +770,6 @@
           condensedMembers.push(parseInt(detailID));
           condensedMembers.push(member.id);
         })
-        console.log(condensedMembers)
 
         url = "http://localhost:3000/lists/member";
         cfg = {
@@ -836,7 +835,7 @@
 
       localStorage.removeItem("taskdata");
       localStorage.removeItem("listdata");
-      //redirectUser("showlists.html");
+      redirectUser("showlists.html");
     }
 
     async function deleteTaskButton(evt) {

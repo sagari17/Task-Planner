@@ -412,7 +412,7 @@ const db = function(dbConnection) {
     taskChangeFinished: taskChangeFinished,
     addManyMembers: addManyMembers,
     getMembersOfList: getMembersOfList,
-    getAllListByUserID: getAllListByUserID,
+    getAllListsByUserID: getAllListsByUserID,
     deleteManyMembers: deleteManyMembers
   };
 };

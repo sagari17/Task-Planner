@@ -220,6 +220,12 @@ input[type="radio"]:checked {
   .registerwrapper {
     width: 70%;
   }
+
+  .statBox {
+    height: 20%;
+    width: 150%;
+    margin-top: 2rem;
+  }
 }
 
 @media screen and (max-width: 760px) {
@@ -284,6 +290,12 @@ input[type="radio"]:checked {
     width: 100%;
     height: 3.5rem;
   }
+
+  .statBox {
+    height: 20%;
+    width: 90%;
+    margin-top: 2rem;
+  }
 }
 
 @media screen and (max-width: 500px) {
@@ -340,6 +352,12 @@ input[type="radio"]:checked {
   .vl-task-title {
     margin-left: 0.5rem;
   }
+
+  .statBox {
+    height: 20%;
+    width: 90%;
+    margin-top: 2rem;
+  }
 }
 
 @media screen and (max-width: 440px) {
@@ -375,5 +393,11 @@ input[type="radio"]:checked {
 
   .filter-dropdown {
     flex-direction: column;
+  }
+
+  .statBox {
+    height: 20%;
+    width: 90%;
+    margin-top: 2rem;
   }
 }

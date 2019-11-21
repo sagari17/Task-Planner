@@ -3,6 +3,7 @@
 @import url("login.css");
 @import url("profile.css");
 @import url("newlist.css");
+@import url("dashboard.css");
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700&display=swap");
 
 :root {
@@ -159,6 +160,21 @@ input:focus {
   outline: none;
 }
 
+/*Task finished, unfinished*/
+.unchecked {
+  background-image: url("../images/checkbox_unchecked.svg");
+  background-size: contain;
+  height: 1.3rem;
+  width: 1.3rem;
+}
+
+.checked {
+  background-image: url("../images/checkbox_checked.svg");
+  background-size: contain;
+  height: 1.4rem;
+  width: 1.4rem;
+}
+
 .hidden {
   display: none;
 }
@@ -184,12 +200,6 @@ input[type="radio"]:checked {
   visibility: hidden;
 }
 
-#errormsg {
-  margin: 0 0 1rem 0;
-  text-align: center;
-  color: var(--color-red);
-}
-
 @media screen and (max-width: 1130px) {
   .list-wrapper {
     width: 30.5%;
@@ -210,6 +220,7 @@ input[type="radio"]:checked {
   .registerwrapper {
     width: 70%;
   }
+
 }
 
 @media screen and (max-width: 760px) {
@@ -274,6 +285,7 @@ input[type="radio"]:checked {
     width: 100%;
     height: 3.5rem;
   }
+
 }
 
 @media screen and (max-width: 500px) {
@@ -330,6 +342,7 @@ input[type="radio"]:checked {
   .vl-task-title {
     margin-left: 0.5rem;
   }
+
 }
 
 @media screen and (max-width: 440px) {

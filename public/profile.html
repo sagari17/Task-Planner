@@ -29,7 +29,7 @@
     </template>
 
     <template id="editProfile">
-      <div class="wrapperprofile">
+      <form class="wrapperprofile">
         <img src="images/profile.svg" id="profileimg" />
         <h1>Edit profile</h1>
         <div class="textwrap">
@@ -38,31 +38,35 @@
             id="firstname"
             placeholder="Firstname"
             class="text-field"
+            required
           />
           <input
             type="text"
             id="lastname"
             placeholder="Lastname"
             class="text-field"
+            required
           />
           <input
-            type="text"
+            type="email"
             id="email"
             placeholder="E-mail"
             class="text-field"
+            required
           />
         </div>
+        <div id="errormsg"></div>
         <div class="buttonrow">
           <button type="button" id="goback" class="button-blue">Go Back</button>
-          <button type="button" id="save" class="button-green">
+          <button type="submit" id="save" class="button-green">
             Save Changes
           </button>
         </div>
-      </div>
+      </form>
     </template>
 
     <template id="changePw">
-      <div class="wrapperprofile">
+      <form class="wrapperprofile">
         <img src="images/profile.svg" id="profileimg" />
         <h1>Change password</h1>
         <div class="textwrap">
@@ -79,13 +83,14 @@
             class="text-field"
           />
         </div>
+        <div id="errormsg"></div>
         <div class="buttonrow">
           <button type="button" id="goback" class="button-blue">Go Back</button>
-          <button type="button" id="change" class="button-green">
+          <button type="submit" id="change" class="button-green">
             Change Password
           </button>
         </div>
-      </div>
+      </form>
     </template>
   </body>
 
@@ -162,16 +167,19 @@
           showUserInfo();
         });
 
-      document.querySelector("#save").addEventListener("click", function(evt) {
-        saveChanges(firstname.value, lastname.value, email.value);
+      document.querySelector("form").addEventListener("submit", function(evt) {
+        evt.preventDefault();
+        saveChanges(firstname, lastname, email);
       });
     }
 
     function changePasswordPage(evt) {
+      evt.preventDefault();
       container.innerHTML = "";
       container.appendChild(changePwTmpl.content.cloneNode(true));
 
       let newpw = document.querySelector("#newpw");
+      let newpwrepeat = document.querySelector("#newpwrepeat");
 
       document
         .querySelector("#goback")
@@ -179,60 +187,66 @@
           showUserInfo();
         });
 
-      document
-        .querySelector("#change")
-        .addEventListener("click", function(evt) {
-          changePw(newpw.value);
-        });
+      document.querySelector("form").addEventListener("submit", function(evt) {
+        evt.preventDefault();
+        changePw(newpw, newpwrepeat);
+      });
     }
 
     async function saveChanges(firstname, lastname, email) {
-      let url = "http://localhost:3000/users";
+      if (
+        utilities.checkNameInput(firstname, lastname) &&
+        (await utilities.isNewOrOldEmail(email))
+      ) {
+        let url = "http://localhost:3000/users";
 
-      let userData = {
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        id: userid
-      };
+        let userData = {
+          firstname: firstname.value,
+          lastname: lastname.value,
+          email: email.value,
+          id: userid
+        };
 
-      let cfg = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      };
+        let cfg = {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData)
+        };
 
-      try {
-        let data = await utilities.requestToServer(url, cfg);
+        try {
+          let data = await utilities.requestToServer(url, cfg);
 
-        let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
-        sessionData.email = email;
-        sessionStorage.setItem("logindata", JSON.stringify(sessionData));
-        showUserInfo();
-      } catch (err) {
-        console.log(err);
+          let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
+          sessionData.email = email.value;
+          sessionStorage.setItem("logindata", JSON.stringify(sessionData));
+          showUserInfo();
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
 
-    async function changePw(password) {
-      let url = "http://localhost:3000/users/changePassword";
+    async function changePw(password, passwordrep) {
+      if (utilities.checkPasswords(password, passwordrep)) {
+        let url = "http://localhost:3000/users/changePassword";
 
-      let userData = {
-        password: password,
-        id: userid
-      };
+        let userData = {
+          password: password.value,
+          id: userid
+        };
 
-      let cfg = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      };
+        let cfg = {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData)
+        };
 
-      try {
-        let data = await utilities.requestToServer(url, cfg);
-        showUserInfo();
-      } catch (err) {
-        console.log(err);
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          showUserInfo();
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
 

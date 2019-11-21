@@ -211,9 +211,11 @@
       passwordrepeat = document.getElementById("pwrepeat");
       errormsg = document.getElementById("errormsg");
 
-
-      if (checkRegisterInput() && checkPasswords() && (await newEmail())) {
-
+      if (
+        utilities.checkNameInput(firstname, lastname) &&
+        (await utilities.isNewEmail(email)) &&
+        utilities.checkPasswords(password, passwordrepeat)
+      ) {
         let url = "http://localhost:3000/users";
 
         let userData = {
@@ -236,52 +238,6 @@
         } catch (err) {
           errormsg.innerHTML = err;
         }
-      }
-    }
-
-    async function newEmail() {
-      let isEmail = null;
-
-      let url = "http://localhost:3000/users/email/" + email.value;
-      let cfg = {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      };
-      try {
-        let data = await utilities.requestToServer(url, cfg);
-        isEmail = data;
-      } catch (err) {
-        console.log(err);
-        errormsg.innerHTML = err;
-      }
-      if (isEmail == false) {
-        return true;
-      } else {
-        errormsg.innerHTML =
-          "There already is an account registered with that email.";
-        return false;
-      }
-    }
-
-    function checkRegisterInput() {
-      if (
-        utilities.isValidInput(firstname.value) &&
-        utilities.isValidInput(lastname.value)
-      ) {
-        return true;
-      } else {
-        errormsg.innerHTML =
-          "Please input valid first and last name - no special characters!";
-        return false;
-      }
-    }
-
-    function checkPasswords() {
-      if (password.value == passwordrepeat.value) {
-        return true;
-      } else {
-        errormsg.innerHTML = "Passwords do not match.";
-        return false;
       }
     }
   </script>

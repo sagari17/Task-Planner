@@ -73,20 +73,19 @@
               this list. You can then assign them to tasks on the list.
             </p>
             <div class="members-div">
-              
               <div>
-              <input
-                type="text"
-                id="member-email"
-                placeholder="User email address"
-                class="text-field-50"
-              />
-              <p id="errormsmemberg-"></p>
-              <button type="button" class="add-button" id="addMember">
-                <img src="images/plus_green_button.svg" /> Add Member
-              </button>
-            </div>
-            <div id="list-members"></div>
+                <input
+                  type="text"
+                  id="member-email"
+                  placeholder="User email address"
+                  class="text-field-50"
+                />
+                <p id="errormsmemberg-"></p>
+                <button type="button" class="add-button" id="addMember">
+                  <img src="images/plus_green_button.svg" /> Add Member
+                </button>
+              </div>
+              <div id="list-members"></div>
             </div>
           </div>
         </div>
@@ -436,6 +435,15 @@
         .forEach(btn => {
           btn.addEventListener("click", deleteTaskButton);
         });
+
+      let querySelector;
+      isNewList
+        ? (querySelector = ".delete-icon-red:last-child")
+        : (querySelector = ".added .delete-icon-red:last-child");
+
+      document.querySelectorAll(querySelector).forEach(btn => {
+        btn.addEventListener("click", deleteTaskButton);
+      });
     }
 
     async function editMembers() {
@@ -480,7 +488,7 @@
             "The person is already a member of this list.";
         }
       } else {
-        errormsg.innerHTML="No user with that email exists";
+        errormsg.innerHTML = "No user with that email exists";
       }
     }
 
@@ -611,14 +619,14 @@
       let index_membersAdd = membersAdd.findIndex(
         member => member.id == elm.parentNode.id
       );
-      
+
       if (index_existing > -1) {
         let del = existing.splice(index_existing, 1);
-          if(index_membersAdd==-1){
+        if (index_membersAdd == -1) {
           deleted.push(del[0]);
         }
       }
-      
+
       if (index_membersAdd > -1) {
         membersAdd.splice(index_membersAdd, 1);
       }
@@ -763,13 +771,13 @@
 
       //save members
       let condensedMembers = [];
-      let membersAdd = sessionStorage.getItem('newMembers');
+      let membersAdd = sessionStorage.getItem("newMembers");
       membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
-      if(membersAdd.length>0){
+      if (membersAdd.length > 0) {
         membersAdd.forEach(member => {
           condensedMembers.push(parseInt(detailID));
           condensedMembers.push(member.id);
-        })
+        });
 
         url = "http://localhost:3000/lists/member";
         cfg = {
@@ -785,15 +793,17 @@
           console.log(err);
         }
       }
-      
+
       let condensedMembers_deleted = [];
-      let membersAdd_deleted = sessionStorage.getItem('deletedMembers');
-      membersAdd_deleted = membersAdd_deleted ? JSON.parse(membersAdd_deleted) : [];
-      if(membersAdd_deleted.length>0){
+      let membersAdd_deleted = sessionStorage.getItem("deletedMembers");
+      membersAdd_deleted = membersAdd_deleted
+        ? JSON.parse(membersAdd_deleted)
+        : [];
+      if (membersAdd_deleted.length > 0) {
         membersAdd_deleted.forEach(member => {
           condensedMembers_deleted.push(parseInt(detailID));
           condensedMembers_deleted.push(member.id);
-        })
+        });
 
         url = "http://localhost:3000/lists/member";
         cfg = {

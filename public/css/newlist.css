@@ -115,3 +115,45 @@ select:focus {
   width: 1.8rem;
   margin-left: 0.8rem;
 }
+
+.members-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 60%;
+  max-width: 60%;
+}
+
+.addmember {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.list-members {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  border-bottom-style: solid;
+  border-bottom-width: thin;
+  border-bottom-color: rgba(233, 233, 233, 0.692);
+  margin: 0;
+}
+
+.task-title-div p {
+  width: 50%;
+  padding: 0;
+}
+
+.addmember #member-email {
+  margin: 0;
+}
+
+#list-members .task-title-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border: none;
+}

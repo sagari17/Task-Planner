@@ -20,7 +20,7 @@ const db = function(dbConnection) {
     let userData = null;
     let values = [email];
     try {
-      userData = await runQuery("SELECT * from users WHERE email=$1", values);
+      userData = await runQuery("SELECT * FROM users WHERE email=$1", values);
     } catch (err) {
       //Deal with it
     }
@@ -31,7 +31,7 @@ const db = function(dbConnection) {
     let userData = null;
     let values = [userID];
     try {
-      userData = await runQuery("SELECT * from users WHERE id=$1", values);
+      userData = await runQuery("SELECT * FROM users WHERE id=$1", values);
     } catch (err) {
       //Deal with it
     }
@@ -45,6 +45,43 @@ const db = function(dbConnection) {
         "INSERT INTO users (id, firstname, lastname, email, password) VALUES(DEFAULT, $1, $2, $3, $4) RETURNING *",
         values
       );
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
+  const addManyMembers = async function(values) {
+    let userData = null;
+    let query =
+      "INSERT INTO members (list_id, user_id) VALUES((select id from lists where id = $1), (select id from users where id = $2))";
+    for (let i = 3; i < values.length; i += 2) {
+      query += `, ((select id from lists where id = $${i}), (select id from users where id = $${i +
+        1}))`;
+    }
+    query += "RETURNING *";
+    try {
+      userData = await runQuery(query, values);
+    } catch (err) {
+      console.log(err);
+    }
+    return userData;
+  };
+
+  const deleteManyMembers = async function(values) {
+    let userData = null;
+    let query ="DELETE FROM members WHERE list_id IN (";
+    let query2 ="(SELECT id FROM lists WHERE id = $1)";
+    let query3 =") AND user_id IN ((SELECT id FROM users WHERE id = $2)";
+    for (let i = 3; i < values.length; i +=2) {
+      query2+= `,(SELECT id FROM lists WHERE id = $${i})`;
+      query3+= `,(SELECT id FROM users WHERE id = $${i + 1})`;
+    }
+    query += query2;
+    query += query3;
+    query += ")RETURNING *";
+    try {
+      userData = await runQuery(query, values);
     } catch (err) {
       console.log(err);
     }
@@ -111,7 +148,21 @@ const db = function(dbConnection) {
     let values = [userID];
     try {
       listData = await runQuery(
-        "SELECT * from lists WHERE owner=$1 ORDER BY id",
+        "SELECT * FROM lists WHERE owner=$1 ORDER BY id",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return listData;
+  };
+
+  const getAllListsByUserID = async function(userID) {
+    let listData = null;
+    let values = [userID];
+    try {
+      listData = await runQuery(
+        "SELECT DISTINCT lists.id, lists.name, lists.owner, lists.public FROM lists, members WHERE lists.owner=$1 OR lists.id=members.list_id AND members.user_id=$1 ",
         values
       );
     } catch (err) {
@@ -134,7 +185,7 @@ const db = function(dbConnection) {
 
   const getTasksByListID = async function(values) {
     let taskData = null;
-    let query = "SELECT * FROM tasks WHERE listid=$1";
+    let query = "SELECT * FROM tasks WHERE listid=$1 ORDER BY id";
     if (values[1] == "None") {
       values = [values[0]];
     } else {
@@ -149,11 +200,10 @@ const db = function(dbConnection) {
   };
 
   const filterTasksByDate = async function(values) {
-    console.log(values[1]);
     let taskData = null;
     let query = "SELECT * FROM tasks WHERE listid=$1";
     if (values[1] == "today") {
-      query += " AND due_date=NOW()::date";
+      query += " AND (due_date::date = NOW()::date)";
     } else if (values[1] == "week") {
       query +=
         " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '7 days'))";
@@ -173,11 +223,12 @@ const db = function(dbConnection) {
 
   const getTasksByListIDs = async function(listIDS) {
     let taskData = null;
-    let query = "SELECT * from tasks WHERE listid=$1";
+    let query = "SELECT * FROM tasks WHERE listid=$1";
     let values = listIDS;
     for (let i = 1; i < listIDS.length; i++) {
       query += ` OR listid=$${i + 1}`;
     }
+    query += " ORDER BY id";
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
@@ -214,8 +265,6 @@ const db = function(dbConnection) {
   };
 
   const createSeveralTasks = async function(values) {
-    console.log("several tasks");
-    console.log(values);
     let taskData = null;
     let query =
       "INSERT INTO tasks (id, name, due_date, tag, assigned_user, finished, listid) VALUES(DEFAULT, $1, $2, $3, $4, $5, $6)";
@@ -224,7 +273,6 @@ const db = function(dbConnection) {
         4}, $${i + 5})`;
     }
     query += "RETURNING *";
-    console.log(query);
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
@@ -246,12 +294,13 @@ const db = function(dbConnection) {
     }
     return taskData;
   };
+
   const updateTask = async function(data) {
     let taskData = null;
     let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=$4 WHERE id=$5 RETURNING *",
+        "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user=(select id FROM lists WHERE id = $4) WHERE id=$5 RETURNING *",
         values
       );
     } catch (err) {
@@ -274,6 +323,7 @@ const db = function(dbConnection) {
     }
     return listData;
   };
+
   const checkIfEmailExists = async function(email) {
     let emailData = null;
     let values = [email];
@@ -291,18 +341,51 @@ const db = function(dbConnection) {
       return false;
     }
   };
+
+  const checkEmailReturnUser = async function(email) {
+    let emailData = null;
+    let values = [email];
+    try {
+      emailData = await runQuery(
+        "SELECT users.id, users.firstname, users.lastname, users.email FROM users WHERE email=$1",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    if (emailData) {
+      return emailData[0];
+    } else {
+      return false;
+    }
+  };
+
   const taskChangeFinished = async function(data) {
     let taskData = null;
     let values = [data.id, 0, 1];
     try {
       taskData = await runQuery(
-        "UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1",
+        "UPDATE tasks SET finished = CASE WHEN finished = $3 THEN $2 WHEN finished = $2 THEN $3 ELSE finished END WHERE id=$1 RETURNING *",
         values
       );
     } catch (err) {
       console.log(err);
     }
     return taskData;
+  };
+
+  const getMembersOfList = async function(listID) {
+    let memberData = null;
+    let values = [listID];
+    try {
+      memberData = await runQuery(
+        "SELECT DISTINCT users.id, users.firstname, users.lastname, users.email FROM lists, users, members WHERE (select id from lists where id = $1) = members.list_id AND users.id = members.user_id",
+        values
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    return memberData;
   };
 
   return {
@@ -325,7 +408,12 @@ const db = function(dbConnection) {
     updateTask: updateTask,
     updateList: updateList,
     checkIfEmailExists: checkIfEmailExists,
-    taskChangeFinished: taskChangeFinished
+    checkEmailReturnUser: checkEmailReturnUser,
+    taskChangeFinished: taskChangeFinished,
+    addManyMembers: addManyMembers,
+    getMembersOfList: getMembersOfList,
+    getAllListsByUserID: getAllListsByUserID,
+    deleteManyMembers: deleteManyMembers
   };
 };
 

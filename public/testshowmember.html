@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create task</title>
+    <title>My document</title>
   </head>
 
   <body>
@@ -36,27 +36,17 @@
     let tag = document.getElementById("tag");
 
     create.addEventListener("click", async function(evt) {
-      let url = "http://localhost:3000/tasks";
-
-      let taskData = {
-        name: name.value,
-        date: date.value,
-        tag: tag.value,
-        assign: 3,
-        finished: 0,
-        listid: 4
-      };
-
+      let url = "http://localhost:3000/lists/all/4";
 
       let cfg = {
-        method: "POST",
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskData)
       };
 
       try {
         var resp = await fetch(url, cfg);
         var data = await resp.json();
+        console.log(data);
         result.innerHTML = data.msg;
       } catch (err) {
         console.log(err);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>Lists</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
@@ -73,16 +73,20 @@
               this list. You can then assign them to tasks on the list.
             </p>
             <div class="members-div">
+              
+              <div>
               <input
                 type="text"
                 id="member-email"
                 placeholder="User email address"
                 class="text-field-50"
               />
-              <p id="errormsg-member"></p>
-              <button type="button" class="add-button">
+              <p id="errormsmemberg-"></p>
+              <button type="button" class="add-button" id="addMember">
                 <img src="images/plus_green_button.svg" /> Add Member
               </button>
+            </div>
+            <div id="list-members"></div>
             </div>
           </div>
         </div>
@@ -92,6 +96,7 @@
             <img src="images/plus_green_button.svg" />Add Task
           </button>
         </div>
+        <p id="errormsg"></p>
         <div class="buttonrow">
           <button type="button" id="cancelList" class="button-blue">
             Cancel List</button
@@ -119,13 +124,11 @@
           </div>
           <div class="dropdown-div">
             Add tag:
-            <select id="tagDropdown" class="tag"> </select>
+            <select class="tag tagDropdown"> </select>
           </div>
           <div class="dropdown-div">
             Assign user:
-            <select class="user">
-              <option value="None" selected>No User</option>
-            </select>
+            <select class="user userDropdown"> </select>
           </div>
         </div>
       </div>
@@ -139,6 +142,7 @@
     let isNewList = true;
     let newListid;
     let existingTasks = true;
+    let userData;
     let TagArr = utilities.getTagArray();
 
     showLists();
@@ -151,12 +155,12 @@
         document
           .querySelector("#addList")
           .addEventListener("click", addNewList);
-        let userData = JSON.parse(sessionStorage.getItem("logindata"));
+        userData = JSON.parse(sessionStorage.getItem("logindata"));
         let listData = JSON.parse(localStorage.getItem("listdata"));
         let ids;
 
         if (listData == null || listData.length == 0) {
-          let url = "http://localhost:3000/lists/" + userData.userid;
+          let url = "http://localhost:3000/lists/all/" + userData.userid;
           listData = await utilities.requestToServer(url, {});
           localStorage.setItem("listdata", JSON.stringify(listData));
         }
@@ -175,6 +179,7 @@
               "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
 
             taskData = await utilities.requestToServer(url2, {});
+            console.log(taskData);
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
 
@@ -202,15 +207,17 @@
                 let taskDiv = document.createElement("div");
                 taskDiv.classList.add("list-div");
                 taskDiv.innerHTML = task.name;
-                taskDiv.setAttribute("id", "index-" + index);
 
-                let checkedDiv = document.createElement("div");
+                let checkedRadio = document.createElement("input");
+                checkedRadio.setAttribute("type", "radio");
+                checkedRadio.classList.add("radioFinished");
                 if (task.finished) {
-                  checkedDiv.classList.add("checked");
-                } else {
-                  checkedDiv.classList.add("unchecked");
+                  checkedRadio.checked = true;
+                  checkedRadio.classList.add("checked");
                 }
-                taskDiv.appendChild(checkedDiv);
+                checkedRadio.setAttribute("id", "taskid-" + task.id);
+
+                taskDiv.appendChild(checkedRadio);
 
                 listViewList.appendChild(taskDiv);
               }
@@ -239,9 +246,17 @@
             document.querySelectorAll(".delete-icon-blue").forEach(btn => {
               btn.addEventListener("click", deleteList);
             });
+
+            //eventlistener for checking a task finished or not
+            document.querySelectorAll(".radioFinished").forEach(btn => {
+              btn.addEventListener("click", utilities.markAsFinished);
+            });
           }
         } else {
-          console.log("no lists yet");
+          let txt = document.createElement("p");
+          txt.innerHTML = "No lists yet. Go ahead and create a new one!";
+          txt.classList.add("notasks");
+          document.querySelector("#show-lists-wrapper").appendChild(txt);
         }
       } catch (err) {
         console.log(err);
@@ -254,12 +269,27 @@
     }
 
     async function addNewList(evt) {
+      let thisUser = JSON.parse(sessionStorage.getItem("logindata"));
+      sessionStorage.removeItem("listMembers");
+      sessionStorage.removeItem("newMembers");
+      sessionStorage.removeItem("deletedMembers");
+      sessionStorage.setItem("listMembers", JSON.stringify([]));
+      let listmembers = [
+        {
+          id: thisUser.userid,
+          firstname: thisUser.firstname,
+          lastname: thisUser.lastname,
+          email: thisUser.email
+        }
+      ];
       isNewList = true;
       let newListTmpl = document.getElementById("newListTmpl");
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
-
+      document
+        .querySelector("#addMember")
+        .addEventListener("click", editMembers);
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
       document.querySelector("form").addEventListener("submit", saveList);
       document
@@ -275,6 +305,9 @@
       detailID = evt.target.parentNode.id;
       let lists = JSON.parse(localStorage.getItem("listdata"));
       let tasks = JSON.parse(localStorage.getItem("taskdata"));
+      sessionStorage.removeItem("listMembers");
+      sessionStorage.removeItem("newMembers");
+      sessionStorage.removeItem("deletedMembers");
       let listData = lists.find(obj => {
         return obj.id == detailID;
       });
@@ -295,22 +328,37 @@
         return obj.listid == detailID;
       });
 
+      const addOptions = await addMemberData(detailID);
+      let existing = JSON.parse(sessionStorage.getItem("listMembers"));
+      createMemberDiv(existing);
+
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
 
         let taskDiv = document.querySelectorAll(".task-div")[index];
 
         taskDiv.querySelector(".task-title").value = task.name;
-        let date = task.due_date ? task.due_date.split("T")[0] : "";
+        let date = task.due_date != null ? task.due_date.split("T")[0] : "";
+        console.log(task);
+        console.log(date);
+        console.log(task.due_date);
+        console.log(task.assigned_user);
         taskDiv.querySelector(".due-date").value = date;
         let tag = task.tag ? task.tag : "None";
         taskDiv.querySelector(".tag").value = tag;
+        task.assigned_user == null
+          ? (taskDiv.querySelector(".user").value = "None")
+          : (taskDiv.querySelector(".user").value = task.assigned_user);
         taskDiv.setAttribute("id", "taskid-" + task.id);
       }
 
       document.querySelectorAll(".delete-icon-red").forEach(btn => {
         btn.addEventListener("click", deleteTaskButton);
       });
+
+      document
+        .querySelector("#addMember")
+        .addEventListener("click", editMembers);
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
       document.querySelector("form").addEventListener("submit", saveChanges);
       document
@@ -358,10 +406,27 @@
           .classList.add("added");
       }
 
-      let tagDropdown = newTaskDiv.content.querySelector("#tagDropdown");
+      if (isNewList || (!isNewList && !existingTasks)) {
+        newTaskDiv.content.querySelector(
+          ".due-date"
+        ).min = new Date().toISOString().split("T")[0];
+      }
+
+      let tagDropdown = newTaskDiv.content.querySelector(".tagDropdown");
+      tagDropdown.innerHTML = "";
       TagArr.forEach(obj => {
         tagDropdown.appendChild(new Option(obj.text, obj.value));
       });
+
+      let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
+      userDropdown.innerHTML = "";
+      userDropdown.appendChild(new Option("No user assigned", "None"));
+      //userDropdown.appendChild(new Option(userData, userData.id));
+      let members = JSON.parse(sessionStorage.getItem("listMembers"));
+      if (members != null && members.length > 0) {
+        addOption(members, newTaskDiv.content);
+      }
+
       let newTaskContent = newTaskDiv.content.cloneNode(true);
       let tasksContainer = document.querySelector("#tasks-container");
       tasksContainer.appendChild(newTaskContent);
@@ -373,13 +438,203 @@
         });
     }
 
+    async function editMembers() {
+      let memberEmail = document.getElementById("member-email");
+      let existingUser = await checkEmail();
+      async function checkEmail() {
+        let url =
+          "http://localhost:3000/users/emailAndData/" + memberEmail.value;
+        let cfg = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      if (existingUser) {
+        let existing = sessionStorage.getItem("listMembers");
+        existing = existing ? JSON.parse(existing) : [];
+
+        let membersAdd = sessionStorage.getItem("newMembers");
+        membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
+
+        let index = existing.findIndex(
+          member => member.email == memberEmail.value
+        );
+        if (index === -1) {
+          existing.push(existingUser);
+          membersAdd.push(existingUser);
+          sessionStorage.setItem("listMembers", JSON.stringify(existing));
+          sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
+          let existingTaskDiv = document.querySelectorAll(".task-div");
+          existingTaskDiv.forEach(elem => {
+            addOption([existingUser], elem);
+          });
+          createMemberDiv([existingUser]);
+        } else {
+          document.getElementById("errormsg").innerHTML =
+            "The person is already a member of this list.";
+        }
+      } else {
+        errormsg.innerHTML="No user with that email exists";
+      }
+    }
+
+    async function addMemberData(listID) {
+      let url = "http://localhost:3000/lists/member/" + listID;
+
+      let cfg = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      try {
+        let resp = await fetch(url, cfg);
+        let data = await resp.json();
+        let existing = sessionStorage.getItem("listMembers");
+        // If no existing data, create an array
+        existing = existing ? JSON.parse(existing) : [];
+        data.forEach(index => {
+          existing.push(index);
+        });
+        sessionStorage.setItem("listMembers", JSON.stringify(existing));
+        return data;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    function addOption(array, element = document) {
+      array.forEach(member => {
+        let user = element.querySelector(".user");
+        let option = document.createElement("option");
+        option.text =
+          member.firstname + " " + member.lastname + " (" + member.email + ")";
+        option.value = member.id;
+        user.appendChild(option);
+      });
+    }
+
+    function createMemberDiv(array) {
+      let list_members = document.getElementById("list-members");
+      array.forEach(member => {
+        let wrapper = document.createElement("div");
+        wrapper.id = member.id;
+        wrapper.classList.add("task-title-div");
+        let membername = document.createElement("p");
+        membername.innerHTML = member.firstname + " " + member.lastname;
+        let img = document.createElement("img");
+        img.src = "images/delete_red_button.svg";
+        img.classList.add("delete-icon-red");
+        img.addEventListener("click", removeMember);
+        wrapper.appendChild(membername);
+        wrapper.appendChild(img);
+        list_members.appendChild(wrapper);
+      });
+    }
+
+    async function getMemberData(listID) {
+      let url = "http://localhost:3000/lists/member/" + listID;
+
+      let cfg = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      };
+
+      try {
+        var resp = await fetch(url, cfg);
+        var data = await resp.json();
+        return data;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    function getAllTaskData(taskDivs) {
+      let newTasks = [];
+      for (let task of taskDivs) {
+        let title = task.querySelector(".task-title").value;
+        let date =
+          task.querySelector(".due-date").value == ""
+            ? null
+            : task.querySelector(".due-date").value + " 01:00";
+        let tag =
+          task.querySelector(".tag").value == "None"
+            ? null
+            : task.querySelector(".tag").value;
+        let user =
+          task.querySelector(".user").value == "None"
+            ? null
+            : task.querySelector(".user").value;
+
+        let taskid = task.id.split("-")[1];
+
+        if (isNewList) {
+          newTasks.push(title, date, tag, user, 0, newListid);
+        } else {
+          newTasks.push({
+            name: title,
+            date: date,
+            tag: tag,
+            user: user,
+            taskid: taskid
+          });
+        }
+      }
+      return newTasks;
+    }
+
+    function removeMember(evt) {
+      let elm = evt.currentTarget;
+      document.querySelectorAll(".user").forEach(opt => {
+        for (var i = 0; i < opt.length; i++) {
+          if (opt.options[i].value == elm.parentNode.id) {
+            opt.remove(i);
+          }
+        }
+      });
+      elm.parentNode.parentNode.removeChild(elm.parentNode);
+      let existing = sessionStorage.getItem("listMembers");
+      existing = existing ? JSON.parse(existing) : [];
+      let membersAdd = sessionStorage.getItem("newMembers");
+      membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
+      let deleted = sessionStorage.getItem("deletedMembers");
+      deleted = deleted ? JSON.parse(deleted) : [];
+
+      let index_existing = existing.findIndex(
+        member => member.id == elm.parentNode.id
+      );
+      let index_membersAdd = membersAdd.findIndex(
+        member => member.id == elm.parentNode.id
+      );
+      
+      if (index_existing > -1) {
+        let del = existing.splice(index_existing, 1);
+          if(index_membersAdd==-1){
+          deleted.push(del[0]);
+        }
+      }
+      
+      if (index_membersAdd > -1) {
+        membersAdd.splice(index_membersAdd, 1);
+      }
+      sessionStorage.setItem("deletedMembers", JSON.stringify(deleted));
+      sessionStorage.setItem("listMembers", JSON.stringify(existing));
+      sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
+    }
+
     async function saveList(evt) {
       evt.preventDefault();
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
 
-      if (document.querySelectorAll(".task-div") < 1) {
-        console.log("make sure to add tasks to your list");
+      if (document.querySelectorAll(".task-div").length < 1) {
+        document.getElementById("errormsg").innerHTML =
+          "Make sure to add tasks to your list";
         return;
       }
 
@@ -414,8 +669,23 @@
         console.log(err);
       }
 
+      url = "http://localhost:3000/lists/member";
+      cfg = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(condensedMembers)
+      };
+
+      try {
+        let newMemberData = await utilities.requestToServer(url, cfg);
+        console.log(newMemberData);
+      } catch (err) {
+        console.log(err);
+      }
+
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
+      console.log(newTasks);
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
@@ -425,7 +695,6 @@
 
       try {
         let newTaskData = await utilities.requestToServer(url, cfg);
-        console.log(newTaskData);
       } catch (err) {
         console.log(err);
       }
@@ -439,8 +708,9 @@
       evt.preventDefault();
       newListid = detailID;
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
-      if (document.querySelectorAll(".task-div") < 1) {
-        console.log("make sure to add tasks to your list");
+      if (document.querySelectorAll(".task-div").length < 1) {
+        document.getElementById("errormsg").innerHTML =
+          "Make sure to add tasks to your list";
         return;
       }
       let radio = document.querySelector("input[name=public]:checked").value;
@@ -475,10 +745,8 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-
       console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
-        console.log(newTasks[index]);
         url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
@@ -488,7 +756,55 @@
 
         try {
           let newTaskData = await utilities.requestToServer(url, cfg);
-          console.log(newTaskData);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      //save members
+      let condensedMembers = [];
+      let membersAdd = sessionStorage.getItem('newMembers');
+      membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
+      if(membersAdd.length>0){
+        membersAdd.forEach(member => {
+          condensedMembers.push(parseInt(detailID));
+          condensedMembers.push(member.id);
+        })
+
+        url = "http://localhost:3000/lists/member";
+        cfg = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(condensedMembers)
+        };
+
+        try {
+          let newMemberData = await utilities.requestToServer(url, cfg);
+          console.log(newMemberData);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      
+      let condensedMembers_deleted = [];
+      let membersAdd_deleted = sessionStorage.getItem('deletedMembers');
+      membersAdd_deleted = membersAdd_deleted ? JSON.parse(membersAdd_deleted) : [];
+      if(membersAdd_deleted.length>0){
+        membersAdd_deleted.forEach(member => {
+          condensedMembers_deleted.push(parseInt(detailID));
+          condensedMembers_deleted.push(member.id);
+        })
+
+        url = "http://localhost:3000/lists/member";
+        cfg = {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(condensedMembers_deleted)
+        };
+
+        try {
+          let newMemberData = await utilities.requestToServer(url, cfg);
+          console.log(newMemberData);
         } catch (err) {
           console.log(err);
         }
@@ -496,15 +812,11 @@
 
       //newly added tasks to already existing list
       let addedTaskDivs = document.querySelectorAll(".added");
-      console.log(addedTaskDivs);
       if (addedTaskDivs.length != 0) {
-        console.log("existing");
         isNewList = true;
-        console.log(detailID);
         newListid = detailID;
         let addedTasks = getAllTaskData(addedTaskDivs);
         isNewList = false;
-        console.log(addedTasks);
 
         url2 = "http://localhost:3000/tasks/createSeveralTasks";
         cfg2 = {
@@ -526,7 +838,6 @@
     }
 
     async function deleteTaskButton(evt) {
-      console.log("in delete");
       let element = evt.target.parentNode.parentNode;
 
       if (!isNewList && !element.classList.contains("added")) {
@@ -552,43 +863,6 @@
       }
 
       element.remove();
-    }
-
-    function getAllTaskData(taskDivs) {
-      let newTasks = [];
-      for (let task of taskDivs) {
-        let title = task.querySelector(".task-title").value;
-        console.log(task.querySelector(".due-date").value);
-        let date =
-          task.querySelector(".due-date").value == ""
-            ? null
-            : task.querySelector(".due-date").value;
-        let tag =
-          task.querySelector(".tag").value == "None"
-            ? null
-            : task.querySelector(".tag").value;
-        let user =
-          task.querySelector(".user").value == "None"
-            ? null
-            : task.querySelector(".user").value;
-
-        let taskid = task.id.split("-")[1];
-
-        console.log(newListid);
-
-        if (isNewList) {
-          newTasks.push(title, date, tag, user, 0, newListid);
-        } else {
-          newTasks.push({
-            name: title,
-            date: date,
-            tag: tag,
-            user: user,
-            taskid: taskid
-          });
-        }
-      }
-      return newTasks;
     }
   </script>
 </html>

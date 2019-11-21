@@ -4,14 +4,16 @@ class MyMenu extends HTMLElement {
     super();
     this.innerHTML = `
       <div id="menuWrapper">
+
+      <div class="menuItem">
+        <img src="images/dash_dashboardbar.svg" alt="dashboard" title="dashboard" /><p>Dashboard</p>
+      </div>
+
+
         <div class="menuItem">
           <img src="images/menu_lists_grey.svg" alt="lists" title="lists" /><p>Lists</p>
         </div>
-        <div class="menuItem">
 
-          <img src="images/statistics-bar.svg" alt="statistics" title="statistics" /><p>Statistics</p>
-
-        </div>
         <div class="menuItem">
           <img
             src="images/menu_profile_grey.svg"
@@ -33,7 +35,7 @@ class MyMenu extends HTMLElement {
     redirectUser("showlists.html");
   }
   clickStatistics() {
-    console.log("statistics clicked");
+    redirectUser("dashboard.html");
   }
   clickProfile() {
     redirectUser("profile.html");

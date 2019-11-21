@@ -86,11 +86,6 @@ h4 > img {
   height: 12em;
 }
 
-#errormsg {
-  margin: 0 0 1rem 0;
-  color: var(--color-red);
-}
-
 #registerHeadline + #errormsg {
   margin: 2rem 0 0 0;
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>My list</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
@@ -50,7 +50,12 @@
     <template id="taskBoxTmpl">
       <div class="viewList-task">
         <div class="row">
-          <input type="radio" name="task" value="date" />
+          <input
+            type="radio"
+            class="radioFinished"
+            name="taskid"
+            value="date"
+          />
           <div class="vl-task-title">Task Nr.1</div>
         </div>
         <div class="row attributes">
@@ -92,12 +97,10 @@
       let url = "http://localhost:3000/lists/view/" + listid;
       try {
         list = await utilities.requestToServer(url, {});
-        //localStorage.setItem("viewlist", JSON.stringify(list));
       } catch (err) {
         console.log(err);
       }
 
-      console.log(list);
       if (list.public == false && !(isLoggedIn() && list.owner == userid)) {
         redirectUser("index.html");
       }
@@ -159,15 +162,28 @@
         message.classList.add("notasks");
         taskBoxes.appendChild(message);
       }
+
+      document.querySelectorAll(".radioFinished").forEach(btn => {
+        btn.addEventListener("click", utilities.markAsFinished);
+      });
     }
 
     function displayListTask(task) {
-      console.log(task);
       let taskBoxTmpl = document.getElementById("taskBoxTmpl");
-      taskBoxTmpl.content.querySelector("input[type=radio]").name =
-        "task-" + task.id;
+      let radioFinished = taskBoxTmpl.content.querySelector(
+        "input[type=radio]"
+      );
+      radioFinished.name = "taskid-" + task.id;
+      radioFinished.setAttribute("id", "taskid-" + task.id);
+      if (task.finished) {
+        radioFinished.checked = true;
+        radioFinished.classList.add("checked");
+      } else {
+        radioFinished.checked = false;
+        radioFinished.classList.remove("checked");
+      }
+
       taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
-      console.log(task.due_date);
       taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
         ? task.due_date.split("T")[0]
         : "No due date";

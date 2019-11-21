@@ -42,8 +42,6 @@ router.get("/:userID", async function(req, res, next) {
 
 // update user with certain id ----------------------------------------------------------------
 router.patch("/", async function(req, res, next) {
-  console.log("inside patch user ");
-  console.log(req.body);
   try {
     let user = await db.updateUser(req.body);
     if (user) {
@@ -93,6 +91,20 @@ router.get("/email/:userEmail", async function(req, res, next) {
   try {
     let email = await db.checkIfEmailExists(req.params.userEmail);
     if (email===true||email===false) {
+      res.status(200).json(email);
+    } else {
+      throw "User does not exist.";
+    }
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+// check if email exists ----------------------------------------------------------------
+router.get("/emailAndData/:userEmail", async function(req, res, next) {
+  try {
+    let email = await db.checkEmailReturnUser(req.params.userEmail);
+    if (email||email===false) {
       res.status(200).json(email);
     } else {
       throw "User does not exist.";

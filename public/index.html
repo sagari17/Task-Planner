@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My document</title>
+    <title>Log in</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="js/index.js"></script>
   </head>
@@ -89,6 +89,8 @@
                 id="pw"
                 placeholder="Password"
                 class="text-field"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 required
               />
               <input
@@ -96,6 +98,8 @@
                 id="pwrepeat"
                 placeholder="Repeat Password"
                 class="text-field"
+                minlength="8"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                 required
               />
             </div>
@@ -167,10 +171,8 @@
       try {
         let data = await utilities.requestToServer(url, cfg);
         sessionStorage.setItem("logindata", JSON.stringify(data));
-        console.log(data);
 
         let listData = JSON.parse(localStorage.getItem("listdata"));
-        console.log(listData);
         if (
           listData != null &&
           listData.length != 0 &&
@@ -209,8 +211,8 @@
       passwordrepeat = document.getElementById("pwrepeat");
       errormsg = document.getElementById("errormsg");
 
-      if (checkRegisterInput() && checkPasswords() && newEmail()) {
-        console.log("does it");
+
+      if (checkRegisterInput() && checkPasswords() && (await newEmail())) {
 
         let url = "http://localhost:3000/users";
 

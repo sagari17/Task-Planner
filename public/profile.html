@@ -109,44 +109,31 @@
     showUserInfo();
 
     async function showUserInfo() {
-      let url = "http://localhost:3000/users/" + userid;
+      let data = await utilities.getUserByID(userid);
 
-      let cfg = {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      };
+      if (data == null) {
+        throw data;
+      } else {
+        userFirstname = data[0].firstname;
+        userLastname = data[0].lastname;
+        userEmail = data[0].email;
+        profileTmpl.content.querySelector("#name").innerHTML =
+          userFirstname + " " + userLastname;
+        profileTmpl.content.querySelector("#email").innerHTML = userEmail;
 
-      try {
-        let data = await utilities.requestToServer(url, cfg);
+        container.innerHTML = "";
+        container.appendChild(profileTmpl.content.cloneNode(true));
 
-        if (data == null) {
-          throw data;
-        } else {
-          userFirstname = data[0].firstname;
-          userLastname = data[0].lastname;
-          userEmail = data[0].email;
-          profileTmpl.content.querySelector("#name").innerHTML =
-            userFirstname + " " + userLastname;
-          profileTmpl.content.querySelector("#email").innerHTML = userEmail;
-
-          container.innerHTML = "";
-          container.appendChild(profileTmpl.content.cloneNode(true));
-
-          document
-            .querySelector("#edit")
-            .addEventListener("click", editProfilePage);
-          document
-            .querySelector("#changepw")
-            .addEventListener("click", changePasswordPage);
-          document
-            .querySelector("#logout")
-            .addEventListener("click", logoutUser);
-          document
-            .querySelector("#deleteUser")
-            .addEventListener("click", deleteUser);
-        }
-      } catch (err) {
-        console.log(err);
+        document
+          .querySelector("#edit")
+          .addEventListener("click", editProfilePage);
+        document
+          .querySelector("#changepw")
+          .addEventListener("click", changePasswordPage);
+        document.querySelector("#logout").addEventListener("click", logoutUser);
+        document
+          .querySelector("#deleteUser")
+          .addEventListener("click", deleteUser);
       }
     }
 

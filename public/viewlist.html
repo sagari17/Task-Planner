@@ -154,7 +154,16 @@
 
       if (tasks.length != 0) {
         for (let task of tasks) {
-          displayListTask(task);
+          let user = "No user assigned";
+          if (task.assigned_user != null) {
+            try {
+              let data = await utilities.getUserByID(task.assigned_user);
+              user = data[0].firstname + " " + data[0].lastname;
+            } catch (err) {
+              console.log(err);
+            }
+          }
+          displayListTask(task, user);
         }
       } else {
         let message = document.createElement("p");
@@ -168,7 +177,7 @@
       });
     }
 
-    function displayListTask(task) {
+    async function displayListTask(task, user) {
       let taskBoxTmpl = document.getElementById("taskBoxTmpl");
       let radioFinished = taskBoxTmpl.content.querySelector(
         "input[type=radio]"
@@ -182,14 +191,11 @@
         radioFinished.checked = false;
         radioFinished.classList.remove("checked");
       }
-
       taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
       taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
         ? task.due_date.split("T")[0]
         : "No due date";
-      taskBoxTmpl.content.querySelector(".user").innerHTML = task.assigned_user
-        ? task.assigned_user
-        : "No user assigned";
+      taskBoxTmpl.content.querySelector(".user").innerHTML = user;
       taskBoxTmpl.content.querySelector(".tag").innerHTML = task.tag
         ? task.tag
         : "No tag assigned";
@@ -209,6 +215,7 @@
     }
 
     function activateFilter(evt) {
+      console.log(evt.target.value);
       evt.target.value == "tag" ? changeTagFilter() : changeDateFilter();
     }
 

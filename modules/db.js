@@ -70,12 +70,12 @@ const db = function(dbConnection) {
 
   const deleteManyMembers = async function(values) {
     let userData = null;
-    let query ="DELETE FROM members WHERE list_id IN (";
-    let query2 ="(SELECT id FROM lists WHERE id = $1)";
-    let query3 =") AND user_id IN ((SELECT id FROM users WHERE id = $2)";
-    for (let i = 3; i < values.length; i +=2) {
-      query2+= `,(SELECT id FROM lists WHERE id = $${i})`;
-      query3+= `,(SELECT id FROM users WHERE id = $${i + 1})`;
+    let query = "DELETE FROM members WHERE list_id IN (";
+    let query2 = "(SELECT id FROM lists WHERE id = $1)";
+    let query3 = ") AND user_id IN ((SELECT id FROM users WHERE id = $2)";
+    for (let i = 3; i < values.length; i += 2) {
+      query2 += `,(SELECT id FROM lists WHERE id = $${i})`;
+      query3 += `,(SELECT id FROM users WHERE id = $${i + 1})`;
     }
     query += query2;
     query += query3;
@@ -185,12 +185,13 @@ const db = function(dbConnection) {
 
   const getTasksByListID = async function(values) {
     let taskData = null;
-    let query = "SELECT * FROM tasks WHERE listid=$1 ORDER BY id";
+    let query = "SELECT * FROM tasks WHERE listid=$1";
     if (values[1] == "None") {
       values = [values[0]];
     } else {
       query += " AND tag=$2";
     }
+    query += "ORDER BY id";
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
@@ -212,7 +213,7 @@ const db = function(dbConnection) {
         " AND (due_date BETWEEN (NOW()::date) AND (NOW()::date + INTERVAL '1 month'))";
     }
     values = [values[0]];
-
+    query += "ORDER BY id";
     try {
       taskData = await runQuery(query, values);
     } catch (err) {

@@ -72,23 +72,26 @@
               Share this list with certain users to let them become Members of
               this list. You can then assign them to tasks on the list.
             </p>
+            
             <div class="members-div">
-              <div>
-                <input
-                  type="text"
-                  id="member-email"
-                  placeholder="User email address"
-                  class="text-field-50"
-                />
-                <p id="errormsmemberg-"></p>
-                <button type="button" class="add-button" id="addMember">
-                  <img src="images/plus_green_button.svg" /> Add Member
-                </button>
-              </div>
-              <div id="list-members"></div>
+
+              <div class="addmember">
+              <input
+                type="text"
+                id="member-email"
+                placeholder="User email address"
+                class="text-field"
+              />
+              <button type="button" class="add-button" id="addMember">
+                <img src="images/plus_green_button.svg" /> Add Member
+              </button>
+            </div>
+            <div id="list-members"></div>
+
             </div>
           </div>
         </div>
+        <p id="errormsmemberg-"></p>
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
           <button type="button" id="addTask" class="add-button">

@@ -72,22 +72,20 @@
               Share this list with certain users to let them become Members of
               this list. You can then assign them to tasks on the list.
             </p>
-            
+
             <div class="members-div">
-
               <div class="addmember">
-              <input
-                type="text"
-                id="member-email"
-                placeholder="User email address"
-                class="text-field"
-              />
-              <button type="button" class="add-button" id="addMember">
-                <img src="images/plus_green_button.svg" /> Add Member
-              </button>
-            </div>
-            <div id="list-members"></div>
-
+                <input
+                  type="text"
+                  id="member-email"
+                  placeholder="User email address"
+                  class="text-field"
+                />
+                <button type="button" class="add-button" id="addMember">
+                  <img src="images/plus_green_button.svg" /> Add Member
+                </button>
+              </div>
+              <div id="list-members"></div>
             </div>
           </div>
         </div>
@@ -291,9 +289,9 @@
       document
         .querySelector("#addMember")
         .addEventListener("click", editMembers);
-      
+
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
-      
+
       document.querySelector("form").addEventListener("submit", saveList);
       document
         .querySelector("#cancelList")
@@ -677,20 +675,19 @@
       try {
         let newlistData = await utilities.requestToServer(url, cfg);
         newListid = newlistData.id;
-        
       } catch (err) {
         console.log(err);
       }
 
       //save members
       let condensedMembers = [];
-      let membersAdd = sessionStorage.getItem('newMembers');
+      let membersAdd = sessionStorage.getItem("newMembers");
       membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
-      if(membersAdd.length>0){
+      if (membersAdd.length > 0) {
         membersAdd.forEach(member => {
           condensedMembers.push(parseInt(newListid));
           condensedMembers.push(member.id);
-        })
+        });
 
         url = "http://localhost:3000/lists/member";
         cfg = {
@@ -734,7 +731,7 @@
       let taskDivs = document.querySelectorAll(".task-div:not(.added)");
       if (document.querySelectorAll(".task-div").length < 1) {
         document.getElementById("errormsg").innerHTML =
-          "Make sure to add tasks to your list";
+          "Make sure to add tasks to your list.<br> If you want to delete all tasks, go back and delete the whole list. ";
         return;
       }
       let radio = document.querySelector("input[name=public]:checked").value;

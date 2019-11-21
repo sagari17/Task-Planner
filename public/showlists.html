@@ -289,7 +289,9 @@
       document
         .querySelector("#addMember")
         .addEventListener("click", editMembers);
+      
       document.querySelector("#addTask").addEventListener("click", addTaskForm);
+      
       document.querySelector("form").addEventListener("submit", saveList);
       document
         .querySelector("#cancelList")
@@ -673,22 +675,34 @@
       try {
         let newlistData = await utilities.requestToServer(url, cfg);
         newListid = newlistData.id;
+        
       } catch (err) {
         console.log(err);
       }
 
-      url = "http://localhost:3000/lists/member";
-      cfg = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(condensedMembers)
-      };
+      //save members
+      let condensedMembers = [];
+      let membersAdd = sessionStorage.getItem('newMembers');
+      membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
+      if(membersAdd.length>0){
+        membersAdd.forEach(member => {
+          condensedMembers.push(parseInt(newListid));
+          condensedMembers.push(member.id);
+        })
 
-      try {
-        let newMemberData = await utilities.requestToServer(url, cfg);
-        console.log(newMemberData);
-      } catch (err) {
-        console.log(err);
+        url = "http://localhost:3000/lists/member";
+        cfg = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(condensedMembers)
+        };
+
+        try {
+          let newMemberData = await utilities.requestToServer(url, cfg);
+          console.log(newMemberData);
+        } catch (err) {
+          console.log(err);
+        }
       }
 
       //save tasks
@@ -709,7 +723,7 @@
 
       localStorage.removeItem("taskdata");
       localStorage.removeItem("listdata");
-      redirectUser("showlists.html");
+      //redirectUser("showlists.html");
     }
 
     async function saveChanges(evt) {

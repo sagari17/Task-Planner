@@ -23,18 +23,18 @@ class MyMenu extends HTMLElement {
         </div>
         <img src="images/MyPlanner.svg" alt="Logo" title="Logo"/>
       </div>`;
-    let lists = this.querySelector(".menuItem");
-    let statistics = this.querySelectorAll(".menuItem")[1];
+    let dashboard = this.querySelector(".menuItem");
+    let lists = this.querySelectorAll(".menuItem")[1];
     let profile = this.querySelectorAll(".menuItem")[2];
     lists.addEventListener("click", this.clickLists);
-    statistics.addEventListener("click", this.clickStatistics);
+    dashboard.addEventListener("click", this.clickDashboard);
     profile.addEventListener("click", this.clickProfile);
   }
 
   clickLists() {
     redirectUser("showlists.html");
   }
-  clickStatistics() {
+  clickDashboard() {
     redirectUser("dashboard.html");
   }
   clickProfile() {

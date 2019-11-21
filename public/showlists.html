@@ -181,7 +181,6 @@
               "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
 
             taskData = await utilities.requestToServer(url2, {});
-            console.log(taskData);
             localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
 

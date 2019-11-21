@@ -154,13 +154,25 @@ utilities = (function() {
 
   function isNewOrOldEmail(email) {
     let oldEmail = JSON.parse(sessionStorage.getItem("logindata"));
-    console.log(oldEmail.email);
-    console.log(email.value);
     if (oldEmail.email != email.value) {
-      console.log("newmail");
       isNewEmail(email);
     } else {
       return true;
+    }
+  }
+
+  async function getUserByID(id) {
+    let url = "http://localhost:3000/users/" + id;
+
+    let cfg = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    };
+
+    try {
+      return await requestToServer(url, cfg);
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -173,6 +185,7 @@ utilities = (function() {
     checkPasswords: checkPasswords,
     checkNameInput: checkNameInput,
     isNewEmail: isNewEmail,
-    isNewOrOldEmail: isNewOrOldEmail
+    isNewOrOldEmail: isNewOrOldEmail,
+    getUserByID: getUserByID
   };
 })();

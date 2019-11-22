@@ -72,7 +72,7 @@
               Share this list with certain users to let them become Members of
               this list. You can then assign them to tasks on the list.
             </p>
-
+            <p id="errormsmember"></p>
             <div class="members-div" id="member-container">
               <div class="addmember">
                 <input
@@ -89,7 +89,7 @@
             </div>
           </div>
         </div>
-        <p id="errormsmemberg-"></p>
+        
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
           <button type="button" id="addTask" class="add-button">
@@ -269,7 +269,6 @@
 
     async function addNewList(evt) {
       let thisUser = JSON.parse(sessionStorage.getItem("logindata"));
-      let radio = document.querySelector("input[name=public]:checked").value;
       sessionStorage.removeItem("listMembers");
       sessionStorage.removeItem("newMembers");
       sessionStorage.removeItem("deletedMembers");
@@ -287,9 +286,6 @@
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
-      if(radio == 0 || radio == 1){
-        document.getElementById("member-container").style.display = "none";
-      }
       document
           .getElementById("radio-private")
           .addEventListener("click", changeRadio);
@@ -311,6 +307,10 @@
         .addEventListener("click", function() {
           redirectUser("showlists.html");
         });
+      let radio = document.querySelector("input[name=public]:checked").value;
+      if(radio == "private" || radio == "public"){
+        document.getElementById("member-container").style.display = "none";
+      }
     }
 
     async function editList(evt) {
@@ -542,15 +542,15 @@
             });
             createMemberDiv([existingUser]);
           } else {
-            document.getElementById("errormsg").innerHTML =
+            document.getElementById("errormsmember").innerHTML =
               "The person is already a member of this list.";
           }
         } else {
-          document.getElementById("errormsg").innerHTML =
+          document.getElementById("errormsmember").innerHTML =
            "No user with that email exists.";
         }
       } else {
-        document.getElementById("errormsg").innerHTML =
+        document.getElementById("errormsmember").innerHTML =
          "Please fill in the e-mail of the user you want to add as a member.";
       }
     }
@@ -786,7 +786,7 @@
 
       localStorage.removeItem("taskdata");
       localStorage.removeItem("listdata");
-      //redirectUser("showlists.html");
+      redirectUser("showlists.html");
     }
 
     async function saveChanges(evt) {

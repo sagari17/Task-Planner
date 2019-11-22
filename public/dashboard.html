@@ -11,16 +11,42 @@
   <body>
     <my-menu></my-menu>
     <div class="metricWrapper">
+      <form id="getPublicList" class="statBox">
+        <p class="quantityOfLists">View Public Lists</p>
+        <p>Input the URL to view a public List</p>
+        <input
+          id="publicUrl"
+          type="text"
+          class="text-field"
+          placeholder="List URL here"
+          required
+        />
+        <div id="errormsg"></div>
+        <button type="submit" class="button-green">View List</button>
+      </form>
       <div class="statBox">
         <div class="textLeft">
-          <div id="quantityOfLists">20 Lists</div>
-          <div id="admin">Joe Jonas</div>
-          <div id="creator">created by you</div>
+          <div class="quantityOfLists">20 Lists</div>
+          <div class="admin">Joe Jonas</div>
+          <div class="creator">created by you</div>
         </div>
-        <img src="images/user_metric.svg" id="imageStats" />
+        <img src="images/user_metric.svg" class="imageStats" />
       </div>
     </div>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
-  <script></script>
+  <script>
+    redirectNotAuthUser("index.html");
+    let getPublicList = document.getElementById("getPublicList");
+    let errormsg = document.getElementById("errormsg");
+    let sessionError = JSON.parse(sessionStorage.getItem("errordata"));
+    if (sessionError) {
+      errormsg.innerHTML = sessionError.msg;
+    }
+    getPublicList.addEventListener("submit", function(evt) {
+      evt.preventDefault();
+      console.log(document.querySelector("#publicUrl").value);
+      redirectUser(document.querySelector("#publicUrl").value);
+    });
+  </script>
 </html>

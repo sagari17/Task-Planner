@@ -148,117 +148,145 @@
     showLists();
 
     async function showLists() {
-      try {
-        let showListTmpl = document.getElementById("showListsTmpl");
-        let div = showListTmpl.content.cloneNode(true);
-        container.appendChild(div);
-        document
-          .querySelector("#addList")
-          .addEventListener("click", addNewList);
-        userData = JSON.parse(sessionStorage.getItem("logindata"));
-        let listData = JSON.parse(localStorage.getItem("listdata"));
-        let ids;
+      let showListTmpl = document.getElementById("showListsTmpl");
+      let div = showListTmpl.content.cloneNode(true);
+      container.appendChild(div);
+      document.querySelector("#addList").addEventListener("click", addNewList);
+      userData = JSON.parse(sessionStorage.getItem("logindata"));
+      let listData = JSON.parse(localStorage.getItem("listdata"));
+      let ids;
 
-        if (listData == null || listData.length == 0) {
-          let url = "http://localhost:3000/lists/all/" + userData.userid;
-          listData = await utilities.requestToServer(url, {});
+      if (listData == null || listData.length == 0) {
+        let url = "http://localhost:3000/lists/all/" + userData.userid;
+        let cfg = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          }
+        };
+        try {
+          listData = await utilities.requestToServer(url, cfg);
           localStorage.setItem("listdata", JSON.stringify(listData));
+        } catch (err) {
+          let error = await err;
+          sessionStorage.removeItem("logindata");
+          sessionStorage.setItem(
+            "errordata",
+            JSON.stringify({ msg: error.msg })
+          );
+          redirectUser("index.html");
         }
-        if (listData.length > 0) {
-          let taskData = JSON.parse(localStorage.getItem("taskdata"));
-          if (taskData == null || taskData.length == 0) {
-            for (let i = 0; i < listData.length; i++) {
-              if (i == 0) {
-                ids = listData[i].id;
-              } else {
-                ids += "," + listData[i].id;
-              }
+      }
+      if (listData.length > 0) {
+        let taskData = JSON.parse(localStorage.getItem("taskdata"));
+        if (taskData == null || taskData.length == 0) {
+          for (let i = 0; i < listData.length; i++) {
+            if (i == 0) {
+              ids = listData[i].id;
+            } else {
+              ids += "," + listData[i].id;
             }
+          }
 
-            let url2 =
-              "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
-
-            taskData = await utilities.requestToServer(url2, {});
+          let url2 = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+          let cfg2 = {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: userData.token
+            }
+          };
+          try {
+            taskData = await utilities.requestToServer(url2, cfg2);
             localStorage.setItem("taskdata", JSON.stringify(taskData));
+          } catch (err) {
+            utilities.handleError(err);
           }
-
-          for (let list of listData) {
-            let listWrapper = document.createElement("div");
-            listWrapper.setAttribute("id", list.id);
-            listWrapper.classList.add("list-wrapper");
-
-            let listViewList = document.createElement("div");
-            listViewList.classList.add("viewList");
-
-            let listDiv = document.createElement("div");
-            listDiv.classList.add("list-div");
-            listDiv.innerHTML = list.name;
-
-            let deleteIcon = document.createElement("img");
-            deleteIcon.setAttribute("src", "images/delete_blue.svg");
-            deleteIcon.classList.add("delete-icon-blue");
-            listDiv.appendChild(deleteIcon);
-
-            listViewList.appendChild(listDiv);
-
-            for (let [index, task] of taskData.entries()) {
-              if (task.listid == list.id) {
-                let taskDiv = document.createElement("div");
-                taskDiv.classList.add("list-div");
-                taskDiv.innerHTML = task.name;
-
-                let checkedRadio = document.createElement("input");
-                checkedRadio.setAttribute("type", "radio");
-                checkedRadio.classList.add("radioFinished");
-                if (task.finished) {
-                  checkedRadio.checked = true;
-                  checkedRadio.classList.add("checked");
-                }
-                checkedRadio.setAttribute("id", "taskid-" + task.id);
-
-                taskDiv.appendChild(checkedRadio);
-
-                listViewList.appendChild(taskDiv);
-              }
-            }
-
-            listWrapper.appendChild(listViewList);
-
-            let editButton = document.createElement("button");
-            editButton.innerHTML = "Edit List";
-            editButton.classList.add("edit");
-            listWrapper.appendChild(editButton);
-
-            document.querySelector("main").appendChild(listWrapper);
-
-            //eventlistener for viewing a list
-            document.querySelectorAll(".viewList").forEach(div => {
-              div.addEventListener("click", viewList);
-            });
-
-            //eventlistener for editing a list
-            document.querySelectorAll(".edit").forEach(div => {
-              div.addEventListener("click", editList);
-            });
-
-            //eventlistener for deleting the respective list
-            document.querySelectorAll(".delete-icon-blue").forEach(btn => {
-              btn.addEventListener("click", deleteList);
-            });
-
-            //eventlistener for checking a task finished or not
-            document.querySelectorAll(".radioFinished").forEach(btn => {
-              btn.addEventListener("click", utilities.markAsFinished);
-            });
-          }
-        } else {
-          let txt = document.createElement("p");
-          txt.innerHTML = "No lists yet. Go ahead and create a new one!";
-          txt.classList.add("notasks");
-          document.querySelector("#show-lists-wrapper").appendChild(txt);
         }
-      } catch (err) {
-        console.log(err);
+
+        for (let list of listData) {
+          let listWrapper = document.createElement("div");
+          listWrapper.setAttribute("id", list.id);
+          listWrapper.classList.add("list-wrapper");
+
+          let listViewList = document.createElement("div");
+          listViewList.classList.add("viewList");
+
+          let listDiv = document.createElement("div");
+          listDiv.classList.add("list-div");
+          listDiv.innerHTML = list.name;
+
+          let deleteIcon = document.createElement("img");
+          deleteIcon.setAttribute("src", "images/delete_blue.svg");
+          deleteIcon.classList.add("delete-icon-blue");
+          listDiv.appendChild(deleteIcon);
+
+          listViewList.appendChild(listDiv);
+
+          for (let [index, task] of taskData.entries()) {
+            if (task.listid == list.id) {
+              let taskDiv = document.createElement("div");
+              taskDiv.classList.add("list-div");
+              taskDiv.innerHTML = task.name;
+
+              let checkedRadio = document.createElement("input");
+              checkedRadio.setAttribute("type", "radio");
+              checkedRadio.classList.add("radioFinished");
+              if (task.finished) {
+                checkedRadio.checked = true;
+                checkedRadio.classList.add("checked");
+              }
+              let date = task.due_date;
+              if (
+                date != null &&
+                date.split("T")[0] < new Date().toISOString().split("T")[0] &&
+                !task.finished
+              ) {
+                taskDiv.classList.add("overdue");
+              }
+              checkedRadio.setAttribute("id", "taskid-" + task.id);
+
+              taskDiv.appendChild(checkedRadio);
+
+              listViewList.appendChild(taskDiv);
+            }
+          }
+
+          listWrapper.appendChild(listViewList);
+
+          let editButton = document.createElement("button");
+          editButton.innerHTML = "Edit List";
+          editButton.classList.add("edit");
+          listWrapper.appendChild(editButton);
+
+          document.querySelector("main").appendChild(listWrapper);
+
+          //eventlistener for viewing a list
+          document.querySelectorAll(".viewList").forEach(div => {
+            div.addEventListener("click", viewList);
+          });
+
+          //eventlistener for editing a list
+          document.querySelectorAll(".edit").forEach(div => {
+            div.addEventListener("click", editList);
+          });
+
+          //eventlistener for deleting the respective list
+          document.querySelectorAll(".delete-icon-blue").forEach(btn => {
+            btn.addEventListener("click", deleteList);
+          });
+
+          //eventlistener for checking a task finished or not
+          document.querySelectorAll(".radioFinished").forEach(btn => {
+            btn.addEventListener("click", utilities.markAsFinished);
+          });
+        }
+      } else {
+        let txt = document.createElement("p");
+        txt.innerHTML = "No lists yet. Go ahead and create a new one!";
+        txt.classList.add("notasks");
+        document.querySelector("#show-lists-wrapper").appendChild(txt);
       }
     }
 
@@ -287,14 +315,14 @@
       container.innerHTML = "";
       container.appendChild(newListContent);
       document
-          .getElementById("radio-private")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-private")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-public")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-public")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-member")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-member")
+        .addEventListener("click", changeRadio);
       document
         .querySelector("#addMember")
         .addEventListener("click", editMembers);
@@ -329,15 +357,15 @@
       newListTmpl.content.querySelector(".green").innerHTML = "Edit&nbsp";
       newListTmpl.content.querySelector("#new-list-title").value =
         listData.name;
-      let public=""
-        if(listData.public == 0){
+      let public = "";
+      if (listData.public == 0) {
         public = "private";
       }
-      if(listData.public == 1){
-        public = "public"
+      if (listData.public == 1) {
+        public = "public";
       }
-      if(listData.public == 2){
-        public = "members"
+      if (listData.public == 2) {
+        public = "members";
       }
       newListTmpl.content.querySelector(
         "input[value=" + public + "]"
@@ -357,14 +385,14 @@
       let existing = JSON.parse(sessionStorage.getItem("listMembers"));
       createMemberDiv(existing);
       document
-          .getElementById("radio-private")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-private")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-public")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-public")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-member")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-member")
+        .addEventListener("click", changeRadio);
 
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
@@ -418,7 +446,10 @@
 
         let cfg = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          }
         };
 
         try {
@@ -427,7 +458,7 @@
           localStorage.removeItem("listdata");
           redirectUser("showlists.html");
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
     }
@@ -455,7 +486,7 @@
       let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
       userDropdown.innerHTML = "";
       userDropdown.appendChild(new Option("No user assigned", "None"));
-      //userDropdown.appendChild(new Option(userData, userData.id));
+      //userDropdown.appendChild(new Option(userData, userData.userid));
       let members = JSON.parse(sessionStorage.getItem("listMembers"));
       if (members != null && members.length > 0) {
         addOption(members, newTaskDiv.content);
@@ -480,45 +511,46 @@
         btn.addEventListener("click", deleteTaskButton);
       });
     }
-    function changeRadio(){
+    function changeRadio() {
       let radio = document.querySelector("input[name=public]:checked").value;
       let visible = document.getElementById("member-container");
-      if(radio == "private" || radio == "public"){
+      if (radio == "private" || radio == "public") {
         document.getElementById("member-container").style.display = "none";
         let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
-        if(existing.length>0){
-          document.querySelectorAll(".user")
-          .forEach(opt => {
+        if (existing.length > 0) {
+          document.querySelectorAll(".user").forEach(opt => {
             opt.options.length = 0;
             opt.appendChild(new Option("No user assigned", "None"));
           });
-        document.getElementById("list-members").innerHTML ="";
-        sessionStorage.removeItem("listMembers");
-        sessionStorage.removeItem("newMembers");
-        sessionStorage.removeItem("deletedMembers");
+          document.getElementById("list-members").innerHTML = "";
+          sessionStorage.removeItem("listMembers");
+          sessionStorage.removeItem("newMembers");
+          sessionStorage.removeItem("deletedMembers");
         }
-      }
-      else if(radio == "members"){
+      } else if (radio == "members") {
         document.getElementById("member-container").style.display = "block";
       }
     }
     async function editMembers() {
       let memberEmail = document.getElementById("member-email");
-      if(memberEmail.value!=0){
+      if (memberEmail.value != 0) {
         let existingUser = await checkEmail();
         async function checkEmail() {
           let url =
             "http://localhost:3000/users/emailAndData/" + memberEmail.value;
           let cfg = {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: {
+              "Content-Type": "application/json",
+              authorization: userData.token
+            }
           };
           try {
             let data = await utilities.requestToServer(url, cfg);
             return data;
           } catch (err) {
-            console.log(err);
+            utilities.handleError(err);
           }
         }
         if (existingUser) {
@@ -560,7 +592,10 @@
 
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        }
       };
 
       try {
@@ -575,7 +610,7 @@
         sessionStorage.setItem("listMembers", JSON.stringify(existing));
         return data;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
     }
 
@@ -613,7 +648,10 @@
 
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        }
       };
 
       try {
@@ -621,7 +659,7 @@
         var data = await resp.json();
         return data;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
     }
 
@@ -732,7 +770,10 @@
       url = "http://localhost:3000/lists";
       cfg = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        },
         body: JSON.stringify(listData)
       };
 
@@ -740,7 +781,7 @@
         let newlistData = await utilities.requestToServer(url, cfg);
         newListid = newlistData.id;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       //save members
@@ -756,15 +797,17 @@
         url = "http://localhost:3000/lists/member";
         cfg = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(condensedMembers)
         };
 
         try {
           let newMemberData = await utilities.requestToServer(url, cfg);
-          console.log(newMemberData);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
@@ -774,14 +817,17 @@
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        },
         body: JSON.stringify(newTasks)
       };
 
       try {
         let newTaskData = await utilities.requestToServer(url, cfg);
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       localStorage.removeItem("taskdata");
@@ -804,7 +850,7 @@
       if (radio == "public") {
         public = 1;
       }
-      if(radio == "members") {
+      if (radio == "members") {
         public = 2;
       }
 
@@ -820,7 +866,10 @@
       url = "http://localhost:3000/lists";
       cfg = {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        },
         body: JSON.stringify(listData)
       };
 
@@ -828,7 +877,7 @@
         let newlistData = await utilities.requestToServer(url, cfg);
         newListid = newlistData.id;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       //save tasks
@@ -838,14 +887,17 @@
         url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(newTasks[index])
         };
 
         try {
           let newTaskData = await utilities.requestToServer(url, cfg);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
@@ -862,24 +914,25 @@
         url = "http://localhost:3000/lists/member";
         cfg = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(condensedMembers)
         };
 
         try {
           let newMemberData = await utilities.requestToServer(url, cfg);
-          console.log(newMemberData);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
-      let chooseDelete =""
+      let chooseDelete = "";
       let condensedMembers_deleted = [];
-      if(public == 0|| public == 1){
-        chooseDelete = "listMembers"
-      }
-      else if (public == 2){
-        chooseDelete = "deletedMembers"
+      if (public == 0 || public == 1) {
+        chooseDelete = "listMembers";
+      } else if (public == 2) {
+        chooseDelete = "deletedMembers";
       }
       let membersAdd_deleted = sessionStorage.getItem(chooseDelete);
       membersAdd_deleted = membersAdd_deleted
@@ -894,15 +947,17 @@
         url = "http://localhost:3000/lists/member";
         cfg = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(condensedMembers_deleted)
         };
 
         try {
           let newMemberData = await utilities.requestToServer(url, cfg);
-          console.log(newMemberData);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
@@ -917,14 +972,17 @@
         url2 = "http://localhost:3000/tasks/createSeveralTasks";
         cfg2 = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(addedTasks)
         };
 
         try {
           let newTaskData = await utilities.requestToServer(url2, cfg2);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
@@ -941,7 +999,10 @@
         let url = "http://localhost:3000/tasks/" + taskid;
         let cfg = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          }
         };
         let tasks = JSON.parse(localStorage.getItem("taskdata"));
 
@@ -954,10 +1015,9 @@
         try {
           let deletedData = await utilities.requestToServer(url, cfg);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
-
       element.remove();
     }
   </script>

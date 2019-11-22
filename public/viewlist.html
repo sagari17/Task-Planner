@@ -77,15 +77,25 @@
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
+    console.log("here");
+    if (!isLoggedIn()) {
+      console.log(isLoggedIn());
+      sessionStorage.setItem(
+        "errordata",
+        JSON.stringify({
+          msg: "You have to be logged in to view a public list."
+        })
+      );
+      //redirectNotAuthUser("index.html");
+    }
+
     let tagArr = utilities.getTagArray();
     let dateArr = utilities.getDateArray();
 
     let urlParams = new URLSearchParams(window.location.search);
     let user = JSON.parse(sessionStorage.getItem("logindata"));
-    let userid;
-    if (isLoggedIn()) {
-      userid = user.userid;
-    }
+    let userid = user.userid;
+    let token = user.token;
     let list;
     let tasks;
     let listid = urlParams.get("id");
@@ -95,58 +105,79 @@
 
     async function displayList() {
       let url = "http://localhost:3000/lists/view/" + listid;
+      let cfg = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token
+        }
+      };
       try {
-        list = await utilities.requestToServer(url, {});
+        list = await utilities.requestToServer(url, cfg);
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
-      if (list.public == false && !(isLoggedIn() && list.owner == userid)) {
-        redirectUser("index.html");
+      if (list.public == false && list.owner != userid) {
+        sessionStorage.setItem(
+          "errordata",
+          JSON.stringify({
+            msg: "You can only view public lists."
+          })
+        );
+        redirectUser("dashboard.html");
+      } else {
+        let viewListTmpl = document.getElementById("viewListTmpl");
+        viewListTmpl.content.querySelector("#viewListTitle").innerHTML =
+          list.name;
+        let tagDropdown = viewListTmpl.content.querySelector("#tagDropdown");
+        tagArr.forEach(obj => {
+          tagDropdown.appendChild(new Option(obj.text, obj.value));
+        });
+
+        let dateDropdown = viewListTmpl.content.querySelector("#dateDropdown");
+        dateArr.forEach(obj => {
+          dateDropdown.appendChild(new Option(obj.text, obj.value));
+        });
+        let viewListContent = viewListTmpl.content.cloneNode(true);
+        container.appendChild(viewListContent);
+
+        document
+          .querySelector("#tagDropdown")
+          .addEventListener("change", changeTagFilter);
+
+        document
+          .querySelector("#dateDropdown")
+          .addEventListener("change", changeDateFilter);
+
+        document.querySelectorAll("input[name=filter]").forEach(element => {
+          element.addEventListener("click", activateFilter);
+        });
+
+        document.querySelector("#backButton").addEventListener("click", goBack);
+
+        getTasks("None");
       }
-
-      let viewListTmpl = document.getElementById("viewListTmpl");
-      viewListTmpl.content.querySelector("#viewListTitle").innerHTML =
-        list.name;
-      let tagDropdown = viewListTmpl.content.querySelector("#tagDropdown");
-      tagArr.forEach(obj => {
-        tagDropdown.appendChild(new Option(obj.text, obj.value));
-      });
-
-      let dateDropdown = viewListTmpl.content.querySelector("#dateDropdown");
-      dateArr.forEach(obj => {
-        dateDropdown.appendChild(new Option(obj.text, obj.value));
-      });
-      let viewListContent = viewListTmpl.content.cloneNode(true);
-      container.appendChild(viewListContent);
-
-      document
-        .querySelector("#tagDropdown")
-        .addEventListener("change", changeTagFilter);
-
-      document
-        .querySelector("#dateDropdown")
-        .addEventListener("change", changeDateFilter);
-
-      document.querySelectorAll("input[name=filter]").forEach(element => {
-        element.addEventListener("click", activateFilter);
-      });
-
-      document.querySelector("#backButton").addEventListener("click", goBack);
-
-      getTasks("None");
     }
 
     async function getTasks(urlAddition) {
       try {
-        url =
+        let url =
           "http://localhost:3000/tasks/tasksByOneID/" +
           listid +
           "/" +
           urlAddition;
-        tasks = await utilities.requestToServer(url, {});
+
+        let cfg = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token
+          }
+        };
+        tasks = await utilities.requestToServer(url, cfg);
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       let taskBoxes = document.querySelector("#taskBoxes");
@@ -157,10 +188,10 @@
           let user = "No user assigned";
           if (task.assigned_user != null) {
             try {
-              let data = await utilities.getUserByID(task.assigned_user);
+              let data = await utilities.getUserByID(task.assigned_user, token);
               user = data[0].firstname + " " + data[0].lastname;
             } catch (err) {
-              console.log(err);
+              utilities.handleError(err);
             }
           }
           displayListTask(task, user);
@@ -192,9 +223,20 @@
         radioFinished.classList.remove("checked");
       }
       taskBoxTmpl.content.querySelector(".vl-task-title").innerHTML = task.name;
-      taskBoxTmpl.content.querySelector(".duedate").innerHTML = task.due_date
-        ? task.due_date.split("T")[0]
-        : "No due date";
+
+      let date = task.due_date;
+      if (date) {
+        date = date.split("T")[0];
+        if (date < new Date().toISOString().split("T")[0] && !task.finished) {
+          console.log(taskBoxTmpl.content);
+          taskBoxTmpl.content
+            .querySelector(".viewList-task")
+            .classList.add("overdue");
+        }
+      } else {
+        date = "No due date";
+      }
+      taskBoxTmpl.content.querySelector(".duedate").innerHTML = date;
       taskBoxTmpl.content.querySelector(".user").innerHTML = user;
       taskBoxTmpl.content.querySelector(".tag").innerHTML = task.tag
         ? task.tag

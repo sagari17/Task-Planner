@@ -86,10 +86,11 @@ utilities = (function() {
     }
 
     let taskid = { id: evt.target.id.split("-")[1] };
+    let token = JSON.parse(sessionStorage.getItem("logindata")).token;
     url = "http://localhost:3000/tasks/finished";
     cfg = {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", authorization: token },
       body: JSON.stringify(taskid)
     };
 
@@ -133,9 +134,10 @@ utilities = (function() {
     let errormsg = document.getElementById("errormsg");
 
     let url = "http://localhost:3000/users/email/" + email.value;
+    let token = JSON.parse(sessionStorage.getItem("logindata")).token;
     let cfg = {
       method: "GET",
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json", authorization: token }
     };
     try {
       let data = await requestToServer(url, cfg);
@@ -161,19 +163,25 @@ utilities = (function() {
     }
   }
 
-  async function getUserByID(id) {
+  async function getUserByID(id, token) {
     let url = "http://localhost:3000/users/" + id;
-
     let cfg = {
       method: "GET",
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json", authorization: token }
     };
 
     try {
       return await requestToServer(url, cfg);
     } catch (err) {
-      console.log(err);
+      handleError(err);
     }
+  }
+
+  async function handleError(err) {
+    let error = await err;
+    sessionStorage.removeItem("logindata");
+    sessionStorage.setItem("errordata", JSON.stringify({ msg: error.msg }));
+    redirectUser("index.html");
   }
 
   return {
@@ -186,6 +194,7 @@ utilities = (function() {
     checkNameInput: checkNameInput,
     isNewEmail: isNewEmail,
     isNewOrOldEmail: isNewOrOldEmail,
-    getUserByID: getUserByID
+    getUserByID: getUserByID,
+    handleError: handleError
   };
 })();

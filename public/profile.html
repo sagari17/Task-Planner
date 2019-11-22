@@ -73,12 +73,16 @@
           <input
             type="password"
             id="newpw"
+            minlength="8"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
             placeholder="New Password"
             class="text-field"
           />
           <input
             type="password"
             id="newpwrepeat"
+            minlength="8"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
             placeholder="Repeat New Password"
             class="text-field"
           />
@@ -96,12 +100,15 @@
 
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
+    redirectNotAuthUser("index.html");
     let container = document.getElementById("container");
     let profileTmpl = document.getElementById("profile");
     let editTmpl = document.getElementById("editProfile");
     let changePwTmpl = document.getElementById("changePw");
 
-    let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+    let logindata = JSON.parse(sessionStorage.getItem("logindata"));
+    let userid = logindata.userid;
+    let token = logindata.token;
     let userFirstname;
     let userLastname;
     let userEmail;
@@ -109,7 +116,7 @@
     showUserInfo();
 
     async function showUserInfo() {
-      let data = await utilities.getUserByID(userid);
+      let data = await utilities.getUserByID(userid, token);
 
       if (data == null) {
         throw data;
@@ -196,7 +203,7 @@
 
         let cfg = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: token },
           body: JSON.stringify(userData)
         };
 
@@ -208,7 +215,7 @@
           sessionStorage.setItem("logindata", JSON.stringify(sessionData));
           showUserInfo();
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
     }
@@ -224,7 +231,7 @@
 
         let cfg = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: token },
           body: JSON.stringify(userData)
         };
 
@@ -232,7 +239,7 @@
           let data = await utilities.requestToServer(url, cfg);
           showUserInfo();
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
     }
@@ -247,14 +254,14 @@
 
       let cfg = {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json", authorization: token }
       };
 
       try {
         let data = await utilities.requestToServer(url, cfg);
         showUserInfo();
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       sessionStorage.removeItem("logindata");

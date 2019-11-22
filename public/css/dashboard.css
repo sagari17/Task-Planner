@@ -20,6 +20,7 @@
   box-shadow: 0px 0px 6px #d0d6e2;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   padding: 3vh 2.7vw;
   margin: 3.5vh 0 0 0;
   box-sizing: border-box;
@@ -54,7 +55,7 @@
 .imageStats {
   display: flex;
   justify-content: center;
-  width: 20%;
+  height: 5rem;
 }
 
 .quantityOfLists {

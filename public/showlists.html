@@ -45,7 +45,7 @@
         </div>
         <div>
           <p class="new-list-heading">List Sharing</p>
-          <div class="radio-group">
+          <div class="radio-group" id="radio-private">
             <p>
               <input
                 type="radio"
@@ -58,13 +58,13 @@
             </p>
             <p class="pgrey">Your list is private. Only you can see it.</p>
           </div>
-          <div class="radio-group">
+          <div class="radio-group" id="radio-public">
             <p><input type="radio" name="public" value="public" /> Public</p>
             <p class="pgrey">
               Your list is public. Everyone who has the link can access it.
             </p>
           </div>
-          <div class="radio-group">
+          <div class="radio-group" id="radio-member">
             <p>
               <input type="radio" name="public" value="members" /> Add members
             </p>
@@ -287,6 +287,15 @@
       container.innerHTML = "";
       container.appendChild(newListContent);
       document
+          .getElementById("radio-private")
+          .addEventListener("click", changeRadio);
+      document
+          .getElementById("radio-public")
+          .addEventListener("click", changeRadio);
+      document
+          .getElementById("radio-member")
+          .addEventListener("click", changeRadio);
+      document
         .querySelector("#addMember")
         .addEventListener("click", editMembers);
       
@@ -316,7 +325,16 @@
       newListTmpl.content.querySelector(".green").innerHTML = "Edit&nbsp";
       newListTmpl.content.querySelector("#new-list-title").value =
         listData.name;
-      let public = listData.public == true ? "public" : "private";
+      let public=""
+        if(listData.public == 0){
+        public = "private";
+      }
+      if(listData.public == 1){
+        public = "public"
+      }
+      if(listData.public == 2){
+        public = "members"
+      }
       newListTmpl.content.querySelector(
         "input[value=" + public + "]"
       ).checked = true;
@@ -332,6 +350,15 @@
       const addOptions = await addMemberData(detailID);
       let existing = JSON.parse(sessionStorage.getItem("listMembers"));
       createMemberDiv(existing);
+      document
+          .getElementById("radio-private")
+          .addEventListener("click", changeRadio);
+      document
+          .getElementById("radio-public")
+          .addEventListener("click", changeRadio);
+      document
+          .getElementById("radio-member")
+          .addEventListener("click", changeRadio);
 
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
@@ -447,50 +474,78 @@
         btn.addEventListener("click", deleteTaskButton);
       });
     }
-
-    async function editMembers() {
-      let memberEmail = document.getElementById("member-email");
-      let existingUser = await checkEmail();
-      async function checkEmail() {
-        let url =
-          "http://localhost:3000/users/emailAndData/" + memberEmail.value;
-        let cfg = {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        };
-        try {
-          let data = await utilities.requestToServer(url, cfg);
-          return data;
-        } catch (err) {
-          console.log(err);
-        }
-      }
-      if (existingUser) {
+    function changeRadio(){
+      let radio = document.querySelector("input[name=public]:checked").value;
+      let visible = document.getElementById("list-members");
+      if(radio == "private" || radio == "public"){
+        sessionStorage.removeItem("listMembers");
+        sessionStorage.removeItem("newMembers");
+        sessionStorage.removeItem("deletedMembers");
+        visible.style.display = "hidden";
         let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
-
-        let membersAdd = sessionStorage.getItem("newMembers");
-        membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
-
-        let index = existing.findIndex(
-          member => member.email == memberEmail.value
-        );
-        if (index === -1) {
-          existing.push(existingUser);
-          membersAdd.push(existingUser);
-          sessionStorage.setItem("listMembers", JSON.stringify(existing));
-          sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
-          let existingTaskDiv = document.querySelectorAll(".task-div");
-          existingTaskDiv.forEach(elem => {
-            addOption([existingUser], elem);
+        if(existing.length>0){
+          document.querySelectorAll(".user")
+          .forEach(opt => {
+            opt.options.length = 0;
+            opt.appendChild(new Option("No user assigned", "None"));
           });
-          createMemberDiv([existingUser]);
+          visible.innerHTML ="";
+        }
+      }
+      else if(radio == "members"){
+        visible.style.display = "block";
+      }
+    }
+    async function editMembers() {
+      let memberEmail = document.getElementById("member-email");
+      if(memberEmail.value!=0){
+        let existingUser = await checkEmail();
+        async function checkEmail() {
+          let url =
+            "http://localhost:3000/users/emailAndData/" + memberEmail.value;
+          let cfg = {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          };
+          try {
+            let data = await utilities.requestToServer(url, cfg);
+            return data;
+          } catch (err) {
+            console.log(err);
+          }
+        }
+        if (existingUser) {
+          let existing = sessionStorage.getItem("listMembers");
+          existing = existing ? JSON.parse(existing) : [];
+
+          let membersAdd = sessionStorage.getItem("newMembers");
+          membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
+
+          let index = existing.findIndex(
+            member => member.email == memberEmail.value
+          );
+          if (index === -1) {
+            existing.push(existingUser);
+            membersAdd.push(existingUser);
+            sessionStorage.setItem("listMembers", JSON.stringify(existing));
+            sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
+            let existingTaskDiv = document.querySelectorAll(".task-div");
+            existingTaskDiv.forEach(elem => {
+              addOption([existingUser], elem);
+            });
+            createMemberDiv([existingUser]);
+          } else {
+            document.getElementById("errormsg").innerHTML =
+              "The person is already a member of this list.";
+          }
         } else {
           document.getElementById("errormsg").innerHTML =
-            "The person is already a member of this list.";
+           "No user with that email exists.";
         }
       } else {
-        errormsg.innerHTML = "No user with that email exists";
+        document.getElementById("errormsg").innerHTML =
+         "Please fill in the e-mail of the user you want to add as a member.";
       }
     }
 
@@ -565,7 +620,16 @@
     }
 
     function getAllTaskData(taskDivs) {
+      let radio = document.querySelector("input[name=public]:checked").value;
       let newTasks = [];
+      let public = 0;
+
+      if (radio == "public") {
+        public = 1;
+      }
+      if (radio == "members") {
+        public = 2;
+      }
       for (let task of taskDivs) {
         let title = task.querySelector(".task-title").value;
         let date =
@@ -577,7 +641,7 @@
             ? null
             : task.querySelector(".tag").value;
         let user =
-          task.querySelector(".user").value == "None"
+          task.querySelector(".user").value == "None"||public==0||public==1
             ? null
             : task.querySelector(".user").value;
 
@@ -654,6 +718,9 @@
 
       if (radio == "public") {
         public = 1;
+      }
+      if (radio == "members") {
+        public = 2;
       }
 
       let listData;
@@ -741,6 +808,9 @@
       if (radio == "public") {
         public = 1;
       }
+      if(radio == "members") {
+        public = 2;
+      }
 
       let listData;
       let url;
@@ -807,9 +877,15 @@
           console.log(err);
         }
       }
-
+      let chooseDelete =""
       let condensedMembers_deleted = [];
-      let membersAdd_deleted = sessionStorage.getItem("deletedMembers");
+      if(public == 0|| public == 1){
+        chooseDelete = "listMembers"
+      }
+      else if (public == 2){
+        chooseDelete = "deletedMembers"
+      }
+      let membersAdd_deleted = sessionStorage.getItem(chooseDelete);
       membersAdd_deleted = membersAdd_deleted
         ? JSON.parse(membersAdd_deleted)
         : [];

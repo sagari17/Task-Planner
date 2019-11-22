@@ -142,19 +142,4 @@ router.patch("/finished", async function(req, res, next) {
   }
 });
 
-router.get("/getOverdueTasks/:userid", protectEndpoints);
-// Gets number of overdue tasks ---------------------------------------
-router.get("/getOverdueTasks/:userid", async function(req, res, next) {
-  try {
-    let numtasks = await db.getOverdueTasks([req.params.userid]);
-    if (numtasks) {
-      res.status(200).json(numtasks);
-    } else {
-      throw "Task could not be updated.";
-    }
-  } catch (err) {
-    res.status(500).json({ msg: err });
-  }
-});
-
 module.exports = router;

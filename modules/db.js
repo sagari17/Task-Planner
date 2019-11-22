@@ -389,19 +389,6 @@ const db = function(dbConnection) {
     return memberData;
   };
 
-  const getOverdueTasks = async function(userID) {
-    let numTasks = null;
-    let query =
-      "SELECT COUNT (id) FROM tasks WHERE (due_date::date < NOW()::date) AND listid IN (SELECT id FROM lists WHERE owner = $1)";
-    try {
-      numTasks = await runQuery(query, userID);
-      console.log(numTasks);
-    } catch (err) {
-      throw "Couldn't get members.";
-    }
-    return numTasks;
-  };
-
   return {
     getUserByEmail: getUserByEmail,
     getUserByID: getUserByID,
@@ -427,8 +414,7 @@ const db = function(dbConnection) {
     addManyMembers: addManyMembers,
     getMembersOfList: getMembersOfList,
     getAllListsByUserID: getAllListsByUserID,
-    deleteManyMembers: deleteManyMembers,
-    getOverdueTasks: getOverdueTasks
+    deleteManyMembers: deleteManyMembers
   };
 };
 

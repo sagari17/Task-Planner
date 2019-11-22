@@ -95,7 +95,7 @@ utilities = (function() {
     };
 
     try {
-      let task = await utilities.requestToServer(url, cfg);
+      await utilities.requestToServer(url, cfg);
       let oldTaskData = JSON.parse(localStorage.getItem("taskdata"));
       for (let i = 0; i < oldTaskData.length; i++) {
         if (oldTaskData[i].id == taskid.id) {
@@ -104,7 +104,7 @@ utilities = (function() {
       }
       localStorage.setItem("taskdata", JSON.stringify(oldTaskData));
     } catch (err) {
-      console.log(err);
+      handleError(err);
     }
   }
 
@@ -134,10 +134,9 @@ utilities = (function() {
     let errormsg = document.getElementById("errormsg");
 
     let url = "http://localhost:3000/users/email/" + email.value;
-    let token = JSON.parse(sessionStorage.getItem("logindata")).token;
     let cfg = {
       method: "GET",
-      headers: { "Content-Type": "application/json", authorization: token }
+      headers: { "Content-Type": "application/json" }
     };
     try {
       let data = await requestToServer(url, cfg);
@@ -200,34 +199,37 @@ utilities = (function() {
   }
 
   async function getTasksByListIDS(listData, token) {
-    let taskData = JSON.parse(localStorage.getItem("taskdata"));
-    if (taskData == null || taskData.length == 0) {
-      let ids;
-      for (let i = 0; i < listData.length; i++) {
-        if (i == 0) {
-          ids = listData[i].id;
-        } else {
-          ids += "," + listData[i].id;
+    let taskData = [];
+    if (listData.length > 0) {
+      taskData = JSON.parse(localStorage.getItem("taskdata"));
+      if (taskData == null || taskData.length == 0) {
+        let ids;
+        for (let i = 0; i < listData.length; i++) {
+          if (i == 0) {
+            ids = listData[i].id;
+          } else {
+            ids += "," + listData[i].id;
+          }
         }
-      }
-
-      let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
-      let cfg = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: token
+        let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+        let cfg = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token
+          }
+        };
+        try {
+          taskData = await utilities.requestToServer(url, cfg);
+          localStorage.setItem("taskdata", JSON.stringify(taskData));
+        } catch (err) {
+          utilities.handleError(err);
         }
-      };
-      try {
-        taskData = await utilities.requestToServer(url, cfg);
-        localStorage.setItem("taskdata", JSON.stringify(taskData));
-      } catch (err) {
-        utilities.handleError(err);
       }
     }
     return taskData;
   }
+
   async function handleError(err) {
     let error = await err;
     sessionStorage.removeItem("logindata");

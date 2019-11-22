@@ -71,7 +71,9 @@
         return obj.finished == true;
       });
       let overdueTasks = taskData.filter(obj => {
-        return obj.due_date < new Date().toISOString().split("T")[0];
+        return (
+          obj.due_date < new Date().toISOString().split("T")[0] && !obj.finished
+        );
       });
 
       generateMetricsBox(

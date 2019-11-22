@@ -237,6 +237,14 @@
                 checkedRadio.checked = true;
                 checkedRadio.classList.add("checked");
               }
+              let date = task.due_date;
+              if (
+                date != null &&
+                date.split("T")[0] < new Date().toISOString().split("T")[0] &&
+                !task.finished
+              ) {
+                taskDiv.classList.add("overdue");
+              }
               checkedRadio.setAttribute("id", "taskid-" + task.id);
 
               taskDiv.appendChild(checkedRadio);

@@ -56,7 +56,7 @@ router.get("/tasksByOneID/:listID/:tag", async function(req, res, next) {
     if (tasks) {
       res.status(200).json(tasks);
     } else {
-      throw "No tasks exist.";
+      throw "Couldn't get tasks.";
     }
   } catch (err) {
     res.status(500).json({ msg: err });

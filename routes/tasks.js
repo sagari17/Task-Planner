@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const protectEndpoints = require("../modules/authEndpoints");
 const dbURI =
   "postgres://svweyjmwncotvj:25a12ff7cfdd88ea11943cb8438b4383ca6c9ea96fb8783a1e5968db1cd8b2e7@ec2-107-20-244-40.compute-1.amazonaws.com:5432/ddoducrh03dt9u" +
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
-router.get("/", function() {});
+router.post("/", protectEndpoints);
 // create task-------------------------------------------------
 router.post("/", async function(req, res, next) {
   let task = req.body;
@@ -30,6 +31,7 @@ router.post("/", async function(req, res, next) {
   }
 });
 
+router.post("/createSeveralTasks", protectEndpoints);
 // create several tasks -------------------------------------------------
 router.post("/createSeveralTasks", async function(req, res, next) {
   let tasks = req.body;
@@ -41,10 +43,11 @@ router.post("/createSeveralTasks", async function(req, res, next) {
       throw "insert failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/tasksByOneID/:listID/:tag", protectEndpoints);
 // Get all tasks by certain list id (and task; add "None" if there should be not tag condition) ---------------
 router.get("/tasksByOneID/:listID/:tag", async function(req, res, next) {
   try {
@@ -56,10 +59,11 @@ router.get("/tasksByOneID/:listID/:tag", async function(req, res, next) {
       throw "No tasks exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/tasksByOneID/:listID/date/:date", protectEndpoints);
 // Get all tasks by certain list id (and task; add "None" if there should be not tag condition) ---------------
 router.get("/tasksByOneID/:listID/date/:date", async function(req, res, next) {
   try {
@@ -71,10 +75,11 @@ router.get("/tasksByOneID/:listID/date/:date", async function(req, res, next) {
       throw "No tasks exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.delete("/:taskID", protectEndpoints);
 // Delete single task by certain task id --------------------------------------
 router.delete("/:taskID", async function(req, res, next) {
   try {
@@ -86,10 +91,11 @@ router.delete("/:taskID", async function(req, res, next) {
       throw "Failed to delete the task!";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.patch("/", protectEndpoints);
 // Update task with certain task id --------------------------------------
 router.patch("/", async function(req, res, next) {
   try {
@@ -100,10 +106,11 @@ router.patch("/", async function(req, res, next) {
       throw "Task could not be updated.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/allTasksBySeveralIDS/:listIDS", protectEndpoints);
 // Get all tasks by several list ids --------------------------------------
 router.get("/allTasksBySeveralIDS/:listIDS", async function(req, res, next) {
   try {
@@ -116,10 +123,11 @@ router.get("/allTasksBySeveralIDS/:listIDS", async function(req, res, next) {
       throw "No tasks exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.patch("/finished", protectEndpoints);
 // Updates finished column to opposite of current value by task id ---------------
 router.patch("/finished", async function(req, res, next) {
   try {
@@ -130,7 +138,7 @@ router.patch("/finished", async function(req, res, next) {
       throw "Task could not be updated.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 

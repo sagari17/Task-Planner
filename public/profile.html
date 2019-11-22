@@ -73,12 +73,16 @@
           <input
             type="password"
             id="newpw"
+            minlength="8"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
             placeholder="New Password"
             class="text-field"
           />
           <input
             type="password"
             id="newpwrepeat"
+            minlength="8"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
             placeholder="Repeat New Password"
             class="text-field"
           />
@@ -96,6 +100,7 @@
 
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
+    redirectNotAuthUser("index.html");
     let container = document.getElementById("container");
     let profileTmpl = document.getElementById("profile");
     let editTmpl = document.getElementById("editProfile");
@@ -210,7 +215,10 @@
           sessionStorage.setItem("logindata", JSON.stringify(sessionData));
           showUserInfo();
         } catch (err) {
-          console.log(err);
+          let error = await err;
+          document.querySelector("#errormsg").innerHTML = error.msg;
+          sessionStorage.removeItem("logindata");
+          redirectUser("index.html");
         }
       }
     }
@@ -234,7 +242,10 @@
           let data = await utilities.requestToServer(url, cfg);
           showUserInfo();
         } catch (err) {
-          console.log(err);
+          let error = await err;
+          document.querySelector("#errormsg").innerHTML = error.msg;
+          sessionStorage.removeItem("logindata");
+          redirectUser("index.html");
         }
       }
     }
@@ -256,7 +267,10 @@
         let data = await utilities.requestToServer(url, cfg);
         showUserInfo();
       } catch (err) {
-        console.log(err);
+        let error = await err;
+        document.querySelector("#errormsg").innerHTML = error.msg;
+        sessionStorage.removeItem("logindata");
+        redirectUser("index.html");
       }
 
       sessionStorage.removeItem("logindata");

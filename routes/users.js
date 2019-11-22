@@ -24,10 +24,11 @@ router.post("/", async function(req, res, next) {
       throw "insert failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/:userID", protectEndpoints);
 // get user by id ----------------------------------------------------------------
 router.get("/:userID", async function(req, res, next) {
   try {
@@ -38,10 +39,11 @@ router.get("/:userID", async function(req, res, next) {
       throw "User does not exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.patch("/", protectEndpoints);
 // update user with certain id ----------------------------------------------------------------
 router.patch("/", async function(req, res, next) {
   try {
@@ -52,11 +54,11 @@ router.patch("/", async function(req, res, next) {
       throw "Profile could not be updated.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
-router.use("/changepassword", protectEndpoints());
+router.patch("/changePassword", protectEndpoints);
 // change password of user with certain id ----------------------------------------------------------------
 router.patch("/changePassword", async function(req, res, next) {
   try {
@@ -70,10 +72,11 @@ router.patch("/changePassword", async function(req, res, next) {
       throw "Password could not be changed.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.delete("/:userID", protectEndpoints);
 // delete user -------------------------------------------------------------------
 router.delete("/:userID", async function(req, res, next) {
   try {
@@ -85,10 +88,11 @@ router.delete("/:userID", async function(req, res, next) {
       throw "Delete failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/email/:userEmail", protectEndpoints);
 // check if email exists ----------------------------------------------------------------
 router.get("/email/:userEmail", async function(req, res, next) {
   try {
@@ -99,10 +103,11 @@ router.get("/email/:userEmail", async function(req, res, next) {
       throw "User does not exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/emailAndData/:userEmail", protectEndpoints);
 // check if email exists ----------------------------------------------------------------
 router.get("/emailAndData/:userEmail", async function(req, res, next) {
   try {
@@ -110,10 +115,10 @@ router.get("/emailAndData/:userEmail", async function(req, res, next) {
     if (email || email === false) {
       res.status(200).json(email);
     } else {
-      throw "User does not exist.";
+      res.status(200).json({ msg: "User does not exist." });
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 

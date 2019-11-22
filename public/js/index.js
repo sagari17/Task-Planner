@@ -173,7 +173,10 @@ utilities = (function() {
     try {
       return await requestToServer(url, cfg);
     } catch (err) {
-      console.log(err);
+      let error = await err;
+      document.querySelector("#container").innerHTML = error.msg;
+      sessionStorage.removeItem("logindata");
+      redirectUser("index.html");
     }
   }
 

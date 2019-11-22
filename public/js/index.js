@@ -177,6 +177,57 @@ utilities = (function() {
     }
   }
 
+  async function getListsByUserID(userid, token) {
+    let listData = JSON.parse(localStorage.getItem("listdata"));
+
+    if (listData == null || listData.length == 0) {
+      let url = "http://localhost:3000/lists/all/" + userid;
+      let cfg = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token
+        }
+      };
+      try {
+        listData = await utilities.requestToServer(url, cfg);
+        localStorage.setItem("listdata", JSON.stringify(listData));
+      } catch (err) {
+        utilities.handleError(err);
+      }
+    }
+    return listData;
+  }
+
+  async function getTasksByListIDS(listData, token) {
+    let taskData = JSON.parse(localStorage.getItem("taskdata"));
+    if (taskData == null || taskData.length == 0) {
+      let ids;
+      for (let i = 0; i < listData.length; i++) {
+        if (i == 0) {
+          ids = listData[i].id;
+        } else {
+          ids += "," + listData[i].id;
+        }
+      }
+
+      let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+      let cfg = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token
+        }
+      };
+      try {
+        taskData = await utilities.requestToServer(url, cfg);
+        localStorage.setItem("taskdata", JSON.stringify(taskData));
+      } catch (err) {
+        utilities.handleError(err);
+      }
+    }
+    return taskData;
+  }
   async function handleError(err) {
     let error = await err;
     sessionStorage.removeItem("logindata");
@@ -195,6 +246,8 @@ utilities = (function() {
     isNewEmail: isNewEmail,
     isNewOrOldEmail: isNewOrOldEmail,
     getUserByID: getUserByID,
-    handleError: handleError
+    handleError: handleError,
+    getListsByUserID: getListsByUserID,
+    getTasksByListIDS: getTasksByListIDS
   };
 })();

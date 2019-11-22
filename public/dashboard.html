@@ -59,60 +59,52 @@
       redirectUser(document.querySelector("#publicUrl").value);
     });
 
-    let overdueTasks = getOverdueTasks();
+    displayMetrics();
 
-    generateMetricsBox(
-      overdueTasks,
-      "Tasks overdue",
-      "Go to lists for more information",
-      "images/user_metric.svg",
-      container1
-    );
+    async function displayMetrics() {
+      let listData = await utilities.getListsByUserID(userid, token);
+      let publicLists = listData.filter(obj => {
+        return obj.public == 1;
+      });
+      let taskData = await utilities.getTasksByListIDS(listData, token);
+      let finishedTasks = taskData.filter(obj => {
+        return obj.finished == true;
+      });
+      let overdueTasks = taskData.filter(obj => {
+        return obj.due_date < new Date().toISOString().split("T")[0];
+      });
 
-    generateMetricsBox(
-      "20",
-      "Lists",
-      "created by you",
-      "images/user_metric.svg",
-      container1
-    );
+      generateMetricsBox(
+        overdueTasks.length,
+        "Overdue Tasks",
+        "More information in Lists",
+        "images/user_metric.svg",
+        container1
+      );
 
-    generateMetricsBox(
-      "20",
-      "Lists",
-      "created by you",
-      "images/user_metric.svg",
-      container2
-    );
+      generateMetricsBox(
+        finishedTasks.length,
+        "Finished Tasks",
+        "In your Lists",
+        "images/user_metric.svg",
+        container1
+      );
 
-    generateMetricsBox(
-      "20",
-      "Lists",
-      "created by you",
-      "images/user_metric.svg",
-      container2
-    );
+      generateMetricsBox(
+        listData.length,
+        "Lists",
+        "Created by you",
+        "images/user_metric.svg",
+        container2
+      );
 
-    async function getOverdueTasks() {
-      let url = "http://localhost:3000/tasks/getOverdueTasks/" + userid;
-
-      let cfg = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: token
-        }
-      };
-
-      let tasks;
-      try {
-        tasks = await utilities.requestToServer(url, cfg);
-        console.log(tasks);
-      } catch (err) {
-        utilities.handleError(err);
-      }
-
-      return tasks[0].count;
+      generateMetricsBox(
+        publicLists.length,
+        "Public Lists",
+        "Shared by you",
+        "images/user_metric.svg",
+        container2
+      );
     }
 
     async function generateMetricsBox(number, txt1, txt2, img, container) {

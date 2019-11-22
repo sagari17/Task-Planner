@@ -269,6 +269,7 @@
 
     async function addNewList(evt) {
       let thisUser = JSON.parse(sessionStorage.getItem("logindata"));
+      let radio = document.querySelector("input[name=public]:checked").value;
       sessionStorage.removeItem("listMembers");
       sessionStorage.removeItem("newMembers");
       sessionStorage.removeItem("deletedMembers");
@@ -286,6 +287,9 @@
       let newListContent = newListTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(newListContent);
+      if(radio == 0 || radio == 1){
+        document.getElementById("member-container").style.display = "none";
+      }
       document
           .getElementById("radio-private")
           .addEventListener("click", changeRadio);
@@ -346,7 +350,9 @@
       let tasksData = tasks.filter(obj => {
         return obj.listid == detailID;
       });
-
+      if(listData.public == 0 || listData.public == 1){
+        document.getElementById("member-container").style.display = "none";
+      }
       const addOptions = await addMemberData(detailID);
       let existing = JSON.parse(sessionStorage.getItem("listMembers"));
       createMemberDiv(existing);

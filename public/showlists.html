@@ -72,7 +72,7 @@
               Share this list with certain users to let them become Members of
               this list. You can then assign them to tasks on the list.
             </p>
-
+            <p id="errormsmember"></p>
             <div class="members-div" id="member-container">
               <div class="addmember">
                 <input
@@ -89,7 +89,7 @@
             </div>
           </div>
         </div>
-        <p id="errormsmemberg-"></p>
+        
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
           <button type="button" id="addTask" class="add-button">
@@ -335,6 +335,10 @@
         .addEventListener("click", function() {
           redirectUser("showlists.html");
         });
+      let radio = document.querySelector("input[name=public]:checked").value;
+      if(radio == "private" || radio == "public"){
+        document.getElementById("member-container").style.display = "none";
+      }
     }
 
     async function editList(evt) {
@@ -374,7 +378,9 @@
       let tasksData = tasks.filter(obj => {
         return obj.listid == detailID;
       });
-
+      if(listData.public == 0 || listData.public == 1){
+        document.getElementById("member-container").style.display = "none";
+      }
       const addOptions = await addMemberData(detailID);
       let existing = JSON.parse(sessionStorage.getItem("listMembers"));
       createMemberDiv(existing);
@@ -568,16 +574,16 @@
             });
             createMemberDiv([existingUser]);
           } else {
-            document.getElementById("errormsg").innerHTML =
+            document.getElementById("errormsmember").innerHTML =
               "The person is already a member of this list.";
           }
         } else {
-          document.getElementById("errormsg").innerHTML =
-            "No user with that email exists.";
+          document.getElementById("errormsmember").innerHTML =
+           "No user with that email exists.";
         }
       } else {
-        document.getElementById("errormsg").innerHTML =
-          "Please fill in the e-mail of the user you want to add as a member.";
+        document.getElementById("errormsmember").innerHTML =
+         "Please fill in the e-mail of the user you want to add as a member.";
       }
     }
 

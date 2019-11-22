@@ -1,4 +1,4 @@
-.metricWrapper {
+#metricWrapper {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -8,9 +8,15 @@
   justify-content: flex-start;
 }
 
+#metricWrapper #container1,
+#metricWrapper #container2 {
+  width: 95%;
+  justify-content: space-between;
+}
+
 .statBox {
   height: 20%;
-  width: 42.5%;
+  width: 48.7%;
   border-radius: 0.2rem;
   display: flex;
   background-color: white;
@@ -38,7 +44,7 @@
 }
 
 .textLeft {
-  width: 50%;
+  width: 60%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -57,13 +63,15 @@
   margin: 0;
 }
 
-#admin {
+.spec {
   font-size: 100%;
+  font-weight: 600;
 }
 
-.creator {
+.info {
   font-size: 90%;
   padding-top: 0.25rem;
+  color: var(--color-blue-middle);
 }
 
 /*----------------------------------------------------------------------------------------------*/

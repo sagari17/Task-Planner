@@ -10,7 +10,7 @@
 
   <body>
     <my-menu></my-menu>
-    <div class="metricWrapper">
+    <div id="metricWrapper">
       <form id="getPublicList" class="statBox">
         <p class="quantityOfLists">View Public Lists</p>
         <p>Input the URL to view a public List</p>
@@ -24,29 +24,107 @@
         <div id="errormsg"></div>
         <button type="submit" class="button-green">View List</button>
       </form>
-      <div class="statBox">
-        <div class="textLeft">
-          <div class="quantityOfLists">20 Lists</div>
-          <div class="admin">Joe Jonas</div>
-          <div class="creator">created by you</div>
+      <div id="container1" class="row"></div>
+      <div id="container2" class="row"></div>
+      <template id="metricBoxTmpl">
+        <div class="statBox">
+          <div class="textLeft">
+            <div class="quantityOfLists">20 Lists</div>
+            <div class="spec">Joe Jonas</div>
+            <div class="info">created by you</div>
+          </div>
+          <img src="images/user_metric.svg" class="imageStats" />
         </div>
-        <img src="images/user_metric.svg" class="imageStats" />
-      </div>
+      </template>
     </div>
   </body>
   <script type="text/javascript" src="js/menuBar.js"></script>
   <script>
     redirectNotAuthUser("index.html");
     let getPublicList = document.getElementById("getPublicList");
+    let container1 = document.getElementById("container1");
+    let container2 = document.getElementById("container2");
+    let user = JSON.parse(sessionStorage.getItem("logindata"));
+    let userid = user.userid;
+    let token = user.token;
     let errormsg = document.getElementById("errormsg");
     let sessionError = JSON.parse(sessionStorage.getItem("errordata"));
     if (sessionError) {
       errormsg.innerHTML = sessionError.msg;
     }
+
     getPublicList.addEventListener("submit", function(evt) {
       evt.preventDefault();
       console.log(document.querySelector("#publicUrl").value);
       redirectUser(document.querySelector("#publicUrl").value);
     });
+
+    let overdueTasks = getOverdueTasks();
+
+    generateMetricsBox(
+      overdueTasks,
+      "Tasks overdue",
+      "Go to lists for more information",
+      "images/user_metric.svg",
+      container1
+    );
+
+    generateMetricsBox(
+      "20",
+      "Lists",
+      "created by you",
+      "images/user_metric.svg",
+      container1
+    );
+
+    generateMetricsBox(
+      "20",
+      "Lists",
+      "created by you",
+      "images/user_metric.svg",
+      container2
+    );
+
+    generateMetricsBox(
+      "20",
+      "Lists",
+      "created by you",
+      "images/user_metric.svg",
+      container2
+    );
+
+    async function getOverdueTasks() {
+      let url = "http://localhost:3000/tasks/getOverdueTasks/" + userid;
+
+      let cfg = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token
+        }
+      };
+
+      let tasks;
+      try {
+        tasks = await utilities.requestToServer(url, cfg);
+        console.log(tasks);
+      } catch (err) {
+        utilities.handleError(err);
+      }
+
+      return tasks[0].count;
+    }
+
+    async function generateMetricsBox(number, txt1, txt2, img, container) {
+      let metricBoxTmpl = document.getElementById("metricBoxTmpl");
+      metricBoxTmpl.content.querySelector(
+        ".quantityOfLists"
+      ).innerHTML = await number;
+      metricBoxTmpl.content.querySelector(".spec").innerHTML = txt1;
+      metricBoxTmpl.content.querySelector(".info").innerHTML = txt2;
+      metricBoxTmpl.content.querySelector(".imageStats").src = img;
+      metricBoxContent = metricBoxTmpl.content.cloneNode(true);
+      container.appendChild(metricBoxContent);
+    }
   </script>
 </html>

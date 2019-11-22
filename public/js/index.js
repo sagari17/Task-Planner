@@ -173,11 +173,15 @@ utilities = (function() {
     try {
       return await requestToServer(url, cfg);
     } catch (err) {
-      let error = await err;
-      document.querySelector("#container").innerHTML = error.msg;
-      sessionStorage.removeItem("logindata");
-      redirectUser("index.html");
+      handleError(err);
     }
+  }
+
+  async function handleError(err) {
+    let error = await err;
+    sessionStorage.removeItem("logindata");
+    sessionStorage.setItem("errordata", JSON.stringify({ msg: error.msg }));
+    redirectUser("index.html");
   }
 
   return {
@@ -190,6 +194,7 @@ utilities = (function() {
     checkNameInput: checkNameInput,
     isNewEmail: isNewEmail,
     isNewOrOldEmail: isNewOrOldEmail,
-    getUserByID: getUserByID
+    getUserByID: getUserByID,
+    handleError: handleError
   };
 })();

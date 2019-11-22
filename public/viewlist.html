@@ -109,7 +109,7 @@
       try {
         list = await utilities.requestToServer(url, cfg);
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       if (list.public == false && !(isLoggedIn() && list.owner == userid)) {
@@ -165,7 +165,7 @@
         };
         tasks = await utilities.requestToServer(url, cfg);
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       let taskBoxes = document.querySelector("#taskBoxes");
@@ -179,7 +179,7 @@
               let data = await utilities.getUserByID(task.assigned_user);
               user = data[0].firstname + " " + data[0].lastname;
             } catch (err) {
-              console.log(err);
+              utilities.handleError(err);
             }
           }
           displayListTask(task, user);

@@ -122,6 +122,7 @@
     let loginTmpl = document.getElementById("logintmpl");
     let registerTmpl = document.getElementById("registertmpl");
     let container = document.getElementById("container");
+    let sessionError = JSON.parse(sessionStorage.getItem("errordata"));
 
     let form;
     let firstname;
@@ -142,6 +143,11 @@
       container.innerHTML = "";
       container.appendChild(loginContent);
 
+      if (sessionError) {
+        errormsg = document.querySelector("#errormsg");
+        errormsg.innerHTML = sessionError.msg;
+      }
+
       let goToRegister = document.getElementById("goToRegister");
       let form = document.getElementsByTagName("form")[0];
 
@@ -154,6 +160,7 @@
       errormsg = document.getElementById("errormsg");
       email = document.getElementById("email");
       password = document.getElementById("password");
+      sessionStorage.removeItem("errordata");
 
       let url = "http://localhost:3000/auth";
 
@@ -236,7 +243,8 @@
           container.innerHTML = "";
           showLogin();
         } catch (err) {
-          errormsg.innerHTML = err;
+          let error = await err;
+          errormsg.innerHTML = error.msg;
         }
       }
     }

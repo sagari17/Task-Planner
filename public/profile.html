@@ -215,10 +215,7 @@
           sessionStorage.setItem("logindata", JSON.stringify(sessionData));
           showUserInfo();
         } catch (err) {
-          let error = await err;
-          document.querySelector("#errormsg").innerHTML = error.msg;
-          sessionStorage.removeItem("logindata");
-          redirectUser("index.html");
+          utilities.handleError(err);
         }
       }
     }
@@ -242,10 +239,7 @@
           let data = await utilities.requestToServer(url, cfg);
           showUserInfo();
         } catch (err) {
-          let error = await err;
-          document.querySelector("#errormsg").innerHTML = error.msg;
-          sessionStorage.removeItem("logindata");
-          redirectUser("index.html");
+          utilities.handleError(err);
         }
       }
     }
@@ -267,10 +261,7 @@
         let data = await utilities.requestToServer(url, cfg);
         showUserInfo();
       } catch (err) {
-        let error = await err;
-        document.querySelector("#errormsg").innerHTML = error.msg;
-        sessionStorage.removeItem("logindata");
-        redirectUser("index.html");
+        utilities.handleError(err);
       }
 
       sessionStorage.removeItem("logindata");

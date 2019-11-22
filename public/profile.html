@@ -23,7 +23,7 @@
         </div>
         <div class="buttoncol">
           <button id="logout" class="button-blue">Logout</button>
-          <button id="deleteUser" class="button-blue">Delete user</button>
+          <button id="deleteUser" class="button-blue">Delete Account</button>
         </div>
       </div>
     </template>
@@ -250,22 +250,24 @@
     }
 
     async function deleteUser() {
-      let url = "http://localhost:3000/users/" + userid;
+      if (confirm("Are you sure you want to delete your Account?")) {
+        let url = "http://localhost:3000/users/" + userid;
 
-      let cfg = {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json", authorization: token }
-      };
+        let cfg = {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json", authorization: token }
+        };
 
-      try {
-        let data = await utilities.requestToServer(url, cfg);
-        showUserInfo();
-      } catch (err) {
-        utilities.handleError(err);
+        try {
+          let data = await utilities.requestToServer(url, cfg);
+          showUserInfo();
+        } catch (err) {
+          utilities.handleError(err);
+        }
+
+        sessionStorage.removeItem("logindata");
+        redirectNotAuthUser("index.html");
       }
-
-      sessionStorage.removeItem("logindata");
-      redirectNotAuthUser("index.html");
     }
   </script>
 </html>

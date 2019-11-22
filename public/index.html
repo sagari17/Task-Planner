@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div id="container"></div>
+    <div id="container" class="loginWrapper"></div>
     <template id="logintmpl">
       <form>
         <div class="wrapper">
@@ -241,6 +241,7 @@
         try {
           let data = await utilities.requestToServer(url, cfg);
           container.innerHTML = "";
+          sessionStorage.removeItem("errordata");
           showLogin();
         } catch (err) {
           let error = await err;

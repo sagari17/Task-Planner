@@ -92,7 +92,6 @@ router.delete("/:userID", async function(req, res, next) {
   }
 });
 
-router.get("/email/:userEmail", protectEndpoints);
 // check if email exists ----------------------------------------------------------------
 router.get("/email/:userEmail", async function(req, res, next) {
   try {

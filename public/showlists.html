@@ -89,7 +89,7 @@
             </div>
           </div>
         </div>
-        
+
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
           <button type="button" id="addTask" class="add-button">
@@ -153,57 +153,17 @@
       container.appendChild(div);
       document.querySelector("#addList").addEventListener("click", addNewList);
       userData = JSON.parse(sessionStorage.getItem("logindata"));
-      let listData = JSON.parse(localStorage.getItem("listdata"));
-      let ids;
 
-      if (listData == null || listData.length == 0) {
-        let url = "http://localhost:3000/lists/all/" + userData.userid;
-        let cfg = {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: userData.token
-          }
-        };
-        try {
-          listData = await utilities.requestToServer(url, cfg);
-          localStorage.setItem("listdata", JSON.stringify(listData));
-        } catch (err) {
-          let error = await err;
-          sessionStorage.removeItem("logindata");
-          sessionStorage.setItem(
-            "errordata",
-            JSON.stringify({ msg: error.msg })
-          );
-          redirectUser("index.html");
-        }
-      }
+      listData = await utilities.getListsByUserID(
+        userData.userid,
+        userData.token
+      );
+
       if (listData.length > 0) {
-        let taskData = JSON.parse(localStorage.getItem("taskdata"));
-        if (taskData == null || taskData.length == 0) {
-          for (let i = 0; i < listData.length; i++) {
-            if (i == 0) {
-              ids = listData[i].id;
-            } else {
-              ids += "," + listData[i].id;
-            }
-          }
-
-          let url2 = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
-          let cfg2 = {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: userData.token
-            }
-          };
-          try {
-            taskData = await utilities.requestToServer(url2, cfg2);
-            localStorage.setItem("taskdata", JSON.stringify(taskData));
-          } catch (err) {
-            utilities.handleError(err);
-          }
-        }
+        let taskData = await utilities.getTasksByListIDS(
+          listData,
+          userData.token
+        );
 
         for (let list of listData) {
           let listWrapper = document.createElement("div");
@@ -336,7 +296,7 @@
           redirectUser("showlists.html");
         });
       let radio = document.querySelector("input[name=public]:checked").value;
-      if(radio == "private" || radio == "public"){
+      if (radio == "private" || radio == "public") {
         document.getElementById("member-container").style.display = "none";
       }
     }
@@ -360,11 +320,9 @@
       let public = "";
       if (listData.public == 0) {
         public = "private";
-      }
-      if (listData.public == 1) {
+      } else if (listData.public == 1) {
         public = "public";
-      }
-      if (listData.public == 2) {
+      } else if (listData.public == 2) {
         public = "members";
       }
       newListTmpl.content.querySelector(
@@ -378,7 +336,7 @@
       let tasksData = tasks.filter(obj => {
         return obj.listid == detailID;
       });
-      if(listData.public == 0 || listData.public == 1){
+      if (listData.public == 0 || listData.public == 1) {
         document.getElementById("member-container").style.display = "none";
       }
       const addOptions = await addMemberData(detailID);
@@ -401,10 +359,6 @@
 
         taskDiv.querySelector(".task-title").value = task.name;
         let date = task.due_date != null ? task.due_date.split("T")[0] : "";
-        console.log(task);
-        console.log(date);
-        console.log(task.due_date);
-        console.log(task.assigned_user);
         taskDiv.querySelector(".due-date").value = date;
         let tag = task.tag ? task.tag : "None";
         taskDiv.querySelector(".tag").value = tag;
@@ -437,9 +391,9 @@
       let id = evt.target.parentNode.parentNode.parentNode.id;
       if (
         confirm(
-          "Are you sure you want to delete the list " +
+          "Are you sure you want to delete the list '" +
             evt.target.parentNode.innerText +
-            "?"
+            "'?"
         )
       ) {
         let url = "http://localhost:3000/lists/ " + id;
@@ -579,11 +533,11 @@
           }
         } else {
           document.getElementById("errormsmember").innerHTML =
-           "No user with that email exists.";
+            "No user with that email exists.";
         }
       } else {
         document.getElementById("errormsmember").innerHTML =
-         "Please fill in the e-mail of the user you want to add as a member.";
+          "Please fill in the e-mail of the user you want to add as a member.";
       }
     }
 
@@ -813,7 +767,6 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log(newTasks);
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
@@ -882,7 +835,6 @@
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
         url = "http://localhost:3000/tasks";
         cfg = {

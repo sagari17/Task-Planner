@@ -107,11 +107,85 @@ utilities = (function() {
     }
   }
 
+  function checkNameInput(firstname, lastname) {
+    let errormsg = document.getElementById("errormsg");
+    if (isValidInput(firstname.value) && isValidInput(lastname.value)) {
+      return true;
+    } else {
+      errormsg.innerHTML =
+        "Please input valid first and last name - no special characters!";
+      return false;
+    }
+  }
+
+  function checkPasswords(password, password2) {
+    let errormsg = document.getElementById("errormsg");
+    if (password.value == password2.value) {
+      return true;
+    } else {
+      errormsg.innerHTML = "Passwords do not match.";
+      return false;
+    }
+  }
+
+  async function isNewEmail(email) {
+    let isEmail = null;
+    let errormsg = document.getElementById("errormsg");
+
+    let url = "http://localhost:3000/users/email/" + email.value;
+    let cfg = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    };
+    try {
+      let data = await requestToServer(url, cfg);
+      isEmail = data;
+    } catch (err) {
+      errormsg.innerHTML = err;
+    }
+    if (isEmail == false) {
+      return true;
+    } else {
+      errormsg.innerHTML =
+        "There already is an account registered with that email.";
+      return false;
+    }
+  }
+
+  function isNewOrOldEmail(email) {
+    let oldEmail = JSON.parse(sessionStorage.getItem("logindata"));
+    if (oldEmail.email != email.value) {
+      isNewEmail(email);
+    } else {
+      return true;
+    }
+  }
+
+  async function getUserByID(id) {
+    let url = "http://localhost:3000/users/" + id;
+
+    let cfg = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    };
+
+    try {
+      return await requestToServer(url, cfg);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return {
     requestToServer: requestToServer,
     isValidInput: isValidInput,
     getTagArray: getTagArray,
     getDateArray: getDateArray,
-    markAsFinished: markAsFinished
+    markAsFinished: markAsFinished,
+    checkPasswords: checkPasswords,
+    checkNameInput: checkNameInput,
+    isNewEmail: isNewEmail,
+    isNewOrOldEmail: isNewOrOldEmail,
+    getUserByID: getUserByID
   };
 })();

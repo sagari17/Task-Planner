@@ -242,6 +242,11 @@ input[type="radio"]:checked {
     width: 100%;
   }
 
+  .members-div {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .dropdown-div {
     width: 100%;
   }
@@ -265,6 +270,11 @@ input[type="radio"]:checked {
   #plannerimg {
     height: 3.5vh;
   }
+
+  #profileimg {
+    width: 25%;
+  }
+
   .filterBar {
     flex-direction: column;
     height: auto;

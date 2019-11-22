@@ -73,7 +73,7 @@
               this list. You can then assign them to tasks on the list.
             </p>
 
-            <div class="members-div">
+            <div class="members-div" id="member-container">
               <div class="addmember">
                 <input
                   type="text"
@@ -475,13 +475,12 @@
       });
     }
     function changeRadio(){
+      console.log(1)
       let radio = document.querySelector("input[name=public]:checked").value;
-      let visible = document.getElementById("list-members");
+      let visible = document.getElementById("member-container");
       if(radio == "private" || radio == "public"){
-        sessionStorage.removeItem("listMembers");
-        sessionStorage.removeItem("newMembers");
-        sessionStorage.removeItem("deletedMembers");
-        visible.style.display = "hidden";
+        console.log(2)
+        document.getElementById("member-container").style.display = "none";
         let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
         if(existing.length>0){
@@ -490,11 +489,15 @@
             opt.options.length = 0;
             opt.appendChild(new Option("No user assigned", "None"));
           });
-          visible.innerHTML ="";
+        document.getElementById("list-members").innerHTML ="";
+        sessionStorage.removeItem("listMembers");
+        sessionStorage.removeItem("newMembers");
+        sessionStorage.removeItem("deletedMembers");
         }
       }
       else if(radio == "members"){
-        visible.style.display = "block";
+        document.getElementById("member-container").style.display = "block";
+        console.log(3)
       }
     }
     async function editMembers() {

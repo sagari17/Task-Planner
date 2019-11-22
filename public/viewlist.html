@@ -83,8 +83,12 @@
     let urlParams = new URLSearchParams(window.location.search);
     let user = JSON.parse(sessionStorage.getItem("logindata"));
     let userid;
+    let token;
     if (isLoggedIn()) {
       userid = user.userid;
+      token = user.token;
+    } else {
+      token = "public";
     }
     let list;
     let tasks;
@@ -95,8 +99,15 @@
 
     async function displayList() {
       let url = "http://localhost:3000/lists/view/" + listid;
+      let cfg = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token
+        }
+      };
       try {
-        list = await utilities.requestToServer(url, {});
+        list = await utilities.requestToServer(url, cfg);
       } catch (err) {
         console.log(err);
       }
@@ -139,12 +150,20 @@
 
     async function getTasks(urlAddition) {
       try {
-        url =
+        let url =
           "http://localhost:3000/tasks/tasksByOneID/" +
           listid +
           "/" +
           urlAddition;
-        tasks = await utilities.requestToServer(url, {});
+
+        let cfg = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token
+          }
+        };
+        tasks = await utilities.requestToServer(url, cfg);
       } catch (err) {
         console.log(err);
       }

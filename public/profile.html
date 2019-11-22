@@ -101,7 +101,9 @@
     let editTmpl = document.getElementById("editProfile");
     let changePwTmpl = document.getElementById("changePw");
 
-    let userid = JSON.parse(sessionStorage.getItem("logindata")).userid;
+    let logindata = JSON.parse(sessionStorage.getItem("logindata"));
+    let userid = logindata.userid;
+    let token = logindata.token;
     let userFirstname;
     let userLastname;
     let userEmail;
@@ -109,7 +111,7 @@
     showUserInfo();
 
     async function showUserInfo() {
-      let data = await utilities.getUserByID(userid);
+      let data = await utilities.getUserByID(userid, token);
 
       if (data == null) {
         throw data;
@@ -196,7 +198,7 @@
 
         let cfg = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: token },
           body: JSON.stringify(userData)
         };
 
@@ -224,7 +226,7 @@
 
         let cfg = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: token },
           body: JSON.stringify(userData)
         };
 
@@ -247,7 +249,7 @@
 
       let cfg = {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json", authorization: token }
       };
 
       try {

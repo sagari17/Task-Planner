@@ -475,11 +475,9 @@
       });
     }
     function changeRadio(){
-      console.log(1)
       let radio = document.querySelector("input[name=public]:checked").value;
       let visible = document.getElementById("member-container");
       if(radio == "private" || radio == "public"){
-        console.log(2)
         document.getElementById("member-container").style.display = "none";
         let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
@@ -497,7 +495,6 @@
       }
       else if(radio == "members"){
         document.getElementById("member-container").style.display = "block";
-        console.log(3)
       }
     }
     async function editMembers() {
@@ -623,16 +620,7 @@
     }
 
     function getAllTaskData(taskDivs) {
-      let radio = document.querySelector("input[name=public]:checked").value;
       let newTasks = [];
-      let public = 0;
-
-      if (radio == "public") {
-        public = 1;
-      }
-      if (radio == "members") {
-        public = 2;
-      }
       for (let task of taskDivs) {
         let title = task.querySelector(".task-title").value;
         let date =
@@ -644,7 +632,7 @@
             ? null
             : task.querySelector(".tag").value;
         let user =
-          task.querySelector(".user").value == "None"||public==0||public==1
+          task.querySelector(".user").value == "None"
             ? null
             : task.querySelector(".user").value;
 

@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors"); //when the clients aren't on the server
 const bodyParser = require("body-parser");
 const app = express();
-const DEFAULT_PORT = 8080;
 
 const lists = require("./routes/lists");
 const users = require("./routes/users");

@@ -1,1 +1,3 @@
 /node_modules
+/modules/secret.js
+/modules/database.js

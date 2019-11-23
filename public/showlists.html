@@ -370,6 +370,7 @@
       }
       const addOptions = await addMemberData(detailID);
       let existing = JSON.parse(sessionStorage.getItem("listMembers"));
+      sessionStorage.setItem("deleteAll", JSON.stringify(existing));
       createMemberDiv(existing);
       document
           .getElementById("radio-private")
@@ -495,6 +496,7 @@
         btn.addEventListener("click", deleteTaskButton);
       });
     }
+    
     function changeRadio(){
       let radio = document.querySelector("input[name=public]:checked").value;
       let visible = document.getElementById("member-container");
@@ -502,7 +504,6 @@
         document.getElementById("member-container").style.display = "none";
         let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
-        sessionStorage.setItem("deleteAll", JSON.stringify(existing));
         if(existing.length>0){
           document.querySelectorAll(".user")
           .forEach(opt => {
@@ -512,7 +513,6 @@
         document.getElementById("list-members").innerHTML ="";
         sessionStorage.removeItem("listMembers");
         sessionStorage.removeItem("newMembers");
-        //sessionStorage.removeItem("deletedMembers");
         }
       }
       else if(radio == "members"){
@@ -561,16 +561,14 @@
           let index = existing.findIndex(
             member => member.email == memberEmail.value
           );
-          console.log(oldMembers)
+
           let indexOld = oldMembers.findIndex(
             member => member.email == memberEmail.value
           );
-          console.log(indexOld)
           let existingTaskDiv = document.querySelectorAll(".task-div");
           if (index === -1 && indexOld >-1) {
             existingTaskDiv.forEach(elem => {
               addOption([existingUser], elem);
-              console.log("old")
             });
             createMemberDiv([existingUser]);
             let spliced = sessionStorage.getItem("splicedDeleted");
@@ -580,7 +578,6 @@
             );
               let del = deletedMembers.splice(deletedMembers_index, 1);
               spliced.push(del[0]);
-              console.log(deletedMembers)
               sessionStorage.setItem("splicedDeleted", JSON.stringify(spliced));
               sessionStorage.setItem("deletedMembers", JSON.stringify(deletedMembers));
              
@@ -926,27 +923,15 @@
       }
       let chooseDelete =""
       let condensedMembers_deleted = [];
-      let membersAdd_deleted;
+      
       if(public == 0|| public == 1){
         chooseDelete = "deleteAll"
-        let all = sessionStorage.getItem("deleteAll");
-        all = all
-        ? JSON.parse(all)
-        : [];
-        let spliced = sessionStorage.getItem("splicedDeleted");
-        spliced = spliced
-        ? JSON.parse(spliced)
-        : [];
-        membersAdd_deleted = all.concat(spliced);
-
       }
       else if (public == 2){
-        membersAdd_deleted = sessionStorage.getItem("deletedMembers");
-        membersAdd_deleted = membersAdd_deleted
-        ? JSON.parse(membersAdd_deleted)
-        : [];
+        chooseDelete = "deletedMembers"
       }
-     console.log(membersAdd_deleted)
+      let membersAdd_deleted = sessionStorage.getItem(chooseDelete);
+      membersAdd_deleted = membersAdd_deleted ? JSON.parse(membersAdd_deleted) : [];
       if (membersAdd_deleted.length > 0) {
         membersAdd_deleted.forEach(member => {
           condensedMembers_deleted.push(parseInt(detailID));

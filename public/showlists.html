@@ -45,28 +45,41 @@
         </div>
         <div>
           <p class="new-list-heading">List Sharing</p>
-          <div class="radio-group" id="radio-private">
+          <div class="radio-group">
             <p>
               <input
                 type="radio"
                 name="public"
                 value="private"
                 class="radio-buttons"
+                id="radio-private"
                 checked
               />
               Private
             </p>
             <p class="pgrey">Your list is private. Only you can see it.</p>
           </div>
-          <div class="radio-group" id="radio-public">
-            <p><input type="radio" name="public" value="public" /> Public</p>
+          <div class="radio-group">
+            <p>
+              <input 
+                type="radio"
+                name="public"
+                value="public"
+                id="radio-public"/> 
+                Public
+            </p>
             <p class="pgrey">
               Your list is public. Everyone who has the link can access it.
             </p>
           </div>
-          <div class="radio-group" id="radio-member">
+          <div class="radio-group" >
             <p>
-              <input type="radio" name="public" value="members" /> Add members
+              <input
+                type="radio"
+                name="public"
+                value="members"
+                id="radio-member"/> 
+                Add members
             </p>
             <p class="pgrey">
               Share this list with certain users to let them become Members of
@@ -310,6 +323,8 @@
       sessionStorage.removeItem("listMembers");
       sessionStorage.removeItem("newMembers");
       sessionStorage.removeItem("deletedMembers");
+      sessionStorage.removeItem("deleteAll");
+      sessionStorage.removeItem("splicedDeleted");
       let listData = lists.find(obj => {
         return obj.id == detailID;
       });
@@ -341,6 +356,7 @@
       }
       const addOptions = await addMemberData(detailID);
       let existing = JSON.parse(sessionStorage.getItem("listMembers"));
+      sessionStorage.setItem("deleteAll", JSON.stringify(existing));
       createMemberDiv(existing);
       document
         .getElementById("radio-private")
@@ -465,28 +481,39 @@
         btn.addEventListener("click", deleteTaskButton);
       });
     }
-    function changeRadio() {
+    
+    function changeRadio(){
       let radio = document.querySelector("input[name=public]:checked").value;
       let visible = document.getElementById("member-container");
-      if (radio == "private" || radio == "public") {
-        document.getElementById("member-container").style.display = "none";
-        let existing = sessionStorage.getItem("listMembers");
+      let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
-        if (existing.length > 0) {
-          document.querySelectorAll(".user").forEach(opt => {
+      if(radio == "private" || radio == "public"){
+        document.getElementById("member-container").style.display = "none";
+        
+        
+        document.getElementById("list-members").innerHTML ="";
+        sessionStorage.removeItem("listMembers");
+        sessionStorage.removeItem("newMembers");
+        
+      }
+      else if(radio == "members"){
+          document.querySelectorAll(".user")
+          .forEach(opt => {
             opt.options.length = 0;
             opt.appendChild(new Option("No user assigned", "None"));
-          });
-          document.getElementById("list-members").innerHTML = "";
-          sessionStorage.removeItem("listMembers");
-          sessionStorage.removeItem("newMembers");
-          sessionStorage.removeItem("deletedMembers");
-        }
-      } else if (radio == "members") {
+          })
+          
+        
+        let oldMembers = sessionStorage.getItem("deleteAll");
+          oldMembers = oldMembers ? JSON.parse(oldMembers) : [];
+        sessionStorage.removeItem("listMembers");
+        sessionStorage.removeItem("newMembers");
+        sessionStorage.setItem("deletedMembers", JSON.stringify(oldMembers));
         document.getElementById("member-container").style.display = "block";
       }
     }
     async function editMembers() {
+      document.getElementById("errormsmember").innerHTML =""
       let memberEmail = document.getElementById("member-email");
       if (memberEmail.value != 0) {
         let existingUser = await checkEmail();
@@ -514,15 +541,41 @@
           let membersAdd = sessionStorage.getItem("newMembers");
           membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
 
+          let oldMembers = sessionStorage.getItem("deleteAll");
+          oldMembers = oldMembers ? JSON.parse(oldMembers) : [];
+
+          let deletedMembers = sessionStorage.getItem("deletedMembers");
+          deletedMembers = deletedMembers ? JSON.parse(deletedMembers) : [];
+
           let index = existing.findIndex(
             member => member.email == memberEmail.value
           );
-          if (index === -1) {
+
+          let indexOld = oldMembers.findIndex(
+            member => member.email == memberEmail.value
+          );
+          let existingTaskDiv = document.querySelectorAll(".task-div");
+          if (index === -1 && indexOld >-1) {
+            existingTaskDiv.forEach(elem => {
+              addOption([existingUser], elem);
+            });
+            createMemberDiv([existingUser]);
+            let spliced = sessionStorage.getItem("splicedDeleted");
+            spliced = spliced ? JSON.parse(spliced) : [];
+            let deletedMembers_index = deletedMembers.findIndex(
+              member => member.id == existingUser.id
+            );
+              let del = deletedMembers.splice(deletedMembers_index, 1);
+              spliced.push(del[0]);
+              sessionStorage.setItem("splicedDeleted", JSON.stringify(spliced));
+              sessionStorage.setItem("deletedMembers", JSON.stringify(deletedMembers));
+             
+          }
+          else if (index === -1) {
             existing.push(existingUser);
             membersAdd.push(existingUser);
             sessionStorage.setItem("listMembers", JSON.stringify(existing));
             sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
-            let existingTaskDiv = document.querySelectorAll(".task-div");
             existingTaskDiv.forEach(elem => {
               addOption([existingUser], elem);
             });
@@ -633,9 +686,7 @@
           task.querySelector(".user").value == "None"
             ? null
             : task.querySelector(".user").value;
-
         let taskid = task.id.split("-")[1];
-
         if (isNewList) {
           newTasks.push(title, date, tag, user, 0, newListid);
         } else {
@@ -881,15 +932,15 @@
       }
       let chooseDelete = "";
       let condensedMembers_deleted = [];
-      if (public == 0 || public == 1) {
-        chooseDelete = "listMembers";
-      } else if (public == 2) {
-        chooseDelete = "deletedMembers";
+
+      if(public == 0|| public == 1){
+        chooseDelete = "deleteAll"
+      }
+      else if (public == 2){
+        chooseDelete = "deletedMembers"
       }
       let membersAdd_deleted = sessionStorage.getItem(chooseDelete);
-      membersAdd_deleted = membersAdd_deleted
-        ? JSON.parse(membersAdd_deleted)
-        : [];
+      membersAdd_deleted = membersAdd_deleted ? JSON.parse(membersAdd_deleted) : [];
       if (membersAdd_deleted.length > 0) {
         membersAdd_deleted.forEach(member => {
           condensedMembers_deleted.push(parseInt(detailID));
@@ -912,7 +963,12 @@
           utilities.handleError(err);
         }
       }
-
+      sessionStorage.removeItem("listMembers");
+      sessionStorage.removeItem("newMembers");
+      sessionStorage.removeItem("deletedMembers");
+      sessionStorage.removeItem("deleteAll");
+      sessionStorage.removeItem("splicedDeleted");
+      
       //newly added tasks to already existing list
       let addedTaskDivs = document.querySelectorAll(".added");
       if (addedTaskDivs.length != 0) {

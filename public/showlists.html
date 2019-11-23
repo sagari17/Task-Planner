@@ -45,28 +45,41 @@
         </div>
         <div>
           <p class="new-list-heading">List Sharing</p>
-          <div class="radio-group" id="radio-private">
+          <div class="radio-group">
             <p>
               <input
                 type="radio"
                 name="public"
                 value="private"
                 class="radio-buttons"
+                id="radio-private"
                 checked
               />
               Private
             </p>
             <p class="pgrey">Your list is private. Only you can see it.</p>
           </div>
-          <div class="radio-group" id="radio-public">
-            <p><input type="radio" name="public" value="public" /> Public</p>
+          <div class="radio-group">
+            <p>
+              <input 
+                type="radio"
+                name="public"
+                value="public"
+                id="radio-public"/> 
+                Public
+            </p>
             <p class="pgrey">
               Your list is public. Everyone who has the link can access it.
             </p>
           </div>
-          <div class="radio-group" id="radio-member">
+          <div class="radio-group" >
             <p>
-              <input type="radio" name="public" value="members" /> Add members
+              <input
+                type="radio"
+                name="public"
+                value="members"
+                id="radio-member"/> 
+                Add members
             </p>
             <p class="pgrey">
               Share this list with certain users to let them become Members of
@@ -322,6 +335,8 @@
       sessionStorage.removeItem("listMembers");
       sessionStorage.removeItem("newMembers");
       sessionStorage.removeItem("deletedMembers");
+      sessionStorage.removeItem("deleteAll");
+      sessionStorage.removeItem("splicedDeleted");
       let listData = lists.find(obj => {
         return obj.id == detailID;
       });
@@ -507,6 +522,7 @@
         sessionStorage.removeItem("newMembers");
         sessionStorage.setItem("deletedMembers", JSON.stringify(oldMembers));
         document.getElementById("member-container").style.display = "block";
+        console.log("lol")
         
       }
     }
@@ -539,6 +555,9 @@
           let oldMembers = sessionStorage.getItem("deleteAll");
           oldMembers = oldMembers ? JSON.parse(oldMembers) : [];
 
+          let deletedMembers = sessionStorage.getItem("deletedMembers");
+          deletedMembers = deletedMembers ? JSON.parse(deletedMembers) : [];
+
           let index = existing.findIndex(
             member => member.email == memberEmail.value
           );
@@ -548,19 +567,22 @@
           );
           console.log(indexOld)
           let existingTaskDiv = document.querySelectorAll(".task-div");
-          if (index === -1 && indexOld !==-1) {
+          if (index === -1 && indexOld >-1) {
             existingTaskDiv.forEach(elem => {
               addOption([existingUser], elem);
+              console.log("old")
             });
             createMemberDiv([existingUser]);
             let spliced = sessionStorage.getItem("splicedDeleted");
             spliced = spliced ? JSON.parse(spliced) : [];
-            let index_oldMember = oldMembers.findIndex(
+            let deletedMembers_index = deletedMembers.findIndex(
               member => member.id == existingUser.id
             );
-              let del = oldMembers.splice(index_oldMember, 1);
+              let del = deletedMembers.splice(deletedMembers_index, 1);
               spliced.push(del[0]);
+              console.log(deletedMembers)
               sessionStorage.setItem("splicedDeleted", JSON.stringify(spliced));
+              sessionStorage.setItem("deletedMembers", JSON.stringify(deletedMembers));
              
           }
           else if (index === -1) {
@@ -924,7 +946,7 @@
         ? JSON.parse(membersAdd_deleted)
         : [];
       }
-     
+     console.log(membersAdd_deleted)
       if (membersAdd_deleted.length > 0) {
         membersAdd_deleted.forEach(member => {
           condensedMembers_deleted.push(parseInt(detailID));
@@ -949,6 +971,7 @@
       sessionStorage.removeItem("newMembers");
       sessionStorage.removeItem("deletedMembers");
       sessionStorage.removeItem("deleteAll");
+      sessionStorage.removeItem("splicedDeleted");
       
       //newly added tasks to already existing list
       let addedTaskDivs = document.querySelectorAll(".added");

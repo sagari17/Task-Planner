@@ -41,7 +41,7 @@ async function loginUser(evt) {
   password = document.getElementById("password");
   sessionStorage.removeItem("errordata");
 
-  let url = "/auth";
+  let url = "http://localhost:3000/auth";
 
   let loginData = {
     email: email.value,
@@ -102,7 +102,7 @@ async function createAccount(evt) {
     (await utilities.isNewEmail(email)) &&
     utilities.checkPasswords(password, passwordrepeat)
   ) {
-    let url = "/users";
+    let url = "http://localhost:3000/users";
 
     let userData = {
       firstname: firstname.value,

@@ -25,7 +25,7 @@ let container = document.getElementById("container");
 displayList();
 
 async function displayList() {
-  let url = "http://localhost:3000/lists/view/" + listid;
+  let url = "/lists/view/" + listid;
   let cfg = {
     method: "GET",
     headers: {
@@ -83,7 +83,7 @@ async function displayList() {
 async function getTasks(urlAddition) {
   try {
     let url =
-      "http://localhost:3000/tasks/tasksByOneID/" + listid + "/" + urlAddition;
+      "/tasks/tasksByOneID/" + listid + "/" + urlAddition;
 
     let cfg = {
       method: "GET",

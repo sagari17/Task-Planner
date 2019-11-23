@@ -246,7 +246,7 @@ async function deleteList(evt) {
         "'?"
     )
   ) {
-    let url = "http://localhost:3000/lists/ " + id;
+    let url = "/lists/ " + id;
 
     let cfg = {
       method: "DELETE",
@@ -347,7 +347,7 @@ async function editMembers() {
   if (memberEmail.value != 0) {
     let existingUser = await checkEmail();
     async function checkEmail() {
-      let url = "http://localhost:3000/users/emailAndData/" + memberEmail.value;
+      let url = "/users/emailAndData/" + memberEmail.value;
       let cfg = {
         method: "GET",
         headers: {
@@ -424,7 +424,7 @@ async function editMembers() {
 }
 
 async function addMemberData(listID) {
-  let url = "http://localhost:3000/lists/member/" + listID;
+  let url = "/lists/member/" + listID;
 
   let cfg = {
     method: "GET",
@@ -480,7 +480,7 @@ function createMemberDiv(array) {
 }
 
 async function getMemberData(listID) {
-  let url = "http://localhost:3000/lists/member/" + listID;
+  let url = "/lists/member/" + listID;
 
   let cfg = {
     method: "GET",
@@ -601,7 +601,7 @@ async function saveList(evt) {
     owner: userid,
     public: public
   };
-  url = "http://localhost:3000/lists";
+  url = "/lists";
   cfg = {
     method: "POST",
     headers: {
@@ -628,7 +628,7 @@ async function saveList(evt) {
       condensedMembers.push(member.id);
     });
 
-    url = "http://localhost:3000/lists/member";
+    url = "/lists/member";
     cfg = {
       method: "POST",
       headers: {
@@ -647,7 +647,7 @@ async function saveList(evt) {
 
   //save tasks
   let newTasks = getAllTaskData(taskDivs);
-  url = "http://localhost:3000/tasks/createSeveralTasks";
+  url = "/tasks/createSeveralTasks";
   cfg = {
     method: "POST",
     headers: {
@@ -696,7 +696,7 @@ async function saveChanges(evt) {
     public: public,
     id: detailID
   };
-  url = "http://localhost:3000/lists";
+  url = "/lists";
   cfg = {
     method: "PATCH",
     headers: {
@@ -716,7 +716,7 @@ async function saveChanges(evt) {
   //save tasks
   let newTasks = getAllTaskData(taskDivs);
   for (let [index, task] of newTasks.entries()) {
-    url = "http://localhost:3000/tasks";
+    url = "/tasks";
     cfg = {
       method: "PATCH",
       headers: {
@@ -743,7 +743,7 @@ async function saveChanges(evt) {
       condensedMembers.push(member.id);
     });
 
-    url = "http://localhost:3000/lists/member";
+    url = "/lists/member";
     cfg = {
       method: "POST",
       headers: {
@@ -775,7 +775,7 @@ async function saveChanges(evt) {
       condensedMembers_deleted.push(member.id);
     });
 
-    url = "http://localhost:3000/lists/member";
+    url = "/lists/member";
     cfg = {
       method: "DELETE",
       headers: {
@@ -805,7 +805,7 @@ async function saveChanges(evt) {
     let addedTasks = getAllTaskData(addedTaskDivs);
     isNewList = false;
 
-    url2 = "http://localhost:3000/tasks/createSeveralTasks";
+    url2 = "/tasks/createSeveralTasks";
     cfg2 = {
       method: "POST",
       headers: {
@@ -832,7 +832,7 @@ async function deleteTaskButton(evt) {
 
   if (!isNewList && !element.classList.contains("added")) {
     let taskid = element.id.split("-")[1];
-    let url = "http://localhost:3000/tasks/" + taskid;
+    let url = "/tasks/" + taskid;
     let cfg = {
       method: "DELETE",
       headers: {

@@ -87,7 +87,7 @@ utilities = (function() {
 
     let taskid = { id: evt.target.id.split("-")[1] };
     let token = JSON.parse(sessionStorage.getItem("logindata")).token;
-    url = "/tasks/finished";
+    url = "http://localhost:3000/tasks/finished";
     cfg = {
       method: "PATCH",
       headers: { "Content-Type": "application/json", authorization: token },
@@ -133,7 +133,7 @@ utilities = (function() {
     let isEmail = null;
     let errormsg = document.getElementById("errormsg");
 
-    let url = "/users/email/" + email.value;
+    let url = "http://localhost:3000/users/email/" + email.value;
     let cfg = {
       method: "GET",
       headers: { "Content-Type": "application/json" }
@@ -163,7 +163,7 @@ utilities = (function() {
   }
 
   async function getUserByID(id, token) {
-    let url = "/users/" + id;
+    let url = "http://localhost:3000/users/" + id;
     let cfg = {
       method: "GET",
       headers: { "Content-Type": "application/json", authorization: token }
@@ -180,7 +180,7 @@ utilities = (function() {
     let listData = JSON.parse(localStorage.getItem("listdata"));
 
     if (listData == null || listData.length == 0) {
-      let url = "/lists/all/" + userid;
+      let url = "http://localhost:3000/lists/all/" + userid;
       let cfg = {
         method: "GET",
         headers: {
@@ -211,7 +211,7 @@ utilities = (function() {
             ids += "," + listData[i].id;
           }
         }
-        let url = "/tasks/allTasksBySeveralIDS/" + ids;
+        let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
         let cfg = {
           method: "GET",
           headers: {

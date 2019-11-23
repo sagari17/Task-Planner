@@ -82,7 +82,7 @@ async function saveChanges(firstname, lastname, email) {
     utilities.checkNameInput(firstname, lastname) &&
     (await utilities.isNewOrOldEmail(email))
   ) {
-    let url = "/users";
+    let url = "http://localhost:3000/users";
 
     let userData = {
       firstname: firstname.value,
@@ -112,7 +112,7 @@ async function saveChanges(firstname, lastname, email) {
 
 async function changePw(password, passwordrep) {
   if (utilities.checkPasswords(password, passwordrep)) {
-    let url = "/users/changePassword";
+    let url = "http://localhost:3000/users/changePassword";
 
     let userData = {
       password: password.value,
@@ -141,7 +141,7 @@ function logoutUser() {
 
 async function deleteUser() {
   if (confirm("Are you sure you want to delete your Account?")) {
-    let url = "/users/" + userid;
+    let url = "http://localhost:3000/users/" + userid;
 
     let cfg = {
       method: "DELETE",

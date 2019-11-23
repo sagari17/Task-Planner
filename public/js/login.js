@@ -15,7 +15,7 @@ showLogin();
 
 function showLogin() {
   if (isLoggedIn()) {
-    redirectUser("doashboard.html");
+    redirectUser("dashboard.html");
   }
 
   let loginContent = loginTmpl.content.cloneNode(true);
@@ -68,7 +68,7 @@ async function loginUser(evt) {
       localStorage.removeItem("listdata");
     }
 
-    redirectUser("dashboard .html");
+    redirectUser("dashboard.html");
   } catch (err) {
     let error = await err;
     errormsg.innerHTML = error.msg;

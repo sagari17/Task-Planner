@@ -12,7 +12,7 @@ const db = function(dbConnection) {
       await client.end();
       return response;
     } catch (err) {
-      throw "Something went wrong";
+      console.log(err);
     }
   }
 
@@ -299,6 +299,7 @@ const db = function(dbConnection) {
   const updateTask = async function(data) {
     let taskData = null;
     let values = [data.name, data.date, data.tag, data.user, data.taskid]; // the data.id needs to be the task id, not the list id
+    console.log(data.user)
     try {
       taskData = await runQuery(
         "UPDATE tasks SET name=$1, due_date=$2, tag=$3, assigned_user = (SELECT users.id FROM users WHERE users.id =$4) WHERE id=$5 RETURNING *",
@@ -307,6 +308,7 @@ const db = function(dbConnection) {
     } catch (err) {
       throw "Couldn't update task.";
     }
+    console.log(taskData)
     return taskData;
   };
 
@@ -354,7 +356,7 @@ const db = function(dbConnection) {
     } catch (err) {
       throw "Couldn't check email.";
     }
-    if (emailData.length != 0) {
+    if (emailData) {
       return emailData[0];
     } else {
       return false;

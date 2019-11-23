@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const secret = "frenchfriestastegood!";
+const secret = process.env.SECRET;
 
 const protectEndpoints = function(req, res, next) {
   let token = req.headers["authorization"];

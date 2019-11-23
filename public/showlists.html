@@ -487,6 +487,7 @@
         document.getElementById("member-container").style.display = "none";
         let existing = sessionStorage.getItem("listMembers");
         existing = existing ? JSON.parse(existing) : [];
+        sessionStorage.setItem("deleteAll", JSON.stringify(existing));
         if(existing.length>0){
           document.querySelectorAll(".user")
           .forEach(opt => {
@@ -496,14 +497,21 @@
         document.getElementById("list-members").innerHTML ="";
         sessionStorage.removeItem("listMembers");
         sessionStorage.removeItem("newMembers");
-        sessionStorage.removeItem("deletedMembers");
+        //sessionStorage.removeItem("deletedMembers");
         }
       }
       else if(radio == "members"){
+        let oldMembers = sessionStorage.getItem("deleteAll");
+          oldMembers = oldMembers ? JSON.parse(oldMembers) : [];
+        sessionStorage.removeItem("listMembers");
+        sessionStorage.removeItem("newMembers");
+        sessionStorage.setItem("deletedMembers", JSON.stringify(oldMembers));
         document.getElementById("member-container").style.display = "block";
+        
       }
     }
     async function editMembers() {
+      document.getElementById("errormsmember").innerHTML =""
       let memberEmail = document.getElementById("member-email");
       if(memberEmail.value!=0){
         let existingUser = await checkEmail();
@@ -528,15 +536,38 @@
           let membersAdd = sessionStorage.getItem("newMembers");
           membersAdd = membersAdd ? JSON.parse(membersAdd) : [];
 
+          let oldMembers = sessionStorage.getItem("deleteAll");
+          oldMembers = oldMembers ? JSON.parse(oldMembers) : [];
+
           let index = existing.findIndex(
             member => member.email == memberEmail.value
           );
-          if (index === -1) {
+          console.log(oldMembers)
+          let indexOld = oldMembers.findIndex(
+            member => member.email == memberEmail.value
+          );
+          console.log(indexOld)
+          let existingTaskDiv = document.querySelectorAll(".task-div");
+          if (index === -1 && indexOld !==-1) {
+            existingTaskDiv.forEach(elem => {
+              addOption([existingUser], elem);
+            });
+            createMemberDiv([existingUser]);
+            let spliced = sessionStorage.getItem("splicedDeleted");
+            spliced = spliced ? JSON.parse(spliced) : [];
+            let index_oldMember = oldMembers.findIndex(
+              member => member.id == existingUser.id
+            );
+              let del = oldMembers.splice(index_oldMember, 1);
+              spliced.push(del[0]);
+              sessionStorage.setItem("splicedDeleted", JSON.stringify(spliced));
+             
+          }
+          else if (index === -1) {
             existing.push(existingUser);
             membersAdd.push(existingUser);
             sessionStorage.setItem("listMembers", JSON.stringify(existing));
             sessionStorage.setItem("newMembers", JSON.stringify(membersAdd));
-            let existingTaskDiv = document.querySelectorAll(".task-div");
             existingTaskDiv.forEach(elem => {
               addOption([existingUser], elem);
             });
@@ -641,9 +672,7 @@
           task.querySelector(".user").value == "None"
             ? null
             : task.querySelector(".user").value;
-        console.log(user)
         let taskid = task.id.split("-")[1];
-
         if (isNewList) {
           newTasks.push(title, date, tag, user, 0, newListid);
         } else {
@@ -875,16 +904,27 @@
       }
       let chooseDelete =""
       let condensedMembers_deleted = [];
+      let membersAdd_deleted;
       if(public == 0|| public == 1){
-        chooseDelete = "listMembers"
+        chooseDelete = "deleteAll"
+        let all = sessionStorage.getItem("deleteAll");
+        all = all
+        ? JSON.parse(all)
+        : [];
+        let spliced = sessionStorage.getItem("splicedDeleted");
+        spliced = spliced
+        ? JSON.parse(spliced)
+        : [];
+        membersAdd_deleted = all.concat(spliced);
+
       }
       else if (public == 2){
-        chooseDelete = "deletedMembers"
-      }
-      let membersAdd_deleted = sessionStorage.getItem(chooseDelete);
-      membersAdd_deleted = membersAdd_deleted
+        membersAdd_deleted = sessionStorage.getItem("deletedMembers");
+        membersAdd_deleted = membersAdd_deleted
         ? JSON.parse(membersAdd_deleted)
         : [];
+      }
+     
       if (membersAdd_deleted.length > 0) {
         membersAdd_deleted.forEach(member => {
           condensedMembers_deleted.push(parseInt(detailID));
@@ -905,7 +945,11 @@
           console.log(err);
         }
       }
-
+      sessionStorage.removeItem("listMembers");
+      sessionStorage.removeItem("newMembers");
+      sessionStorage.removeItem("deletedMembers");
+      sessionStorage.removeItem("deleteAll");
+      
       //newly added tasks to already existing list
       let addedTaskDivs = document.querySelectorAll(".added");
       if (addedTaskDivs.length != 0) {
@@ -930,7 +974,7 @@
 
       localStorage.removeItem("taskdata");
       localStorage.removeItem("listdata");
-      redirectUser("showlists.html");
+      //redirectUser("showlists.html");
     }
 
     async function deleteTaskButton(evt) {

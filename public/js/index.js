@@ -86,15 +86,16 @@ utilities = (function() {
     }
 
     let taskid = { id: evt.target.id.split("-")[1] };
+    let token = JSON.parse(sessionStorage.getItem("logindata")).token;
     url = "http://localhost:3000/tasks/finished";
     cfg = {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", authorization: token },
       body: JSON.stringify(taskid)
     };
 
     try {
-      let task = await utilities.requestToServer(url, cfg);
+      await utilities.requestToServer(url, cfg);
       let oldTaskData = JSON.parse(localStorage.getItem("taskdata"));
       for (let i = 0; i < oldTaskData.length; i++) {
         if (oldTaskData[i].id == taskid.id) {
@@ -103,7 +104,7 @@ utilities = (function() {
       }
       localStorage.setItem("taskdata", JSON.stringify(oldTaskData));
     } catch (err) {
-      console.log(err);
+      handleError(err);
     }
   }
 
@@ -161,19 +162,79 @@ utilities = (function() {
     }
   }
 
-  async function getUserByID(id) {
+  async function getUserByID(id, token) {
     let url = "http://localhost:3000/users/" + id;
-
     let cfg = {
       method: "GET",
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json", authorization: token }
     };
 
     try {
       return await requestToServer(url, cfg);
     } catch (err) {
-      console.log(err);
+      handleError(err);
     }
+  }
+
+  async function getListsByUserID(userid, token) {
+    let listData = JSON.parse(localStorage.getItem("listdata"));
+
+    if (listData == null || listData.length == 0) {
+      let url = "http://localhost:3000/lists/all/" + userid;
+      let cfg = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token
+        }
+      };
+      try {
+        listData = await utilities.requestToServer(url, cfg);
+        localStorage.setItem("listdata", JSON.stringify(listData));
+      } catch (err) {
+        utilities.handleError(err);
+      }
+    }
+    return listData;
+  }
+
+  async function getTasksByListIDS(listData, token) {
+    let taskData = [];
+    if (listData.length > 0) {
+      taskData = JSON.parse(localStorage.getItem("taskdata"));
+      if (taskData == null || taskData.length == 0) {
+        let ids;
+        for (let i = 0; i < listData.length; i++) {
+          if (i == 0) {
+            ids = listData[i].id;
+          } else {
+            ids += "," + listData[i].id;
+          }
+        }
+        let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+        let cfg = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token
+          }
+        };
+        try {
+          taskData = await utilities.requestToServer(url, cfg);
+          localStorage.setItem("taskdata", JSON.stringify(taskData));
+        } catch (err) {
+          utilities.handleError(err);
+        }
+      }
+    }
+    return taskData;
+  }
+
+  async function handleError(err) {
+    let error = await err;
+    sessionStorage.removeItem("logindata");
+    sessionStorage.setItem("errordata", JSON.stringify({ msg: error.msg }));
+    redirectUser("index.html");
   }
 
   return {
@@ -186,6 +247,9 @@ utilities = (function() {
     checkNameInput: checkNameInput,
     isNewEmail: isNewEmail,
     isNewOrOldEmail: isNewOrOldEmail,
-    getUserByID: getUserByID
+    getUserByID: getUserByID,
+    handleError: handleError,
+    getListsByUserID: getListsByUserID,
+    getTasksByListIDS: getTasksByListIDS
   };
 })();

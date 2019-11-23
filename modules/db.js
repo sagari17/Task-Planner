@@ -22,7 +22,7 @@ const db = function(dbConnection) {
     try {
       userData = await runQuery("SELECT * FROM users WHERE email=$1", values);
     } catch (err) {
-      //Deal with it
+      throw "Couldn't get user.";
     }
     return userData;
   };
@@ -33,7 +33,7 @@ const db = function(dbConnection) {
     try {
       userData = await runQuery("SELECT * FROM users WHERE id=$1", values);
     } catch (err) {
-      //Deal with it
+      throw "Couldn't get user.";
     }
     return userData;
   };
@@ -46,7 +46,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't create user.";
     }
     return userData;
   };
@@ -63,7 +63,7 @@ const db = function(dbConnection) {
     try {
       userData = await runQuery(query, values);
     } catch (err) {
-      console.log(err);
+      throw "Couldn't add members.";
     }
     return userData;
   };
@@ -83,7 +83,7 @@ const db = function(dbConnection) {
     try {
       userData = await runQuery(query, values);
     } catch (err) {
-      console.log(err);
+      throw "Couldn't delete members.";
     }
     return userData;
   };
@@ -97,7 +97,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't update user.";
     }
     return userData;
   };
@@ -111,7 +111,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't change password.";
     }
     return userData;
   };
@@ -125,7 +125,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't delete user.";
     }
     return userData;
   };
@@ -138,7 +138,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't create list.";
     }
     return listData;
   };
@@ -152,7 +152,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't get lists.";
     }
     return listData;
   };
@@ -166,7 +166,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't get lists.";
     }
     return listData;
   };
@@ -178,7 +178,7 @@ const db = function(dbConnection) {
     try {
       listData = await runQuery(query, values);
     } catch (err) {
-      console.log(err);
+      throw "Couldn't get list.";
     }
     return listData;
   };
@@ -195,7 +195,7 @@ const db = function(dbConnection) {
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
-      console.log(err);
+      throw "Couldn't get tasks.";
     }
     return taskData;
   };
@@ -217,7 +217,7 @@ const db = function(dbConnection) {
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
-      console.log(err);
+      throw "Couldn't filter tasks.";
     }
     return taskData;
   };
@@ -233,7 +233,7 @@ const db = function(dbConnection) {
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
-      //Deal with it
+      throw "Couldn't get tasks.";
     }
     return taskData;
   };
@@ -247,7 +247,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't delete list.";
     }
     return listData;
   };
@@ -260,7 +260,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't create task.";
     }
     return taskData;
   };
@@ -277,7 +277,7 @@ const db = function(dbConnection) {
     try {
       taskData = await runQuery(query, values);
     } catch (err) {
-      console.log(err);
+      throw "Couldn't create tasks.";
     }
     return taskData;
   };
@@ -291,7 +291,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't delete task.";
     }
     return taskData;
   };
@@ -306,7 +306,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't update task.";
     }
     console.log(taskData)
     return taskData;
@@ -322,7 +322,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't update list.";
     }
     return listData;
   };
@@ -336,7 +336,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't check email.";
     }
     if (parseInt(emailData[0].count)) {
       return true;
@@ -354,7 +354,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't check email.";
     }
     if (emailData) {
       return emailData[0];
@@ -372,7 +372,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't change to finished.";
     }
     return taskData;
   };
@@ -386,7 +386,7 @@ const db = function(dbConnection) {
         values
       );
     } catch (err) {
-      console.log(err);
+      throw "Couldn't get members.";
     }
     return memberData;
   };

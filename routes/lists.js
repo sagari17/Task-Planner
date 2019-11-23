@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const protectEndpoints = require("../modules/authEndpoints");
 const dbURI =
   "postgres://svweyjmwncotvj:25a12ff7cfdd88ea11943cb8438b4383ca6c9ea96fb8783a1e5968db1cd8b2e7@ec2-107-20-244-40.compute-1.amazonaws.com:5432/ddoducrh03dt9u" +
   "?ssl=true"; //get from heroku postgres settings URI
 const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
 
+router.post("/", protectEndpoints);
 // create list -----------------------------------------------------
 router.post("/", async function(req, res, next) {
   let data = req.body;
@@ -19,9 +21,11 @@ router.post("/", async function(req, res, next) {
       throw "insert failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
+
+router.post("/member/", protectEndpoints);
 // add members -----------------------------------------------------
 router.post("/member/", async function(req, res, next) {
   let data = req.body;
@@ -34,9 +38,11 @@ router.post("/member/", async function(req, res, next) {
       throw "insert failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
+
+router.delete("/member/", protectEndpoints);
 // Delete members -----------------------------------------------------
 router.delete("/member/", async function(req, res, next) {
   let data = req.body;
@@ -48,9 +54,11 @@ router.delete("/member/", async function(req, res, next) {
       throw "insert failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
+
+router.get("/member/:listID", protectEndpoints);
 // get members by list-----------------------------------------------------
 router.get("/member/:listID", async function(req, res, next) {
   //let data = req.body;
@@ -64,10 +72,11 @@ router.get("/member/:listID", async function(req, res, next) {
       throw "insert failed";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/:userID", protectEndpoints);
 // Get all lists by certain userID ---------------------------------
 router.get("/:userID", async function(req, res, next) {
   try {
@@ -78,10 +87,11 @@ router.get("/:userID", async function(req, res, next) {
       throw "No lists exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/all/:userID", protectEndpoints);
 // Get all lists and lists that user are member of by certain userID ---------------------------------
 router.get("/all/:userID", async function(req, res, next) {
   try {
@@ -92,10 +102,11 @@ router.get("/all/:userID", async function(req, res, next) {
       throw "No lists exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.get("/view/:listID", protectEndpoints);
 // Get single list by listID ----------------------------------------
 router.get("/view/:listID", async function(req, res, next) {
   try {
@@ -106,10 +117,11 @@ router.get("/view/:listID", async function(req, res, next) {
       throw "No lists exist.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.delete("/view/:listID", protectEndpoints);
 // delete list -------------------------------------------------------------------
 router.delete("/:listID", async function(req, res, next) {
   try {
@@ -121,10 +133,11 @@ router.delete("/:listID", async function(req, res, next) {
       throw "Failed to delete the list!";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 
+router.patch("/", protectEndpoints);
 // update list -------------------------------------------------------------------
 router.patch("/", async function(req, res, next) {
   try {
@@ -135,7 +148,7 @@ router.patch("/", async function(req, res, next) {
       throw "List could not be updated.";
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ msg: err });
   }
 });
 

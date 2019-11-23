@@ -102,7 +102,7 @@
             </div>
           </div>
         </div>
-        
+
         <div id="tasks-container">
           <p class="new-list-heading">Tasks</p>
           <button type="button" id="addTask" class="add-button">
@@ -161,117 +161,105 @@
     showLists();
 
     async function showLists() {
-      try {
-        let showListTmpl = document.getElementById("showListsTmpl");
-        let div = showListTmpl.content.cloneNode(true);
-        container.appendChild(div);
-        document
-          .querySelector("#addList")
-          .addEventListener("click", addNewList);
-        userData = JSON.parse(sessionStorage.getItem("logindata"));
-        let listData = JSON.parse(localStorage.getItem("listdata"));
-        let ids;
+      let showListTmpl = document.getElementById("showListsTmpl");
+      let div = showListTmpl.content.cloneNode(true);
+      container.appendChild(div);
+      document.querySelector("#addList").addEventListener("click", addNewList);
+      userData = JSON.parse(sessionStorage.getItem("logindata"));
 
-        if (listData == null || listData.length == 0) {
-          let url = "http://localhost:3000/lists/all/" + userData.userid;
-          listData = await utilities.requestToServer(url, {});
-          localStorage.setItem("listdata", JSON.stringify(listData));
-        }
-        if (listData.length > 0) {
-          let taskData = JSON.parse(localStorage.getItem("taskdata"));
-          if (taskData == null || taskData.length == 0) {
-            for (let i = 0; i < listData.length; i++) {
-              if (i == 0) {
-                ids = listData[i].id;
-              } else {
-                ids += "," + listData[i].id;
+      listData = await utilities.getListsByUserID(
+        userData.userid,
+        userData.token
+      );
+
+      if (listData.length > 0) {
+        let taskData = await utilities.getTasksByListIDS(
+          listData,
+          userData.token
+        );
+
+        for (let list of listData) {
+          let listWrapper = document.createElement("div");
+          listWrapper.setAttribute("id", list.id);
+          listWrapper.classList.add("list-wrapper");
+
+          let listViewList = document.createElement("div");
+          listViewList.classList.add("viewList");
+
+          let listDiv = document.createElement("div");
+          listDiv.classList.add("list-div");
+          listDiv.innerHTML = list.name;
+
+          let deleteIcon = document.createElement("img");
+          deleteIcon.setAttribute("src", "images/delete_blue.svg");
+          deleteIcon.classList.add("delete-icon-blue");
+          listDiv.appendChild(deleteIcon);
+
+          listViewList.appendChild(listDiv);
+
+          for (let [index, task] of taskData.entries()) {
+            if (task.listid == list.id) {
+              let taskDiv = document.createElement("div");
+              taskDiv.classList.add("list-div");
+              taskDiv.innerHTML = task.name;
+
+              let checkedRadio = document.createElement("input");
+              checkedRadio.setAttribute("type", "radio");
+              checkedRadio.classList.add("radioFinished");
+              if (task.finished) {
+                checkedRadio.checked = true;
+                checkedRadio.classList.add("checked");
               }
+              let date = task.due_date;
+              if (
+                date != null &&
+                date.split("T")[0] < new Date().toISOString().split("T")[0] &&
+                !task.finished
+              ) {
+                taskDiv.classList.add("overdue");
+              }
+              checkedRadio.setAttribute("id", "taskid-" + task.id);
+
+              taskDiv.appendChild(checkedRadio);
+
+              listViewList.appendChild(taskDiv);
             }
-
-            let url2 =
-              "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
-
-            taskData = await utilities.requestToServer(url2, {});
-            localStorage.setItem("taskdata", JSON.stringify(taskData));
           }
 
-          for (let list of listData) {
-            let listWrapper = document.createElement("div");
-            listWrapper.setAttribute("id", list.id);
-            listWrapper.classList.add("list-wrapper");
+          listWrapper.appendChild(listViewList);
 
-            let listViewList = document.createElement("div");
-            listViewList.classList.add("viewList");
+          let editButton = document.createElement("button");
+          editButton.innerHTML = "Edit List";
+          editButton.classList.add("edit");
+          listWrapper.appendChild(editButton);
 
-            let listDiv = document.createElement("div");
-            listDiv.classList.add("list-div");
-            listDiv.innerHTML = list.name;
+          document.querySelector("main").appendChild(listWrapper);
 
-            let deleteIcon = document.createElement("img");
-            deleteIcon.setAttribute("src", "images/delete_blue.svg");
-            deleteIcon.classList.add("delete-icon-blue");
-            listDiv.appendChild(deleteIcon);
+          //eventlistener for viewing a list
+          document.querySelectorAll(".viewList").forEach(div => {
+            div.addEventListener("click", viewList);
+          });
 
-            listViewList.appendChild(listDiv);
+          //eventlistener for editing a list
+          document.querySelectorAll(".edit").forEach(div => {
+            div.addEventListener("click", editList);
+          });
 
-            for (let [index, task] of taskData.entries()) {
-              if (task.listid == list.id) {
-                let taskDiv = document.createElement("div");
-                taskDiv.classList.add("list-div");
-                taskDiv.innerHTML = task.name;
+          //eventlistener for deleting the respective list
+          document.querySelectorAll(".delete-icon-blue").forEach(btn => {
+            btn.addEventListener("click", deleteList);
+          });
 
-                let checkedRadio = document.createElement("input");
-                checkedRadio.setAttribute("type", "radio");
-                checkedRadio.classList.add("radioFinished");
-                if (task.finished) {
-                  checkedRadio.checked = true;
-                  checkedRadio.classList.add("checked");
-                }
-                checkedRadio.setAttribute("id", "taskid-" + task.id);
-
-                taskDiv.appendChild(checkedRadio);
-
-                listViewList.appendChild(taskDiv);
-              }
-            }
-
-            listWrapper.appendChild(listViewList);
-
-            let editButton = document.createElement("button");
-            editButton.innerHTML = "Edit List";
-            editButton.classList.add("edit");
-            listWrapper.appendChild(editButton);
-
-            document.querySelector("main").appendChild(listWrapper);
-
-            //eventlistener for viewing a list
-            document.querySelectorAll(".viewList").forEach(div => {
-              div.addEventListener("click", viewList);
-            });
-
-            //eventlistener for editing a list
-            document.querySelectorAll(".edit").forEach(div => {
-              div.addEventListener("click", editList);
-            });
-
-            //eventlistener for deleting the respective list
-            document.querySelectorAll(".delete-icon-blue").forEach(btn => {
-              btn.addEventListener("click", deleteList);
-            });
-
-            //eventlistener for checking a task finished or not
-            document.querySelectorAll(".radioFinished").forEach(btn => {
-              btn.addEventListener("click", utilities.markAsFinished);
-            });
-          }
-        } else {
-          let txt = document.createElement("p");
-          txt.innerHTML = "No lists yet. Go ahead and create a new one!";
-          txt.classList.add("notasks");
-          document.querySelector("#show-lists-wrapper").appendChild(txt);
+          //eventlistener for checking a task finished or not
+          document.querySelectorAll(".radioFinished").forEach(btn => {
+            btn.addEventListener("click", utilities.markAsFinished);
+          });
         }
-      } catch (err) {
-        console.log(err);
+      } else {
+        let txt = document.createElement("p");
+        txt.innerHTML = "No lists yet. Go ahead and create a new one!";
+        txt.classList.add("notasks");
+        document.querySelector("#show-lists-wrapper").appendChild(txt);
       }
     }
 
@@ -300,14 +288,14 @@
       container.innerHTML = "";
       container.appendChild(newListContent);
       document
-          .getElementById("radio-private")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-private")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-public")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-public")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-member")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-member")
+        .addEventListener("click", changeRadio);
       document
         .querySelector("#addMember")
         .addEventListener("click", editMembers);
@@ -321,7 +309,7 @@
           redirectUser("showlists.html");
         });
       let radio = document.querySelector("input[name=public]:checked").value;
-      if(radio == "private" || radio == "public"){
+      if (radio == "private" || radio == "public") {
         document.getElementById("member-container").style.display = "none";
       }
     }
@@ -344,15 +332,13 @@
       newListTmpl.content.querySelector(".green").innerHTML = "Edit&nbsp";
       newListTmpl.content.querySelector("#new-list-title").value =
         listData.name;
-      let public=""
-        if(listData.public == 0){
+      let public = "";
+      if (listData.public == 0) {
         public = "private";
-      }
-      if(listData.public == 1){
-        public = "public"
-      }
-      if(listData.public == 2){
-        public = "members"
+      } else if (listData.public == 1) {
+        public = "public";
+      } else if (listData.public == 2) {
+        public = "members";
       }
       newListTmpl.content.querySelector(
         "input[value=" + public + "]"
@@ -365,7 +351,7 @@
       let tasksData = tasks.filter(obj => {
         return obj.listid == detailID;
       });
-      if(listData.public == 0 || listData.public == 1){
+      if (listData.public == 0 || listData.public == 1) {
         document.getElementById("member-container").style.display = "none";
       }
       const addOptions = await addMemberData(detailID);
@@ -373,14 +359,14 @@
       sessionStorage.setItem("deleteAll", JSON.stringify(existing));
       createMemberDiv(existing);
       document
-          .getElementById("radio-private")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-private")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-public")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-public")
+        .addEventListener("click", changeRadio);
       document
-          .getElementById("radio-member")
-          .addEventListener("click", changeRadio);
+        .getElementById("radio-member")
+        .addEventListener("click", changeRadio);
 
       for (let [index, task] of tasksData.entries()) {
         addTaskForm(task);
@@ -389,10 +375,6 @@
 
         taskDiv.querySelector(".task-title").value = task.name;
         let date = task.due_date != null ? task.due_date.split("T")[0] : "";
-        console.log(task);
-        console.log(date);
-        console.log(task.due_date);
-        console.log(task.assigned_user);
         taskDiv.querySelector(".due-date").value = date;
         let tag = task.tag ? task.tag : "None";
         taskDiv.querySelector(".tag").value = tag;
@@ -425,16 +407,19 @@
       let id = evt.target.parentNode.parentNode.parentNode.id;
       if (
         confirm(
-          "Are you sure you want to delete the list " +
+          "Are you sure you want to delete the list '" +
             evt.target.parentNode.innerText +
-            "?"
+            "'?"
         )
       ) {
         let url = "http://localhost:3000/lists/ " + id;
 
         let cfg = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          }
         };
 
         try {
@@ -443,7 +428,7 @@
           localStorage.removeItem("listdata");
           redirectUser("showlists.html");
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
     }
@@ -471,7 +456,7 @@
       let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
       userDropdown.innerHTML = "";
       userDropdown.appendChild(new Option("No user assigned", "None"));
-      //userDropdown.appendChild(new Option(userData, userData.id));
+      //userDropdown.appendChild(new Option(userData, userData.userid));
       let members = JSON.parse(sessionStorage.getItem("listMembers"));
       if (members != null && members.length > 0) {
         addOption(members, newTaskDiv.content);
@@ -525,27 +510,28 @@
         sessionStorage.removeItem("newMembers");
         sessionStorage.setItem("deletedMembers", JSON.stringify(oldMembers));
         document.getElementById("member-container").style.display = "block";
-        console.log("lol")
-        
       }
     }
     async function editMembers() {
       document.getElementById("errormsmember").innerHTML =""
       let memberEmail = document.getElementById("member-email");
-      if(memberEmail.value!=0){
+      if (memberEmail.value != 0) {
         let existingUser = await checkEmail();
         async function checkEmail() {
           let url =
             "http://localhost:3000/users/emailAndData/" + memberEmail.value;
           let cfg = {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: {
+              "Content-Type": "application/json",
+              authorization: userData.token
+            }
           };
           try {
             let data = await utilities.requestToServer(url, cfg);
             return data;
           } catch (err) {
-            console.log(err);
+            utilities.handleError(err);
           }
         }
         if (existingUser) {
@@ -600,11 +586,11 @@
           }
         } else {
           document.getElementById("errormsmember").innerHTML =
-           "No user with that email exists.";
+            "No user with that email exists.";
         }
       } else {
         document.getElementById("errormsmember").innerHTML =
-         "Please fill in the e-mail of the user you want to add as a member.";
+          "Please fill in the e-mail of the user you want to add as a member.";
       }
     }
 
@@ -613,7 +599,10 @@
 
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        }
       };
 
       try {
@@ -628,7 +617,7 @@
         sessionStorage.setItem("listMembers", JSON.stringify(existing));
         return data;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
     }
 
@@ -666,7 +655,10 @@
 
       let cfg = {
         method: "GET",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        }
       };
 
       try {
@@ -674,7 +666,7 @@
         var data = await resp.json();
         return data;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
     }
 
@@ -783,7 +775,10 @@
       url = "http://localhost:3000/lists";
       cfg = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        },
         body: JSON.stringify(listData)
       };
 
@@ -791,7 +786,7 @@
         let newlistData = await utilities.requestToServer(url, cfg);
         newListid = newlistData.id;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       //save members
@@ -807,32 +802,36 @@
         url = "http://localhost:3000/lists/member";
         cfg = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(condensedMembers)
         };
 
         try {
           let newMemberData = await utilities.requestToServer(url, cfg);
-          console.log(newMemberData);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log(newTasks);
       url = "http://localhost:3000/tasks/createSeveralTasks";
       cfg = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        },
         body: JSON.stringify(newTasks)
       };
 
       try {
         let newTaskData = await utilities.requestToServer(url, cfg);
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       localStorage.removeItem("taskdata");
@@ -855,7 +854,7 @@
       if (radio == "public") {
         public = 1;
       }
-      if(radio == "members") {
+      if (radio == "members") {
         public = 2;
       }
 
@@ -871,7 +870,10 @@
       url = "http://localhost:3000/lists";
       cfg = {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: userData.token
+        },
         body: JSON.stringify(listData)
       };
 
@@ -879,24 +881,26 @@
         let newlistData = await utilities.requestToServer(url, cfg);
         newListid = newlistData.id;
       } catch (err) {
-        console.log(err);
+        utilities.handleError(err);
       }
 
       //save tasks
       let newTasks = getAllTaskData(taskDivs);
-      console.log(newTasks);
       for (let [index, task] of newTasks.entries()) {
         url = "http://localhost:3000/tasks";
         cfg = {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(newTasks[index])
         };
 
         try {
           let newTaskData = await utilities.requestToServer(url, cfg);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
@@ -913,20 +917,22 @@
         url = "http://localhost:3000/lists/member";
         cfg = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(condensedMembers)
         };
 
         try {
           let newMemberData = await utilities.requestToServer(url, cfg);
-          console.log(newMemberData);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
-      let chooseDelete =""
+      let chooseDelete = "";
       let condensedMembers_deleted = [];
-      
+
       if(public == 0|| public == 1){
         chooseDelete = "deleteAll"
       }
@@ -944,15 +950,17 @@
         url = "http://localhost:3000/lists/member";
         cfg = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(condensedMembers_deleted)
         };
 
         try {
           let newMemberData = await utilities.requestToServer(url, cfg);
-          console.log(newMemberData);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
       sessionStorage.removeItem("listMembers");
@@ -972,14 +980,17 @@
         url2 = "http://localhost:3000/tasks/createSeveralTasks";
         cfg2 = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          },
           body: JSON.stringify(addedTasks)
         };
 
         try {
           let newTaskData = await utilities.requestToServer(url2, cfg2);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
 
@@ -996,7 +1007,10 @@
         let url = "http://localhost:3000/tasks/" + taskid;
         let cfg = {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            "Content-Type": "application/json",
+            authorization: userData.token
+          }
         };
         let tasks = JSON.parse(localStorage.getItem("taskdata"));
 
@@ -1009,10 +1023,9 @@
         try {
           let deletedData = await utilities.requestToServer(url, cfg);
         } catch (err) {
-          console.log(err);
+          utilities.handleError(err);
         }
       }
-
       element.remove();
     }
   </script>

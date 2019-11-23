@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div id="container"></div>
+    <div id="container" class="loginWrapper"></div>
     <template id="logintmpl">
       <form>
         <div class="wrapper">
@@ -83,6 +83,7 @@
             </div>
             <div class="registerwrapper">
               <h4><img src="images/password_blue.svg" />Password</h4>
+              <p>Requires lowercase and capital letters, 8 characters and at least 1 number.</p>
 
               <input
                 type="password"
@@ -122,6 +123,7 @@
     let loginTmpl = document.getElementById("logintmpl");
     let registerTmpl = document.getElementById("registertmpl");
     let container = document.getElementById("container");
+    let sessionError = JSON.parse(sessionStorage.getItem("errordata"));
 
     let form;
     let firstname;
@@ -135,12 +137,17 @@
 
     function showLogin() {
       if (isLoggedIn()) {
-        redirectUser("showlists.html");
+        redirectUser("doashboard.html");
       }
 
       let loginContent = loginTmpl.content.cloneNode(true);
       container.innerHTML = "";
       container.appendChild(loginContent);
+
+      if (sessionError) {
+        errormsg = document.querySelector("#errormsg");
+        errormsg.innerHTML = sessionError.msg;
+      }
 
       let goToRegister = document.getElementById("goToRegister");
       let form = document.getElementsByTagName("form")[0];
@@ -154,6 +161,7 @@
       errormsg = document.getElementById("errormsg");
       email = document.getElementById("email");
       password = document.getElementById("password");
+      sessionStorage.removeItem("errordata");
 
       let url = "http://localhost:3000/auth";
 
@@ -182,7 +190,7 @@
           localStorage.removeItem("listdata");
         }
 
-        redirectUser("showlists.html");
+        redirectUser("dashboard.html");
       } catch (err) {
         let error = await err;
         errormsg.innerHTML = error.msg;
@@ -234,9 +242,11 @@
         try {
           let data = await utilities.requestToServer(url, cfg);
           container.innerHTML = "";
+          sessionStorage.removeItem("errordata");
           showLogin();
         } catch (err) {
-          errormsg.innerHTML = err;
+          let error = await err;
+          errormsg.innerHTML = error.msg;
         }
       }
     }

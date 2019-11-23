@@ -322,8 +322,12 @@ function changeRadio() {
   let existing = sessionStorage.getItem("listMembers");
   existing = existing ? JSON.parse(existing) : [];
   if (radio == "private" || radio == "public") {
+    document.querySelectorAll(".user")
+          .forEach(opt => {
+            opt.options.length = 0;
+            opt.appendChild(new Option("No user assigned", "None"));
+          })
     document.getElementById("member-container").style.display = "none";
-
     document.getElementById("list-members").innerHTML = "";
     sessionStorage.removeItem("listMembers");
     sessionStorage.removeItem("newMembers");

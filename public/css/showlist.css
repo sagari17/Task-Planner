@@ -117,7 +117,3 @@ header {
 .overdue {
   background-color: var(--color-red-light) !important;
 }
-
-#errormsmember {
-  color: var(--color-red);
-}

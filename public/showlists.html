@@ -500,22 +500,25 @@
     function changeRadio(){
       let radio = document.querySelector("input[name=public]:checked").value;
       let visible = document.getElementById("member-container");
+      let existing = sessionStorage.getItem("listMembers");
+        existing = existing ? JSON.parse(existing) : [];
       if(radio == "private" || radio == "public"){
         document.getElementById("member-container").style.display = "none";
-        let existing = sessionStorage.getItem("listMembers");
-        existing = existing ? JSON.parse(existing) : [];
-        if(existing.length>0){
+        
+        
+        document.getElementById("list-members").innerHTML ="";
+        sessionStorage.removeItem("listMembers");
+        sessionStorage.removeItem("newMembers");
+        
+      }
+      else if(radio == "members"){
           document.querySelectorAll(".user")
           .forEach(opt => {
             opt.options.length = 0;
             opt.appendChild(new Option("No user assigned", "None"));
-          });
-        document.getElementById("list-members").innerHTML ="";
-        sessionStorage.removeItem("listMembers");
-        sessionStorage.removeItem("newMembers");
-        }
-      }
-      else if(radio == "members"){
+          })
+          
+        
         let oldMembers = sessionStorage.getItem("deleteAll");
           oldMembers = oldMembers ? JSON.parse(oldMembers) : [];
         sessionStorage.removeItem("listMembers");
@@ -982,7 +985,7 @@
 
       localStorage.removeItem("taskdata");
       localStorage.removeItem("listdata");
-      //redirectUser("showlists.html");
+      redirectUser("showlists.html");
     }
 
     async function deleteTaskButton(evt) {

@@ -1,6 +1,4 @@
-console.log("here");
 if (!isLoggedIn()) {
-  console.log(isLoggedIn());
   sessionStorage.setItem(
     "errordata",
     JSON.stringify({
@@ -143,7 +141,6 @@ async function displayListTask(task, user) {
   if (date) {
     date = date.split("T")[0];
     if (date < new Date().toISOString().split("T")[0] && !task.finished) {
-      console.log(taskBoxTmpl.content);
       taskBoxTmpl.content
         .querySelector(".viewList-task")
         .classList.add("overdue");
@@ -172,7 +169,6 @@ function changeDateFilter(evt) {
 }
 
 function activateFilter(evt) {
-  console.log(evt.target.value);
   evt.target.value == "tag" ? changeTagFilter() : changeDateFilter();
 }
 

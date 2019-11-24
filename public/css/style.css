@@ -14,6 +14,9 @@
   --color-green-dark: #82c205;
   --color-red: #e03f3f;
   --color-red-light: #fbe3e3;
+  --color-orange: #dbaf00;
+  --color-yellow: #dbdb00;
+  --color-darkorange: #db7500;
 }
 
 * {

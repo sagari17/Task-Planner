@@ -4,7 +4,10 @@ const db = function(dbConnection) {
   const dbConnectionString = dbConnection;
 
   async function runQuery(query, params) {
-    const client = new pg.Client(dbConnectionString);
+    const client = new pg.Client(
+      "postgres://svweyjmwncotvj:25a12ff7cfdd88ea11943cb8438b4383ca6c9ea96fb8783a1e5968db1cd8b2e7@ec2-107-20-244-40.compute-1.amazonaws.com:5432/ddoducrh03dt9u" +
+        "?ssl=true"
+    );
     try {
       await client.connect(); //test if connected? throw an error/deal with it
       const res = await client.query(query, params); //encapsulation in funciton
@@ -19,10 +22,8 @@ const db = function(dbConnection) {
   const getUserByEmail = async function(email) {
     let userData = null;
     let values = [email];
-    console.log(email);
     try {
       userData = await runQuery("SELECT * FROM users WHERE email=$1", values);
-      console.log(userData);
     } catch (err) {
       throw "Couldn't get user.";
     }

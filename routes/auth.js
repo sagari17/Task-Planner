@@ -18,11 +18,13 @@ router.post("/", async function(req, res) {
       if (check == true) {
         let payload = { userid: result[0].id };
         let tok = jwt.sign(payload, secret, { expiresIn: "12h" }); //create token
+        console.log("worked");
         res.status(200).json({
           email: result[0].email,
           userid: result[0].id,
           token: tok
         });
+        console.log("wellwell");
       } else {
         res.status(400).json({ msg: "Wrong password" });
       }

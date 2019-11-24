@@ -56,6 +56,7 @@ async function loginUser(evt) {
 
   try {
     let data = await utilities.requestToServer(url, cfg);
+    console.log(data);
     sessionStorage.setItem("logindata", JSON.stringify(data));
 
     let listData = JSON.parse(localStorage.getItem("listdata"));

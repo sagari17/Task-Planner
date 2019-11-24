@@ -87,7 +87,7 @@ utilities = (function() {
 
     let taskid = { id: evt.target.id.split("-")[1] };
     let token = JSON.parse(sessionStorage.getItem("logindata")).token;
-    url = "http://localhost:3000/tasks/finished";
+    url = "/tasks/finished";
     cfg = {
       method: "PATCH",
       headers: { "Content-Type": "application/json", authorization: token },
@@ -133,7 +133,7 @@ utilities = (function() {
     let isEmail = null;
     let errormsg = document.getElementById("errormsg");
 
-    let url = "http://localhost:3000/users/email/" + email.value;
+    let url = "/users/email/" + email.value;
     let cfg = {
       method: "GET",
       headers: { "Content-Type": "application/json" }
@@ -163,7 +163,7 @@ utilities = (function() {
   }
 
   async function getUserByID(id, token) {
-    let url = "http://localhost:3000/users/" + id;
+    let url = "/users/" + id;
     let cfg = {
       method: "GET",
       headers: { "Content-Type": "application/json", authorization: token }
@@ -206,6 +206,7 @@ utilities = (function() {
   async function getTasksByListIDS(listData, token) {
     return new Promise(async function(resolve, reject) {
       try {
+        //try to load from server
         let taskData = [];
         if (listData.length > 0) {
           let ids;

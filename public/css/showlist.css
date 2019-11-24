@@ -121,3 +121,15 @@ header {
 #errormsmember {
   color: var(--color-red);
 }
+
+.yellow-list-wrapper {
+  border-top: 8px solid var(--color-yellow) !important;
+}
+
+.orange-list-wrapper {
+  border-top: 8px solid var(--color-orange) !important;
+}
+
+.darkorange-list-wrapper {
+  border-top: 8px solid var(--color-darkorange) !important;
+}

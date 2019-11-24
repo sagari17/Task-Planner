@@ -13,7 +13,6 @@ if (sessionError) {
 
 getPublicList.addEventListener("submit", function(evt) {
   evt.preventDefault();
-  console.log(document.querySelector("#publicUrl").value);
   redirectUser(document.querySelector("#publicUrl").value);
 });
 

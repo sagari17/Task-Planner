@@ -118,7 +118,7 @@ router.get("/view/:listID", async function(req, res, next) {
   }
 });
 
-router.delete("/view/:listID", protectEndpoints);
+router.delete("/:listID", protectEndpoints);
 // delete list -------------------------------------------------------------------
 router.delete("/:listID", async function(req, res, next) {
   try {

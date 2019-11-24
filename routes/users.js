@@ -105,7 +105,7 @@ router.get("/email/:userEmail", async function(req, res, next) {
 });
 
 router.get("/emailAndData/:userEmail", protectEndpoints);
-// check if email exists ----------------------------------------------------------------
+// check if email exists and return user ------------------------------------------------
 router.get("/emailAndData/:userEmail", async function(req, res, next) {
   try {
     let email = await db.checkEmailReturnUser(req.params.userEmail);
@@ -113,6 +113,22 @@ router.get("/emailAndData/:userEmail", async function(req, res, next) {
       res.status(200).json(email);
     } else {
       res.status(200).json({ msg: "User does not exist." });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+});
+
+router.get("/isMemberOfList/:listID/:userID", protectEndpoints);
+// check if email exists and return user ------------------------------------------------
+router.get("/isMemberOfList/:listID/:userID", async function(req, res, next) {
+  try {
+    let values = [req.params.listID, req.params.userID];
+    let member = await db.isMemberOfList(values);
+    if (member && member.length > 0) {
+      res.status(200).json(true);
+    } else {
+      res.status(200).json(false);
     }
   } catch (err) {
     res.status(500).json({ msg: err });

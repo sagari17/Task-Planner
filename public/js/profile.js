@@ -150,7 +150,6 @@ async function deleteUser() {
 
     try {
       let data = await utilities.requestToServer(url, cfg);
-      showUserInfo();
     } catch (err) {
       utilities.handleError(err);
     }

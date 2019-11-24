@@ -4,10 +4,7 @@ const db = function(dbConnection) {
   const dbConnectionString = dbConnection;
 
   async function runQuery(query, params) {
-    const client = new pg.Client(
-      "postgres://svweyjmwncotvj:25a12ff7cfdd88ea11943cb8438b4383ca6c9ea96fb8783a1e5968db1cd8b2e7@ec2-107-20-244-40.compute-1.amazonaws.com:5432/ddoducrh03dt9u" +
-        "?ssl=true"
-    );
+    const client = new pg.Client(dbConnectionString);
     try {
       await client.connect(); //test if connected? throw an error/deal with it
       const res = await client.query(query, params); //encapsulation in funciton

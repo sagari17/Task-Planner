@@ -162,7 +162,7 @@ const db = function(dbConnection) {
     let values = [userID];
     try {
       listData = await runQuery(
-        "SELECT DISTINCT lists.id, lists.name, lists.owner, lists.public FROM lists, members WHERE lists.owner=$1 OR lists.id=members.list_id AND members.user_id=$1 ",
+        "SELECT DISTINCT lists.id, lists.name, lists.owner, lists.public FROM lists, members WHERE lists.owner=$1 OR lists.id=members.list_id AND members.user_id=$1 ORDER BY lists.id",
         values
       );
     } catch (err) {

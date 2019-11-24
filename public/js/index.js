@@ -177,41 +177,10 @@ utilities = (function() {
   }
 
   async function getListsByUserID(userid, token) {
-    let listData = JSON.parse(localStorage.getItem("listdata"));
-
-    if (listData == null || listData.length == 0) {
-      let url = "/lists/all/" + userid;
-      let cfg = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: token
-        }
-      };
+    return new Promise(async function(resolve, reject) {
       try {
-        listData = await utilities.requestToServer(url, cfg);
-        localStorage.setItem("listdata", JSON.stringify(listData));
-      } catch (err) {
-        utilities.handleError(err);
-      }
-    }
-    return listData;
-  }
-
-  async function getTasksByListIDS(listData, token) {
-    let taskData = [];
-    if (listData.length > 0) {
-      taskData = JSON.parse(localStorage.getItem("taskdata"));
-      if (taskData == null || taskData.length == 0) {
-        let ids;
-        for (let i = 0; i < listData.length; i++) {
-          if (i == 0) {
-            ids = listData[i].id;
-          } else {
-            ids += "," + listData[i].id;
-          }
-        }
-        let url = "/tasks/allTasksBySeveralIDS/" + ids;
+        //try to load from server
+        let url = "http://localhost:3000/lists/all/" + userid;
         let cfg = {
           method: "GET",
           headers: {
@@ -219,15 +188,57 @@ utilities = (function() {
             authorization: token
           }
         };
-        try {
-          taskData = await utilities.requestToServer(url, cfg);
-          localStorage.setItem("taskdata", JSON.stringify(taskData));
-        } catch (err) {
-          utilities.handleError(err);
+        listData = await utilities.requestToServer(url, cfg);
+        localStorage.setItem("listdata", JSON.stringify(listData));
+        resolve(listData);
+      } catch (err) {
+        //try to load from local storage
+        let listData = localStorage.getItem("listdata");
+        if (listData) {
+          resolve(JSON.parse(listData));
+        } else {
+          reject(err);
         }
       }
-    }
-    return taskData;
+    });
+  }
+
+  async function getTasksByListIDS(listData, token) {
+    return new Promise(async function(resolve, reject) {
+      try {
+        //try to load from server
+        let taskData = [];
+        if (listData.length > 0) {
+          let ids;
+          for (let i = 0; i < listData.length; i++) {
+            if (i == 0) {
+              ids = listData[i].id;
+            } else {
+              ids += "," + listData[i].id;
+            }
+          }
+          let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+          let cfg = {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token
+            }
+          };
+          taskData = await utilities.requestToServer(url, cfg);
+          localStorage.setItem("taskdata", JSON.stringify(taskData));
+        }
+        resolve(taskData);
+      } catch (err) {
+        //try to load from local storage
+        let taskData = localStorage.getItem("taskdata");
+        if (taskData) {
+          resolve(JSON.parse(taskData));
+        } else {
+          reject(err);
+        }
+      }
+    });
   }
 
   async function handleError(err) {

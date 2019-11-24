@@ -25,6 +25,13 @@ async function showLists() {
       let listWrapper = document.createElement("div");
       listWrapper.setAttribute("id", list.id);
       listWrapper.classList.add("list-wrapper");
+      if (userData.userid != list.owner) {
+        listWrapper.classList.add("darkorange-list-wrapper");
+      } else if (list.public == 1) {
+        listWrapper.classList.add("yellow-list-wrapper");
+      } else if (list.public == 2) {
+        listWrapper.classList.add("orange-list-wrapper");
+      }
 
       let listViewList = document.createElement("div");
       listViewList.classList.add("viewList");
@@ -40,7 +47,7 @@ async function showLists() {
 
       listViewList.appendChild(listDiv);
 
-      for (let [index, task] of taskData.entries()) {
+      for (let task of taskData) {
         if (task.listid == list.id) {
           let taskDiv = document.createElement("div");
           taskDiv.classList.add("list-div");
@@ -192,7 +199,7 @@ async function editList(evt) {
   if (listData.public == 0 || listData.public == 1) {
     document.getElementById("member-container").style.display = "none";
   }
-  const addOptions = await addMemberData(detailID);
+  await addMemberData(detailID);
   let existing = JSON.parse(sessionStorage.getItem("listMembers"));
   sessionStorage.setItem("deleteAll", JSON.stringify(existing));
   createMemberDiv(existing);
@@ -290,7 +297,6 @@ function addTaskForm() {
   let userDropdown = newTaskDiv.content.querySelector(".userDropdown");
   userDropdown.innerHTML = "";
   userDropdown.appendChild(new Option("No user assigned", "None"));
-  //userDropdown.appendChild(new Option(userData, userData.userid));
   let members = JSON.parse(sessionStorage.getItem("listMembers"));
   if (members != null && members.length > 0) {
     addOption(members, newTaskDiv.content);

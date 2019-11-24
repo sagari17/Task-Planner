@@ -1,4 +1,3 @@
-//menubar
 class MyMenu extends HTMLElement {
   constructor() {
     super();

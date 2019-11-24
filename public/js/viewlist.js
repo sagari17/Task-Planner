@@ -37,7 +37,27 @@ async function displayList() {
     utilities.handleError(err);
   }
 
-  if (list.public == false && list.owner != userid) {
+  let isMember = false;
+  if (list.public == 2) {
+    let url = "/users/isMemberOfList/" + list.id + "/" + userid;
+    let cfg = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token
+      }
+    };
+    try {
+      isMember = await utilities.requestToServer(url, cfg);
+    } catch (err) {
+      utilities.handleError(err);
+    }
+  }
+
+  if (
+    (list.public == 0 && list.owner != userid) ||
+    (list.public == 2 && !isMember)
+  ) {
     sessionStorage.setItem(
       "errordata",
       JSON.stringify({

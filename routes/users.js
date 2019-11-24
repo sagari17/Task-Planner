@@ -2,9 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const protectEndpoints = require("../modules/authEndpoints");
 const router = express.Router();
-const db = require("../modules/db")(
-  process.env.DATABASE_URL || require("../modules/database")
-);
+const db = require("../modules/db")(process.env.DATABASE_URL);
 
 // create user -------------------------------------------------------------------
 router.post("/", async function(req, res, next) {

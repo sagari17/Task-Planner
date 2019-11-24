@@ -180,7 +180,7 @@ utilities = (function() {
     return new Promise(async function(resolve, reject) {
       try {
         //try to load from server
-        let url = "http://localhost:3000/lists/all/" + userid;
+        let url = "/lists/all/" + userid;
         let cfg = {
           method: "GET",
           headers: {
@@ -217,7 +217,7 @@ utilities = (function() {
               ids += "," + listData[i].id;
             }
           }
-          let url = "http://localhost:3000/tasks/allTasksBySeveralIDS/" + ids;
+          let url = "/tasks/allTasksBySeveralIDS/" + ids;
           let cfg = {
             method: "GET",
             headers: {

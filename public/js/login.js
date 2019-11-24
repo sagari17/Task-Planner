@@ -118,7 +118,7 @@ async function createAccount(evt) {
     };
 
     try {
-      let data = await utilities.requestToServer(url, cfg);
+      await utilities.requestToServer(url, cfg);
       container.innerHTML = "";
       sessionStorage.removeItem("errordata");
       showLogin();

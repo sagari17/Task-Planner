@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const protectEndpoints = require("../modules/authEndpoints");
-const db = require("../modules/db")(
-  process.env.DATABASE_URL || require("../modules/database")
-);
+const db = require("../modules/db")(process.env.DATABASE_URL);
 
 router.post("/", protectEndpoints);
 // create list -----------------------------------------------------

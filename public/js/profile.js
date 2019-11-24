@@ -98,8 +98,7 @@ async function saveChanges(firstname, lastname, email) {
     };
 
     try {
-      let data = await utilities.requestToServer(url, cfg);
-
+      await utilities.requestToServer(url, cfg);
       let sessionData = JSON.parse(sessionStorage.getItem("logindata"));
       sessionData.email = email.value;
       sessionStorage.setItem("logindata", JSON.stringify(sessionData));
@@ -126,7 +125,7 @@ async function changePw(password, passwordrep) {
     };
 
     try {
-      let data = await utilities.requestToServer(url, cfg);
+      await utilities.requestToServer(url, cfg);
       showUserInfo();
     } catch (err) {
       utilities.handleError(err);

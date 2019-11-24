@@ -5,7 +5,7 @@ if (!isLoggedIn()) {
       msg: "You have to be logged in to view a public list."
     })
   );
-  //redirectNotAuthUser("index.html");
+  redirectNotAuthUser("index.html");
 }
 
 let tagArr = utilities.getTagArray();
@@ -80,8 +80,7 @@ async function displayList() {
 
 async function getTasks(urlAddition) {
   try {
-    let url =
-      "/tasks/tasksByOneID/" + listid + "/" + urlAddition;
+    let url = "/tasks/tasksByOneID/" + listid + "/" + urlAddition;
 
     let cfg = {
       method: "GET",

@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const secret = process.env.SECRET || require("../modules/secret"); //for tokens
+const secret = process.env.SECRET; //for tokens
 const jwt = require("jsonwebtoken");
-const db = require("../modules/db")(
-  process.env.DATABASE_URL || require("../modules/database")
-);
+const db = require("../modules/db")(process.env.DATABASE_URL);
 
 // login user -------------------------------------------------------------------
 router.post("/", async function(req, res) {

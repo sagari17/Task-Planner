@@ -6,11 +6,8 @@ const db = function(dbConnection) {
   async function runQuery(query, params) {
     const client = new pg.Client(dbConnectionString);
     try {
-      console.log("trying");
       await client.connect(); //test if connected? throw an error/deal with it
-      console.log("client connected");
       const res = await client.query(query, params); //encapsulation in funciton
-      console.log("query");
       let response = res.rows; //Did we get anything? Dont care here.
       await client.end();
       return response;

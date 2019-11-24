@@ -177,24 +177,29 @@ utilities = (function() {
   }
 
   async function getListsByUserID(userid, token) {
-    let listData = JSON.parse(localStorage.getItem("listdata"));
+    let listData = [];
 
-    if (listData == null || listData.length == 0) {
-      let url = "http://localhost:3000/lists/all/" + userid;
-      let cfg = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: token
-        }
-      };
-      try {
-        listData = await utilities.requestToServer(url, cfg);
-        localStorage.setItem("listdata", JSON.stringify(listData));
-      } catch (err) {
+    let url = "http://localhost:3000/lists/all/" + userid;
+    let cfg = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: token
+      }
+    };
+
+    try {
+      listData = await utilities.requestToServer(url, cfg);
+      localStorage.setItem("listdata", JSON.stringify(listData));
+    } catch (err) {
+      let listDataLS = localStorage.getItem("listdata");
+      if (listData) {
+        listdata = JSON.parse(listDataLS);
+      } else {
         utilities.handleError(err);
       }
     }
+
     return listData;
   }
 

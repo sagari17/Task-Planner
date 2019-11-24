@@ -6,8 +6,11 @@ const db = function(dbConnection) {
   async function runQuery(query, params) {
     const client = new pg.Client(dbConnectionString);
     try {
+      console.log("trying");
       await client.connect(); //test if connected? throw an error/deal with it
+      console.log("client connected");
       const res = await client.query(query, params); //encapsulation in funciton
+      console.log("query");
       let response = res.rows; //Did we get anything? Dont care here.
       await client.end();
       return response;
@@ -19,8 +22,10 @@ const db = function(dbConnection) {
   const getUserByEmail = async function(email) {
     let userData = null;
     let values = [email];
+    console.log(email);
     try {
       userData = await runQuery("SELECT * FROM users WHERE email=$1", values);
+      console.log(userData);
     } catch (err) {
       throw "Couldn't get user.";
     }

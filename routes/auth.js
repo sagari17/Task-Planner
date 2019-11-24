@@ -3,8 +3,9 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const secret = process.env.SECRET || require("../modules/secret"); //for tokens
 const jwt = require("jsonwebtoken");
-const dbURI = require("../modules/database");
-const db = require("../modules/db")(process.env.DATABASE_URL || dbURI);
+const db = require("../modules/db")(
+  process.env.DATABASE_URL || require("../modules/database")
+);
 
 // login user -------------------------------------------------------------------
 router.post("/", async function(req, res) {
@@ -18,13 +19,11 @@ router.post("/", async function(req, res) {
       if (check == true) {
         let payload = { userid: result[0].id };
         let tok = jwt.sign(payload, secret, { expiresIn: "12h" }); //create token
-        console.log("worked");
         res.status(200).json({
           email: result[0].email,
           userid: result[0].id,
           token: tok
         });
-        console.log("wellwell");
       } else {
         res.status(400).json({ msg: "Wrong password" });
       }

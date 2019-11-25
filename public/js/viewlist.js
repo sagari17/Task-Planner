@@ -54,8 +54,6 @@ async function displayList() {
     }
   }
 
-  console.log(list.public == 2 && !isMember && list.owner != userid);
-
   if (
     (list.public == 0 && list.owner != userid) ||
     (list.public == 2 && !isMember && list.owner != userid)

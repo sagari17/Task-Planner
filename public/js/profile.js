@@ -136,6 +136,7 @@ async function changePw(password, passwordrep) {
 
 function logoutUser() {
   sessionStorage.removeItem("logindata");
+  sessionStorage.removeItem("errordata");
   redirectNotAuthUser("index.html");
 }
 

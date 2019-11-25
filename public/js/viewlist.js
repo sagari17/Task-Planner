@@ -165,6 +165,10 @@ async function displayListTask(task, user) {
       taskBoxTmpl.content
         .querySelector(".viewList-task")
         .classList.add("overdue");
+    } else {
+      taskBoxTmpl.content
+        .querySelector(".viewList-task")
+        .classList.remove("overdue");
     }
   } else {
     date = "No due date";

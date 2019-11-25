@@ -8,6 +8,18 @@
   align-items: center;
 }
 
+.yellow-title-wrapper {
+  background-color: var(--color-yellow) !important;
+}
+
+.orange-title-wrapper {
+  background-color: var(--color-orange) !important;
+}
+
+.darkorange-title-wrapper {
+  background-color: var(--color-darkorange) !important;
+}
+
 #listTitleWrapper img {
   margin: 0 1.2rem;
   height: 1.3rem;

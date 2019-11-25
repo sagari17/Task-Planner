@@ -69,6 +69,19 @@ async function displayList() {
     redirectUser("dashboard.html");
   } else {
     let viewListTmpl = document.getElementById("viewListTmpl");
+    if (userid != list.owner) {
+      viewListTmpl.content
+        .querySelector("#listTitleWrapper")
+        .classList.add("darkorange-title-wrapper");
+    } else if (list.public == 1) {
+      viewListTmpl.content
+        .querySelector("#listTitleWrapper")
+        .classList.add("yellow-title-wrapper");
+    } else if (list.public == 2) {
+      viewListTmpl.content
+        .querySelector("#listTitleWrapper")
+        .classList.add("orange-title-wrapper");
+    }
     viewListTmpl.content.querySelector("#viewListTitle").innerHTML = list.name;
     let tagDropdown = viewListTmpl.content.querySelector("#tagDropdown");
     tagArr.forEach(obj => {

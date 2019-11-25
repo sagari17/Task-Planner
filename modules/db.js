@@ -354,7 +354,7 @@ const db = function(dbConnection) {
     } catch (err) {
       throw "Couldn't check email.";
     }
-    if (emailData) {
+    if (emailData && emailData.length > 0) {
       return emailData[0];
     } else {
       return false;
